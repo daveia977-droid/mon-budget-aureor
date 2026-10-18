@@ -119,6 +119,7 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <section id="p-bills" class="page">
 <div class="card stat"><small>Reste a payer</small><strong id="unpaid2" style="font-size:22px;color:var(--amber)">0 €</strong></div>
 <div class="card">
+<button id="exportAllBills" class="block" style="margin-bottom:12px">📥 Exporter toutes les factures (PNG)</button>
 <strong>Ajouter une facture</strong>
 <form id="billForm" novalidate>
 <label for="bname">Intitule</label><input id="bname" maxlength="100" placeholder="Ex. Electricite">
@@ -168,6 +169,7 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <div class="toast" id="toast"></div>
 <footer>Mon Quotidien · version personnelle. Evite d'y stocker des informations bancaires sensibles.</footer>
 
+<canvas id="canvasExport" style="position:fixed;left:-9999px;top:-9999px"></canvas>
 <nav>
 <button class="active" data-page="home"><span class="ico">🏠</span>Accueil</button>
 <button data-page="expenses"><span class="ico">💰</span>Depenses</button>
@@ -284,6 +286,147 @@ function expenseRow(x){
  return '<div class="item"><span class="dot" style="background:'+escAttr(c.color)+';flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong><br><small>'+esc(x.date)+' · '+esc(c.label)+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-expense="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
 }
 
+// ==================== FONCTIONS EXPORT PNG AUREOR ====================
+
+function drawBillDocument(canvas,bill,isGrouped,groupedData){
+ var ctx=canvas.getContext("2d");
+ var dpr=window.devicePixelRatio||2;
+ var width=600,height=isGrouped?800:500;
+ canvas.width=width*dpr;canvas.height=height*dpr;
+ ctx.scale(dpr,dpr);
+ ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
+
+ // En-tete AUREOR (fond sombre #0D0D0D)
+ var headerHeight=120;
+ ctx.fillStyle="#0D0D0D";
+ ctx.fillRect(0,0,width,headerHeight);
+
+ // Texte AUREOR (dore #B08D35, espacement 0.35em, centre)
+ ctx.font="bold 28px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#B08D35";
+ ctx.textAlign="center";
+ ctx.textBaseline="middle";
+ var spacing=28*0.35;
+ var aureorText="AŪREOR";
+ for(var i=0;i<aureorText.length;i++){
+  ctx.fillText(aureorText[i],width/2-(aureorText.length*spacing)/2+i*spacing,headerHeight/2);
+ }
+
+ // Sous-titre
+ ctx.font="14px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#B08D35";
+ ctx.fillText(isGrouped?"RECAPITULATIF DES FACTURES":"RECAPITULATIF INTERNE",width/2,headerHeight/2+28);
+
+ // Contenu (fond blanc)
+ var contentY=headerHeight+20;
+
+ ctx.fillStyle="#222222";
+ ctx.font="14px system-ui,-apple-system,sans-serif";
+ ctx.textAlign="left";
+
+ if(isGrouped){
+  var lineHeight=22,startY=contentY;
+  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
+  ctx.fillText("DATE",40,startY);
+  ctx.fillText("INTITULE",180,startY);
+  ctx.fillText("CATEGORIE",320,startY);
+  ctx.fillText("MONTANT",450,startY);
+  ctx.fillText("STATUT",530,startY);
+  ctx.font="14px system-ui,-apple-system,sans-serif";
+  startY+=lineHeight+8;
+  ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(40,startY-4);ctx.lineTo(560,startY-4);ctx.stroke();
+  startY+=4;
+
+  groupedData.bills.forEach(function(b){
+   var cat=catOf(b.category);
+   var statusText=b.paid?"Payee":"A payer";
+   var statusColor=b.paid?"#34d399":"#f87171";
+   ctx.fillStyle="#222222";
+   ctx.fillText(b.due,40,startY);
+   var label=b.label;
+   if(label.length>25)label=label.substring(0,22)+"...";
+   ctx.fillText(label,180,startY);
+   ctx.fillText(cat.label,320,startY);
+   ctx.fillText(money(b.amount),450,startY);
+   ctx.fillStyle=statusColor;
+   ctx.fillText(statusText,530,startY);
+   ctx.fillStyle="#222222";
+   startY+=lineHeight;
+  });
+
+  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle="#B08D35";
+  startY+=lineHeight;
+  ctx.fillText("TOTAL PAYE:",40,startY);
+  ctx.fillText(money(groupedData.paidTotal),450,startY);
+  startY+=lineHeight;
+  ctx.fillText("TOTAL IMPAYE:",40,startY);
+  ctx.fillText(money(groupedData.unpaidTotal),450,startY);
+  startY+=lineHeight;
+  ctx.fillText("TOTAL GENERAL:",40,startY);
+  ctx.fillText(money(groupedData.total),450,startY);
+  ctx.font="12px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle="#888888";
+  ctx.textAlign="center";
+  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+ }else{
+  var cat=catOf(bill.category);
+  var lines=[
+   {label:"INTITULE:",value:bill.label},
+   {label:"MONTANT:",value:money(bill.amount)},
+   {label:"CATEGORIE:",value:cat.label},
+   {label:"ECHEANCE:",value:bill.due},
+   {label:"STATUT:",value:bill.paid?"Payee":"A payer"},
+   {label:"ID:",value:bill.id}
+  ];
+  var startY=contentY;
+  lines.forEach(function(line,i){
+   ctx.font=i===0?"bold 16px system-ui,-apple-system,sans-serif":"14px system-ui,-apple-system,sans-serif";
+   ctx.fillStyle=i===0?"#B08D35":"#222222";
+   ctx.textAlign="right";
+   ctx.fillText(line.label,width/2-20,startY);
+   ctx.textAlign="left";
+   ctx.fillText(line.value,width/2+20,startY);
+   startY+=28;
+  });
+  ctx.font="12px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle="#888888";
+  ctx.textAlign="center";
+  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+ }
+}
+
+function exportBillAsPNG(bill){
+ var canvas=$("canvasExport");
+ var filename="AUREOR-Recap-Facture-"+bill.id+"-"+bill.due.replace(/[-:]/g,"")+".png";
+ drawBillDocument(canvas,bill,false,null);
+ var url=canvas.toDataURL("image/png");
+ var a=document.createElement("a");
+ a.href=url;a.download=filename;
+ document.body.appendChild(a);a.click();a.remove();
+ toast("Export PNG en cours...");
+}
+
+function exportAllBillsAsPNG(){
+ var canvas=$("canvasExport");
+ var unpaidBills=data.bills.filter(function(x){return !x.paid});
+ var paidBills=data.bills.filter(function(x){return x.paid});
+ var groupedData={
+  bills:data.bills,
+  paidTotal:paidBills.reduce(function(s,x){return s+x.amount},0),
+  unpaidTotal:unpaidBills.reduce(function(s,x){return s+x.amount},0),
+  total:data.bills.reduce(function(s,x){return s+x.amount},0)
+ };
+ drawBillDocument(canvas,null,true,groupedData);
+ var url=canvas.toDataURL("image/png");
+ var a=document.createElement("a");
+ a.href=url;a.download="AUREOR-Recap-Toutes-Factures-"+today().replace(/[-:]/g,"")+".png";
+ document.body.appendChild(a);a.click();a.remove();
+ toast("Export PNG groupe en cours...");
+}
+
+
 function render(){
  var es=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month});
  var total=es.reduce(function(s,x){return s+x.amount},0);
@@ -317,7 +460,7 @@ function render(){
  var sorted=[].concat(data.bills).sort(function(a,b){return (a.paid-b.paid)||a.due.localeCompare(b.due)});
  $("blist").innerHTML=sorted.map(function(x){
   var late=!x.paid&&x.due<today();
-  return '<div class="item"><input class="check" type="checkbox" data-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Facture payee"><div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>Echeance : '+esc(x.due)+' · '+esc(catOf(x.category).label)+(x.paid?" · Payee":late?' · <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" · a payer")+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
+  return '<div class="item"><input class="check" type="checkbox" data-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Facture payee"><div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>Echeance : '+esc(x.due)+' · '+esc(catOf(x.category).label)+(x.paid?" · Payee":late?' · <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" · a payer")+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button><button class="primary" data-export-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button></div>';
  }).join("")||'<div class="empty">Aucune facture enregistre.</div>';
  var tk=[].concat(data.tasks).sort(function(a,b){return a.done-b.done});
  $("tlist").innerHTML=tk.map(function(x){return '<div class="item"><input class="check" type="checkbox" data-task="'+escAttr(x.id)+'" '+(x.done?"checked":"")+' aria-label="Tache terminee"><div class="details '+(x.done?"done":"")+'">'+esc(x.text)+'</div><button class="danger" data-delete-task="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>'}).join("")||'<div class="empty">Aucune tache.</div>';
@@ -481,6 +624,18 @@ $("clear").addEventListener("click",function(){
  if(!confirm("Effacer toutes les donnees ? Exporte d'abord une sauvegarde si necessaire."))return;
  data={expenses:[],budgets:{},bills:[],tasks:[]};
  save();render();toast("Donnees effacees.");
+});
+
+$("exportAllBills").addEventListener("click",exportAllBillsAsPNG);
+
+document.addEventListener("click",function(e){
+ var b=e.target.closest("[data-export-bill]");
+ if(b&&b.dataset.exportBill){
+  var billId=b.dataset.exportBill;
+  for(var i=0;i<data.bills.length;i++){
+   if(data.bills[i].id===billId){exportBillAsPNG(data.bills[i]);break}
+  }
+ }
 });
 
 render();
