@@ -121,9 +121,11 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </form>
 </div>
 <div class="card"><strong>Historique</strong><div id="elist"></div></div>
+<div class="card"><button id="openBills" class="block">🧾 Voir mes charges et factures</button></div>
 </section>
 
 <section id="p-bills" class="page">
+<div class="card"><button id="closeBills" class="block">← Retour aux dépenses</button></div>
 <div class="card stat"><small>Charges à payer</small><strong id="unpaid2" style="font-size:22px;color:var(--amber)">0 €</strong></div>
 <div class="card">
 <button id="exportAllBills" class="block" style="margin-bottom:12px">📥 Exporter toutes les factures (PNG)</button>
@@ -182,6 +184,7 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <div class="stat"><small>Bénéfice du mois</small><strong id="bilanMNet">0 €</strong></div>
 </div>
 <small id="bilanMHint" class="muted" style="margin-top:8px;display:block"></small>
+<button id="exportMonth" class="block" style="margin-top:12px">📥 Exporter le rapport du mois (PNG)</button>
 </div>
 <div class="card">
 <strong>Bilan global (tout l’historique)</strong>
@@ -540,6 +543,59 @@ function exportBillAsPNG(bill){
  toast("Export PNG lance : choisis Enregistrer dans Photos.");
 }
 
+function drawMonthReport(canvas){
+ var ctx=canvas.getContext("2d");
+ var dpr=window.devicePixelRatio||2;
+ var width=600,height=540;
+ canvas.width=width*dpr;canvas.height=height*dpr;
+ ctx.scale(dpr,dpr);
+ ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
+ var headerHeight=120;
+ ctx.fillStyle="#0D0D0D";ctx.fillRect(0,0,width,headerHeight);
+ ctx.font="bold 28px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#B08D35";ctx.textAlign="center";ctx.textBaseline="middle";
+ var spacing=28*0.35,txt="AŪREOR";
+ for(var i=0;i<txt.length;i++)ctx.fillText(txt[i],width/2-(txt.length*spacing)/2+i*spacing,headerHeight/2);
+ ctx.font="14px system-ui,-apple-system,sans-serif";
+ ctx.fillText("RAPPORT MENSUEL",width/2,headerHeight/2+28);
+ var mExp=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mBills=data.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mCA=data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mNet=mCA-(mExp+mBills);
+ var labelMonth=new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+ ctx.fillStyle="#222222";ctx.textAlign="left";ctx.textBaseline="alphabetic";
+ ctx.font="bold 16px system-ui,-apple-system,sans-serif";
+ ctx.fillText(labelMonth,40,headerHeight+40);
+ var rows=[
+  {label:"CA clients du mois",value:money(mCA)},
+  {label:"Depenses internes du mois",value:money(mExp)},
+  {label:"Factures du mois",value:money(mBills)},
+  {label:"Benefice du mois",value:money(mNet)},
+  {label:"Objectif de marge",value:money(Number(data.marginTarget)||1000)}
+ ];
+ var y=headerHeight+80;
+ rows.forEach(function(r,idx){
+  ctx.font=idx===3?"bold 15px system-ui,-apple-system,sans-serif":"14px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle=idx===3?(mNet<0?"#f87171":"#B08D35"):"#222222";
+  ctx.fillText(r.label,40,y);
+  ctx.textAlign="right";
+  ctx.fillText(r.value,width-40,y);
+  ctx.textAlign="left";
+  y+=30;
+ });
+ ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
+ ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(width-40,y);ctx.stroke();
+ ctx.font="12px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#888888";ctx.textAlign="center";
+ ctx.fillText("Exporte le: "+today(),width/2,height-20);
+}
+$("exportMonth").addEventListener("click",function(){
+ var canvas=$("canvasExport");
+ drawMonthReport(canvas);
+ downloadPNG(canvas,"AUREOR-Rapport-"+month+".png");
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
+});
+
 function exportAllBillsAsPNG(){
  var canvas=$("canvasExport");
  var unpaidBills=data.bills.filter(function(x){return !x.paid});
@@ -683,23 +739,25 @@ function render(){
  var es=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month});
  var total=es.reduce(function(s,x){return s+x.amount},0);
  var budget=Number(data.budgets[month]||0);
+var paidBillsMonth=data.bills.filter(function(x){return x.paid&&x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+var usedWithBills=total+paidBillsMonth;
  $("month").value=month;
  $("monthLabel").textContent=new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
  $("spent").textContent=money(total);
  var rem=$("remaining");
- rem.textContent=budget?money(budget-total):"—";
- rem.style.color=budget&&total>budget?"var(--danger)":budget&&budget-total<budget*0.2?"var(--amber)":"";
+ rem.textContent=budget?money(budget-usedWithBills):"—";
+ rem.style.color=budget&&usedWithBills>budget?"var(--danger)":budget&&budget-usedWithBills<budget*0.2?"var(--amber)":"";
  $("unpaid").textContent=money(data.bills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0));
  $("caHome").textContent=money(data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0));
 
  var pend=data.tasks.filter(function(x){return !x.done}).length;
  var pendEl=$("pending");if(pendEl)pendEl.textContent=pend;$("pending2").textContent=pend;
  $("budget").value=budget||"";
- var pct=budget?Math.min(100,total/budget*100):0;
+ var pct=budget?Math.min(100,usedWithBills/budget*100):0;
  var bar=$("progress");
  bar.style.width=pct+"%";
  bar.style.background=pct>=100?"var(--danger)":pct>=80?"var(--amber)":"var(--accent)";
- $("budgetHint").textContent=budget?(total>budget?"Budget depasse de "+money(total-budget):"Il reste "+money(budget-total)+" ("+Math.round(pct)+"% utilise)"):"Definis ton budget mensuel.";
+ $("budgetHint").textContent=budget?(usedWithBills>budget?"Budget depasse de "+money(usedWithBills-budget):"Il reste "+money(budget-usedWithBills)+" ("+Math.round(pct)+"% utilise)")+(paidBillsMonth>0?" · dont "+money(paidBillsMonth)+" de factures payees":""):"Definis ton budget mensuel.";
  var m={};
  es.forEach(function(x){m[x.category]=(m[x.category]||0)+x.amount});
  var entries=Object.keys(m).map(function(id){return{label:catOf(id).label,color:catOf(id).color,value:Math.round(m[id]*100)/100}}).sort(function(a,b){return b.value-a.value});
@@ -789,7 +847,17 @@ function render(){
  renderChips();
 }
 
-var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients",bilan:"Bilan",menu:"Menu"};
+var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients",bilan:"Bilan",menu:"Menu",bills:"Charges & factures"};
+function showPage(name){
+ var btns=document.querySelectorAll("nav button");
+ for(var i=0;i<btns.length;i++)btns[i].classList.toggle("active",btns[i].dataset.page===name);
+ var pages=document.querySelectorAll(".page");
+ for(var j=0;j<pages.length;j++)pages[j].classList.toggle("active",pages[j].id==="p-"+name);
+ $("hdrTitle").textContent=TITLES[name];
+ window.scrollTo(0,0);
+}
+$("openBills").addEventListener("click",function(){showPage("bills")});
+$("closeBills").addEventListener("click",function(){showPage("expenses")});
 document.querySelector("nav").addEventListener("click",function(e){
  var b=e.target.closest("[data-page]");if(!b)return;
  var btns=document.querySelectorAll("nav button");
