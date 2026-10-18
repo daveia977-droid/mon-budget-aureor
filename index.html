@@ -515,15 +515,29 @@ function drawBillDocument(canvas,bill,isGrouped,groupedData){
  }
 }
 
+function downloadPNG(canvas,filename){
+ canvas.toBlob(function(blob){
+  if(!blob){toast("Export impossible sur cet appareil.");return}
+  var file=null;
+  try{file=new File([blob],filename,{type:"image/png"})}catch(e){}
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+   navigator.share({files:[file],title:"AUREOR"}).catch(function(){});
+   return;
+  }
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url)},4000);
+ },"image/png");
+}
+
 function exportBillAsPNG(bill){
  var canvas=$("canvasExport");
  var filename="AUREOR-Recap-Facture-"+bill.id+"-"+bill.due.replace(/[-:]/g,"")+".png";
  drawBillDocument(canvas,bill,false,null);
- var url=canvas.toDataURL("image/png");
- var a=document.createElement("a");
- a.href=url;a.download=filename;
- document.body.appendChild(a);a.click();a.remove();
- toast("Export PNG en cours...");
+ downloadPNG(canvas,filename);
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
 }
 
 function exportAllBillsAsPNG(){
@@ -537,11 +551,8 @@ function exportAllBillsAsPNG(){
   total:data.bills.reduce(function(s,x){return s+x.amount},0)
  };
  drawBillDocument(canvas,null,true,groupedData);
- var url=canvas.toDataURL("image/png");
- var a=document.createElement("a");
- a.href=url;a.download="AUREOR-Recap-Toutes-Factures-"+today().replace(/[-:]/g,"")+".png";
- document.body.appendChild(a);a.click();a.remove();
- toast("Export PNG groupe en cours...");
+ downloadPNG(canvas,"AUREOR-Recap-Toutes-Factures-"+today().replace(/[-:]/g,"")+".png");
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
 }
 
 
@@ -652,11 +663,8 @@ function exportClientBillAsPNG(bill){
  var canvas=$("canvasExport");
  var filename="AUREOR-Client-"+(bill.clientName||"X").replace(/[^a-zA-Z0-9]/g,"_")+"-"+bill.id+".png";
  drawClientDocument(canvas,bill,false,null);
- var url=canvas.toDataURL("image/png");
- var a=document.createElement("a");
- a.href=url;a.download=filename;
- document.body.appendChild(a);a.click();a.remove();
- toast("Export PNG en cours...");
+ downloadPNG(canvas,filename);
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
 }
 
 function exportAllClientBillsAsPNG(){
@@ -666,11 +674,8 @@ function exportAllClientBillsAsPNG(){
   total:data.clientBills.reduce(function(s,x){return s+x.amount},0)
  };
  drawClientDocument(canvas,null,true,groupedData);
- var url=canvas.toDataURL("image/png");
- var a=document.createElement("a");
- a.href=url;a.download="AUREOR-Tous-Clients-"+today().replace(/[-:]/g,"")+".png";
- document.body.appendChild(a);a.click();a.remove();
- toast("Export PNG groupe en cours...");
+ downloadPNG(canvas,"AUREOR-Tous-Clients-"+today().replace(/[-:]/g,"")+".png");
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
 }
 
 
