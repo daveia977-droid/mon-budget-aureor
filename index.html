@@ -189,6 +189,8 @@ function today(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)
 function money(n){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0)}
 function esc(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>'"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]})}
 function escAttr(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>'"\s]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"," ":"&#32;","\t":"&#9;","\n":"&#10;","\r":"&#13;"}[c]||c})}
+function isValidHexColor(c){return typeof c==="string"&&/^#([0-9A-Fa-f]{3}){1,2}$/.test(c)}
+function hasInvisibleChars(s){return typeof s==="string"&&/[\u200B-\u206F\uFEFF]/.test(s)}
 var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)};
 
 var month=today().slice(0,7);
@@ -224,7 +226,7 @@ function renderChips(){
  for(var i=0;i<chips.length;i++){
   var b=chips[i],c=catOf(b.dataset.cat),sel=b.dataset.cat===ecat;
   b.classList.toggle("sel",sel);
-  b.style.background=sel?escAttr(c.color):"";b.style.color=sel?"#0b1220":"";
+  b.style.background=sel&&isValidHexColor(c.color)?escAttr(c.color):"";b.style.color=sel?"#0b1220":"";
  }
 }
 CATS.forEach(function(c){var o=document.createElement("option");o.value=c.id;o.textContent=c.label;$("bcat").appendChild(o)});
@@ -401,41 +403,55 @@ $("export").addEventListener("click",function(){
  $("msg").textContent="Vérifie dans Fichiers/Téléchargements que la sauvegarde est bien là.";
  toast("Sauvegarde exportée.");
 });
-function validateImport(s){
- if(!s||typeof s!=="object")return false;
- if(!Array.isArray(s.expenses))return false;
- if(!s.budgets||typeof s.budgets!=="object")return false;
- if(!Array.isArray(s.bills))return false;
- if(!Array.isArray(s.tasks))return false;
+function validateImport(s,errCb){
+ if(!s||typeof s!=="object"){if(errCb)errCb("Donn\u00e9es invalides: racine manquante ou non objet");return false;}
+ if(!Array.isArray(s.expenses)){if(errCb)errCb("Donn\u00e9es invalides: expenses doit \u00eatre un tableau");return false;}
+ if(!s.budgets||typeof s.budgets!=="object"){if(errCb)errCb("Donn\u00e9es invalides: budgets doit \u00eatre un objet");return false;}
+ if(!Array.isArray(s.bills)){if(errCb)errCb("Donn\u00e9es invalides: bills doit \u00eatre un tableau");return false;}
+ if(!Array.isArray(s.tasks)){if(errCb)errCb("Donn\u00e9es invalides: tasks doit \u00eatre un tableau");return false;}
  for(var i=0;i<s.expenses.length;i++){
   var e=s.expenses[i];
-  if(!e||typeof e!=="object")return false;
-  if(typeof e.label!=="string"||e.label.length>500)return false;
-  if(typeof e.amount!=="number"||e.amount<=0||!Number.isFinite(e.amount))return false;
-  if(typeof e.date!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(e.date))return false;
-  if(typeof e.category!=="string")return false;
-  if(typeof e.id!=="string"||e.id.length>100)return false;
+  if(!e||typeof e!=="object"){if(errCb)errCb("D\u00e9pense #"+(i+1)+": objet manquant ou invalide");return false;}
+  if(typeof e.label!=="string"){if(errCb)errCb("D\u00e9pense #"+(i+1)+": label doit \u00eatre une cha\u00eene");return false;}
+  if(e.label.length>500){if(errCb)errCb("D\u00e9pense #"+(i+1)+": label trop long (max 500)");return false;}
+  if(hasInvisibleChars(e.label)){if(errCb)errCb("D\u00e9pense #"+(i+1)+": label contient des caract\u00e8res invisibles");return false;}
+  if(typeof e.amount!=="number"){if(errCb)errCb("D\u00e9pense #"+(i+1)+": amount doit \u00eatre un nombre");return false;}
+  if(e.amount<=0||!Number.isFinite(e.amount)){if(errCb)errCb("D\u00e9pense #"+(i+1)+": amount doit \u00eatre > 0");return false;}
+  if(typeof e.date!=="string"){if(errCb)errCb("D\u00e9pense #"+(i+1)+": date doit \u00eatre une cha\u00eene");return false;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(e.date)){if(errCb)errCb("D\u00e9pense #"+(i+1)+": date invalide (format: AAAA-MM-JJ)");return false;}
+  if(typeof e.category!=="string"){if(errCb)errCb("D\u00e9pense #"+(i+1)+": category doit \u00eatre une cha\u00eene");return false;}
+  if(typeof e.id!=="string"){if(errCb)errCb("D\u00e9pense #"+(i+1)+": id doit \u00eatre une cha\u00eene");return false;}
+  if(e.id.length>100){if(errCb)errCb("D\u00e9pense #"+(i+1)+": id trop long (max 100)");return false;}
  }
  for(var j=0;j<s.bills.length;j++){
   var b=s.bills[j];
-  if(!b||typeof b!=="object")return false;
-  if(typeof b.label!=="string"||b.label.length>500)return false;
-  if(typeof b.amount!=="number"||b.amount<=0||!Number.isFinite(b.amount))return false;
-  if(typeof b.due!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(b.due))return false;
-  if(typeof b.category!=="string")return false;
-  if(typeof b.paid!=="boolean")return false;
-  if(typeof b.id!=="string"||b.id.length>100)return false;
+  if(!b||typeof b!=="object"){if(errCb)errCb("Facture #"+(j+1)+": objet manquant ou invalide");return false;}
+  if(typeof b.label!=="string"){if(errCb)errCb("Facture #"+(j+1)+": label doit \u00eatre une cha\u00eene");return false;}
+  if(b.label.length>500){if(errCb)errCb("Facture #"+(j+1)+": label trop long (max 500)");return false;}
+  if(hasInvisibleChars(b.label)){if(errCb)errCb("Facture #"+(j+1)+": label contient des caract\u00e8res invisibles");return false;}
+  if(typeof b.amount!=="number"){if(errCb)errCb("Facture #"+(j+1)+": amount doit \u00eatre un nombre");return false;}
+  if(b.amount<=0||!Number.isFinite(b.amount)){if(errCb)errCb("Facture #"+(j+1)+": amount doit \u00eatre > 0");return false;}
+  if(typeof b.due!=="string"){if(errCb)errCb("Facture #"+(j+1)+": due doit \u00eatre une cha\u00eene");return false;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(b.due)){if(errCb)errCb("Facture #"+(j+1)+": due invalide (format: AAAA-MM-JJ)");return false;}
+  if(typeof b.category!=="string"){if(errCb)errCb("Facture #"+(j+1)+": category doit \u00eatre une cha\u00eene");return false;}
+  if(typeof b.paid!=="boolean"){if(errCb)errCb("Facture #"+(j+1)+": paid doit \u00eatre un bool\u00e9en");return false;}
+  if(typeof b.id!=="string"){if(errCb)errCb("Facture #"+(j+1)+": id doit \u00eatre une cha\u00eene");return false;}
+  if(b.id.length>100){if(errCb)errCb("Facture #"+(j+1)+": id trop long (max 100)");return false;}
  }
  for(var k=0;k<s.tasks.length;k++){
   var t=s.tasks[k];
-  if(!t||typeof t!=="object")return false;
-  if(typeof t.text!=="string"||t.text.length>500)return false;
-  if(typeof t.done!=="boolean")return false;
-  if(typeof t.id!=="string"||t.id.length>100)return false;
+  if(!t||typeof t!=="object"){if(errCb)errCb("T\u00e2che #"+(k+1)+": objet manquant ou invalide");return false;}
+  if(typeof t.text!=="string"){if(errCb)errCb("T\u00e2che #"+(k+1)+": text doit \u00eatre une cha\u00eene");return false;}
+  if(t.text.length>500){if(errCb)errCb("T\u00e2che #"+(k+1)+": text trop long (max 500)");return false;}
+  if(hasInvisibleChars(t.text)){if(errCb)errCb("T\u00e2che #"+(k+1)+": text contient des caract\u00e8res invisibles");return false;}
+  if(typeof t.done!=="boolean"){if(errCb)errCb("T\u00e2che #"+(k+1)+": done doit \u00eatre un bool\u00e9en");return false;}
+  if(typeof t.id!=="string"){if(errCb)errCb("T\u00e2che #"+(k+1)+": id doit \u00eatre une cha\u00eene");return false;}
+  if(t.id.length>100){if(errCb)errCb("T\u00e2che #"+(k+1)+": id trop long (max 100)");return false;}
  }
  for(var key in s.budgets){
-  if(typeof s.budgets[key]!=="number"||s.budgets[key]<0||!Number.isFinite(s.budgets[key]))return false;
-  if(key.length>10)return false;
+  if(typeof s.budgets[key]!=="number"){if(errCb)errCb("Budget pour "+key+": doit \u00eatre un nombre");return false;}
+  if(s.budgets[key]<0||!Number.isFinite(s.budgets[key])){if(errCb)errCb("Budget pour "+key+": doit \u00eatre >= 0");return false;}
+  if(key.length>10){if(errCb)errCb("Budget: cl\u00e9 "+key+" trop longue (max 10)");return false;}
  }
  return true;
 }
@@ -446,7 +462,7 @@ $("restore").addEventListener("click",function(){
  f.text().then(function(txt){
   var s;
   try{s=JSON.parse(txt)}catch(e){$("msg").textContent="Fichier invalide. Aucune donnée restaurée.";return}
-  if(!validateImport(s)){$("msg").textContent="Fichier invalide. Aucune donnée restaurée.";return}
+  if(!validateImport(s,function(err){$("msg").textContent=err}))return
   if(!confirm("Remplacer les données actuelles par cette sauvegarde ?"))return;
   data={expenses:s.expenses,budgets:s.budgets,bills:s.bills,tasks:s.tasks};
   save();render();$("msg").textContent="Sauvegarde restaurée.";
