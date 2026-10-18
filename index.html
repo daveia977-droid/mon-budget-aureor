@@ -311,7 +311,9 @@ function donutSVG(entries,total){
   svg+='<path d="M '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' L '+cx+' '+cy+' Z" fill="'+escAttr(e.color)+'" stroke="#0b1423" stroke-width="'+stroke+'"/>';
   angle+=rad;
  }
- svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R-stroke*3)+'" fill="'+escAttr(catOf(entries[0]||{color:"#0b1423"}).color)+'"/>';
+ svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R-stroke*3)+'" fill="#142033" stroke="#B08D35" stroke-width="1"/>';
+ svg+='<text x="'+cx+'" y="'+(cy-3)+'" text-anchor="middle" font-size="13" font-weight="bold" fill="#f4f7fb">'+money(total)+'</text>';
+ svg+='<text x="'+cx+'" y="'+(cy+12)+'" text-anchor="middle" font-size="8" fill="#a7b4c7">total du mois</text>';
  svg+='</svg>';
  return svg;
 }
@@ -636,7 +638,7 @@ function render(){
  var m={};
  es.forEach(function(x){m[x.category]=(m[x.category]||0)+x.amount});
  var entries=Object.keys(m).map(function(id){return{label:catOf(id).label,color:catOf(id).color,value:Math.round(m[id]*100)/100}}).sort(function(a,b){return b.value-a.value});
- $("chartCats").innerHTML=entries.length?donutSVG(entries,Math.round(total*100)/100):'<div class="empty">Aucune depense ce mois-ci.</div>';
+ $("chartCats").innerHTML=entries.length?('<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:8px">'+donutSVG(entries,Math.round(total*100)/100)+'<div style="flex:1;min-width:150px">'+entries.map(function(e){return '<p style="margin:4px 0;font-size:13px"><span class="dot" style="background:'+escAttr(e.color)+'"></span>'+esc(e.label)+' <strong>'+money(e.value)+' · '+Math.round(e.value/total*100)+'%</strong></p>'}).join("")+'</div></div>'):'<div class="empty">Aucune depense ce mois-ci.</div>';
  $("chartMonths").innerHTML=monthsSVG();
  var recent=[].concat(es).sort(function(a,b){return b.date.localeCompare(a.date)}).slice(0,4);
  $("recent").innerHTML=recent.map(expenseRow).join("")||'<div class="empty">Aucune depense.</div>';
@@ -736,7 +738,7 @@ $("saveBudget").addEventListener("click",function(){
 $("marginTarget").value=data.marginTarget;
 $("saveTarget").addEventListener("click",function(){
  var v=$("marginTarget").value;
- if(v===""||!Number.isFinite(Number(v))||Number(v)<0){toast("Saisis un objectif valide.");return}
+ if(v===""||!Number.isFinite(Number(v))||Number(v)<=0){toast("Saisis un objectif valide (supérieur à 0).");return}
  data.marginTarget=Math.round(Number(v)*100)/100;
  save();render();toast("Objectif enregistre.");
 });
@@ -897,7 +899,7 @@ function validateImport(s,errCb){
   if(key.length>10){if(errCb)errCb("Budget: cle "+key+" trop longue (max 10)");return false;}
  }
  if(typeof s.marginTarget!=="undefined"&&typeof s.marginTarget!=="number"){if(errCb)errCb("marginTarget doit etre un nombre");return false;}
- if(typeof s.marginTarget!=="undefined"&&(s.marginTarget<0||!Number.isFinite(s.marginTarget))){if(errCb)errCb("marginTarget doit etre >= 0");return false;}
+ if(typeof s.marginTarget!=="undefined"&&(s.marginTarget<=0||!Number.isFinite(s.marginTarget))){if(errCb)errCb("marginTarget doit etre > 0");return false;}
  return true;
 }
 
@@ -931,6 +933,7 @@ $("restore").addEventListener("click",function(){
  f.text().then(function(txt){
   var s;
   try{s=JSON.parse(txt)}catch(e){$("msg").textContent="Fichier invalide. Aucune donnee restauree.";return}
+  if(s&&typeof s==="object"&&!Array.isArray(s.clientBills))s.clientBills=[];
   if(!validateImport(s,function(err){$("msg").textContent=err}))return
   if(!confirm("Remplacer les donnees actuelles par cette sauvegarde ?"))return;
   data={expenses:s.expenses,budgets:s.budgets,bills:s.bills,clientBills:s.clientBills||[],tasks:s.tasks,marginTarget:s.marginTarget||1000};
