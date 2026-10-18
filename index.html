@@ -175,7 +175,16 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 
 <section id="p-bilan" class="page">
 <div class="card">
-<strong>Bilan mensuel</strong>
+<strong>Bilan du mois</strong>
+<div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
+<div class="stat"><small>CA du mois</small><strong id="bilanMCA">0 €</strong></div>
+<div class="stat"><small>Charges du mois</small><strong id="bilanMCharges">0 €</strong></div>
+<div class="stat"><small>Bénéfice du mois</small><strong id="bilanMNet">0 €</strong></div>
+</div>
+<small id="bilanMHint" class="muted" style="margin-top:8px;display:block"></small>
+</div>
+<div class="card">
+<strong>Bilan global (tout l’historique)</strong>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
 <div class="stat"><small>Chiffre d'affaires</small><strong id="bilanCA">0 €</strong></div>
 <div class="stat"><small>Charges internes</small><strong id="bilanCharges">0 €</strong></div>
@@ -187,6 +196,10 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <small id="bilanHint" class="muted" style="margin-top:8px;display:block">Objectif de marge actuel</small>
 <label for="marginTarget" style="margin-top:16px">Objectif de marge (€)</label>
 <div class="row"><input id="marginTarget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 1000" value="1000"><button id="saveTarget" class="primary">OK</button></div>
+</div>
+<div class="card">
+<strong>Bénéfice sur 6 mois</strong>
+<div id="chartBilan"></div>
 </div>
 <div class="card">
 <strong>Détail des charges</strong>
@@ -357,6 +370,33 @@ function monthsSVG(){
   if(v.total>0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="9" fill="#f4f7fb">'+Math.round(v.total)+'</text>';
  });
  return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Tendance sur 6 mois">'+bars+'</svg>';
+}
+
+function bilanSVG(){
+ var months=[],m=new Date();
+ for(var i=0;i<6;i++){
+  var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
+  months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),key:key});
+  m.setMonth(m.getMonth()-1);
+ }
+ months.reverse();
+ months.forEach(function(v){
+  var ca=data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0);
+  var ch=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+data.bills.filter(function(x){return x.due&&x.due.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0);
+  v.net=Math.round((ca-ch)*100)/100;
+ });
+ var maxAbs=Math.max.apply(null,months.map(function(x){return Math.abs(x.net)}))||1;
+ var H=140,W=320,bw=28,gap=(W-6*bw)/7;
+ var bars="";
+ months.forEach(function(v,i){
+  var h=Math.max(Math.abs(v.net)/maxAbs*H,1);
+  var x=34+i*(bw+gap),y=H-h+10;
+  var fill=v.net<0?"#f87171":(i===5?"#B08D35":"#34d399");
+  bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="5" fill="'+fill+'"/>';
+  bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="10" fill="#a7b4c7">'+esc(v.label)+'</text>';
+  if(v.net!==0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="9" fill="#f4f7fb">'+Math.round(v.net)+'</text>';
+ });
+ return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Bénéfice sur 6 mois">'+bars+'</svg>';
 }
 
 function expenseRow(x){
@@ -648,7 +688,7 @@ function render(){
  $("caHome").textContent=money(data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0));
 
  var pend=data.tasks.filter(function(x){return !x.done}).length;
- $("pending").textContent=pend;$("pending2").textContent=pend;
+ var pendEl=$("pending");if(pendEl)pendEl.textContent=pend;$("pending2").textContent=pend;
  $("budget").value=budget||"";
  var pct=budget?Math.min(100,total/budget*100):0;
  var bar=$("progress");
@@ -716,6 +756,14 @@ function render(){
  }
  $("bilanAlert").innerHTML=alertHtml;
  $("bilanHint").textContent="Objectif: "+money(marginTarget)+" ("+Math.round(targetProgress)+"% atteint)";
+ var mExp=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mBills=data.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mCA=data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ $("bilanMCA").textContent=money(mCA);
+ $("bilanMCharges").textContent=money(mExp+mBills);
+ $("bilanMNet").textContent=money(mCA-(mExp+mBills));
+ $("bilanMHint").textContent="Mois affiché : "+new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+ $("chartBilan").innerHTML=bilanSVG();
 
  var chargeDetails=[
   {label:"Depenses internes",value:money(allExpenses)},
