@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0D0D">
-<title>Mon Budget A\u016aREOR</title>
+<title>Budget AŪREOR</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1220;--panel:#142033;--line:#2a3b53;--text:#f4f7fb;--muted:#a7b4c7;--accent:#B08D35;--danger:#ff9aa5;--amber:#fbbf24;--green:#34d399}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,-apple-system,sans-serif;padding-bottom:74px}
 header{padding:16px;background:#0D0D0D;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
-header small{color:#B08D35;letter-spacing:2px;font-weight:bold;font-size:11px}
+header small{color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:11px}
 header h1{margin:4px 0 0;font-size:22px}
 main{max-width:640px;margin:auto;padding:12px 12px 25px}
 .page{display:none}.page.active{display:block}
@@ -43,9 +43,16 @@ button.danger{color:var(--danger);border-color:#5b2a33;background:#241420}
 .chip{display:inline-block;font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);margin:2px}
 .chip.sel{color:#092219;border-color:transparent;font-weight:600}
 nav{position:fixed;bottom:0;left:0;right:0;background:#0D0D0D;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
-nav button{background:none;border:0;color:var(--muted);font-size:10px;padding:8px 2px;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button{background:none;border:0;color:var(--muted);font-size:10px;padding:8px 2px;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden;white-space:nowrap}
 nav button .ico{font-size:19px;line-height:1}
 nav button.active{color:var(--accent);font-weight:600}
+#userGate{position:fixed;inset:0;background:#0D0D0D;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+#userGate.show{display:flex}
+#userGate h2{color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:15px;margin:0 0 10px}
+#userGate p{color:#f4f7fb;font-size:19px;margin:0 0 30px}
+#userGate .choices{display:flex;gap:14px;width:100%;max-width:420px}
+#userGate .choices button{flex:1;padding:24px 10px;font-size:19px;font-weight:bold;letter-spacing:0.08em;background:#142033;border:1px solid #B08D35;color:#B08D35;border-radius:14px}
+#userGate .choices button:active{background:#B08D35;color:#0D0D0D}
 .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#0d1526;border:1px solid var(--line);color:var(--text);font-size:13px;padding:9px 16px;border-radius:99px;z-index:20;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
 .toast.show{opacity:1}
 .done{text-decoration:line-through;color:var(--muted)}
@@ -59,8 +66,9 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </head>
 <body>
 <header>
-<small>MON QUOTIDIEN</small>
+<small>BUDGET AŪREOR</small>
 <h1 id="hdrTitle">Tableau de bord</h1>
+<div id="hdrUser" style="color:#B08D35;font-size:12px;margin-top:3px"></div>
 </header>
 
 <main>
@@ -70,14 +78,14 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <input type="month" id="month" aria-label="Choisir le mois" style="max-width:160px">
 </div>
 <div class="grid">
-<div class="card stat"><small>Depenses internes</small><strong id="spent">0 \u20ac</strong></div>
-<div class="card stat"><small>Budget restant</small><strong id="remaining">\u2014</strong></div>
-<div class="card stat"><small>Charges a payer</small><strong id="unpaid">0 \u20ac</strong></div>
-<div class="card stat"><small>CA clients</small><strong id="caHome">0 \u20ac</strong></div>
+<div class="card stat"><small>Depenses internes</small><strong id="spent">0 €</strong></div>
+<div class="card stat"><small>Budget restant</small><strong id="remaining">—</strong></div>
+<div class="card stat"><small>Charges a payer</small><strong id="unpaid">0 €</strong></div>
+<div class="card stat"><small>CA clients</small><strong id="caHome">0 €</strong></div>
 </div>
 <div class="card">
 <strong>Budget mensuel</strong>
-<label for="budget">Budget du mois (\u20ac)</label>
+<label for="budget">Budget du mois (€)</label>
 <div class="row"><input id="budget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 800"><button id="saveBudget">OK</button></div>
 <div class="bar"><span id="progress" style="width:0;background:var(--accent)"></span></div>
 <small id="budgetHint" class="muted">Definis ton budget mensuel.</small>
@@ -103,7 +111,7 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <label for="ename">Intitule</label><input id="ename" maxlength="100" placeholder="Ex. Courses">
 <div class="err" id="err-ename"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="eamount">Montant (\u20ac)</label><input id="eamount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="12,50"></div>
+<div><label for="eamount">Montant (€)</label><input id="eamount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="12,50"></div>
 <div><label for="edate">Date</label><input id="edate" type="date"></div>
 </div>
 <div class="err" id="err-amount"></div>
@@ -116,15 +124,15 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </section>
 
 <section id="p-bills" class="page">
-<div class="card stat"><small>Charges \u00e0 payer</small><strong id="unpaid2" style="font-size:22px;color:var(--amber)">0 \u20ac</strong></div>
+<div class="card stat"><small>Charges à payer</small><strong id="unpaid2" style="font-size:22px;color:var(--amber)">0 €</strong></div>
 <div class="card">
-<button id="exportAllBills" class="block" style="margin-bottom:12px">\ud83d\udce5 Exporter toutes les factures (PNG)</button>
+<button id="exportAllBills" class="block" style="margin-bottom:12px">📥 Exporter toutes les factures (PNG)</button>
 <strong>Ajouter une charge</strong>
 <form id="billForm" novalidate>
 <label for="bname">Intitule</label><input id="bname" maxlength="100" placeholder="Ex. Electricite">
 <div class="err" id="err-bname"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="bamount">Montant (\u20ac)</label><input id="bamount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
+<div><label for="bamount">Montant (€)</label><input id="bamount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
 <div><label for="bdue">Echeance</label><input id="bdue" type="date"></div>
 </div>
 <div class="err" id="err-bamount"></div>
@@ -139,72 +147,72 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 
 <section id="p-clients" class="page">
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-<div class="card stat"><small>CA total</small><strong id="caTotal">0 \u20ac</strong></div>
-<div class="card stat"><small>Encaissements</small><strong id="clientPaidTotal">0 \u20ac</strong></div>
-<div class="card stat"><small>Reste \u00e0 encaisser</small><strong id="clientUnpaidTotal">0 \u20ac</strong></div>
-<div class="card stat"><small>R\u00e9capitulatifs</small><strong id="clientCount">0</strong></div>
+<div class="card stat"><small>CA total</small><strong id="caTotal">0 €</strong></div>
+<div class="card stat"><small>Encaissements</small><strong id="clientPaidTotal">0 €</strong></div>
+<div class="card stat"><small>Reste à encaisser</small><strong id="clientUnpaidTotal">0 €</strong></div>
+<div class="card stat"><small>Récapitulatifs</small><strong id="clientCount">0</strong></div>
 </div>
 <div class="card">
-<button id="exportAllClientBills" class="block primary" style="margin-bottom:12px">\ud83d\udce5 Exporter tous les r\u00e9capitulatifs (PNG)</button>
-<strong>Ajouter un r\u00e9capitulatif client</strong>
+<button id="exportAllClientBills" class="block primary" style="margin-bottom:12px">📥 Exporter tous les récapitulatifs (PNG)</button>
+<strong>Ajouter un récapitulatif client</strong>
 <form id="clientBillForm" novalidate>
-<label for="cname">Intitul\u00e9</label><input id="cname" maxlength="100" placeholder="Ex. S\u00e9jour Courchevel">
+<label for="cname">Intitulé</label><input id="cname" maxlength="100" placeholder="Ex. Séjour Courchevel">
 <div class="err" id="err-cname"></div>
 <label for="cclient">Nom du client / payeur (facultatif)</label><input id="cclient" maxlength="100" placeholder="Ex. Jean Dupont">
 <div class="err" id="err-cclient"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="camount">Montant (\u20ac)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
+<div><label for="camount">Montant (€)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
 <div><label for="cdate">Date</label><input id="cdate" type="date"></div>
 </div>
 <div class="err" id="err-camount"></div>
 <div class="err" id="err-cdate"></div>
-<div class="row" style="margin-top:8px"><label for="cpaid" style="margin:0">Pay\u00e9</label><input id="cpaid" type="checkbox" style="margin-left:8px"></div>
-<button class="primary block">Ajouter le r\u00e9capitulatif</button>
+<div class="row" style="margin-top:8px"><label for="cpaid" style="margin:0">Payé</label><input id="cpaid" type="checkbox" style="margin-left:8px"></div>
+<button class="primary block">Ajouter le récapitulatif</button>
 </form>
 </div>
-<div class="card"><strong>R\u00e9capitulatifs clients</strong><div id="clist"></div></div>
+<div class="card"><strong>Récapitulatifs clients</strong><div id="clist"></div></div>
 </section>
 
 <section id="p-bilan" class="page">
 <div class="card">
 <strong>Bilan mensuel</strong>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
-<div class="stat"><small>Chiffre d'affaires</small><strong id="bilanCA">0 \u20ac</strong></div>
-<div class="stat"><small>Charges internes</small><strong id="bilanCharges">0 \u20ac</strong></div>
-<div class="stat"><small>B\u00e9n\u00e9fice net</small><strong id="bilanNet">0 \u20ac</strong></div>
-<div class="stat"><small>Objectif marge</small><strong id="bilanTarget">1 000 \u20ac</strong></div>
+<div class="stat"><small>Chiffre d'affaires</small><strong id="bilanCA">0 €</strong></div>
+<div class="stat"><small>Charges internes</small><strong id="bilanCharges">0 €</strong></div>
+<div class="stat"><small>Bénéfice net</small><strong id="bilanNet">0 €</strong></div>
+<div class="stat"><small>Objectif marge</small><strong id="bilanTarget">1 000 €</strong></div>
 </div>
 <div id="bilanAlert" style="margin-top:16px"></div>
 <div class="bar" style="margin-top:16px"><span id="bilanProgress" style="width:0;background:#B08D35"></span></div>
 <small id="bilanHint" class="muted" style="margin-top:8px;display:block">Objectif de marge actuel</small>
-<label for="marginTarget" style="margin-top:16px">Objectif de marge (\u20ac)</label>
+<label for="marginTarget" style="margin-top:16px">Objectif de marge (€)</label>
 <div class="row"><input id="marginTarget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 1000" value="1000"><button id="saveTarget" class="primary">OK</button></div>
 </div>
 <div class="card">
-<strong>D\u00e9tail des charges</strong>
+<strong>Détail des charges</strong>
 <div id="bilanDetails"></div>
 </div>
 <div class="card">
-<strong>D\u00e9tail du CA</strong>
+<strong>Détail du CA</strong>
 <div id="caDetails"></div>
 </div>
 </section>
 
 <section id="p-menu" class="page">
 <div class="card">
-<strong>T\u00e2ches</strong>
+<strong>Tâches</strong>
 <div class="card" style="margin-top:0">
-<strong>Ajouter une t\u00e2che</strong>
+<strong>Ajouter une tâche</strong>
 <form id="taskForm" novalidate>
-<div class="row" style="margin-top:8px"><input id="tname" maxlength="180" placeholder="Ex. V\u00e9rifier mon compte"><button class="primary">Ajouter</button></div>
+<div class="row" style="margin-top:8px"><input id="tname" maxlength="180" placeholder="Ex. Vérifier mon compte"><button class="primary">Ajouter</button></div>
 <div class="err" id="err-tname"></div>
 </form>
 </div>
-<div class="card"><strong>Ma liste — <span id="pending2">0</span> \u00e0 faire</strong><div id="tlist"></div></div>
+<div class="card"><strong>Ma liste — <span id="pending2">0</span> à faire</strong><div id="tlist"></div></div>
 </div>
 <div class="card">
-<strong>Sauvegarde de mes donn\u00e9es</strong>
-<p class="hint">Les donn\u00e9es sont enregistr\u00e9es dans le navigateur de cet appareil (elles ne se synchronisent pas entre appareils). Exporte r\u00e9guli\u00e8rement une copie JSON.</p>
+<strong>Sauvegarde de mes données</strong>
+<p class="hint">Les données sont enregistrées dans le navigateur de cet appareil (elles ne se synchronisent pas entre appareils). Exporte régulièrement une copie JSON.</p>
 <button id="export" class="primary block">Exporter une sauvegarde (fichier JSON)</button>
 <label for="file" style="margin-top:16px">Restaurer depuis un fichier</label>
 <input id="file" type="file" accept=".json,application/json">
@@ -212,23 +220,35 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <p id="msg" class="hint" role="status"></p>
 </div>
 <div class="card">
-<strong>R\u00e9initialisation</strong>
-<button id="clear" class="danger block">Effacer toutes les donn\u00e9es</button>
+<strong>Réinitialisation</strong>
+<button id="clear" class="danger block">Effacer toutes les données</button>
+</div>
+<div class="card">
+<strong>Profil</strong>
+<button id="switchUser" class="block">Changer d’utilisateur</button>
 </div>
 </section>
 
 </main>
 
+<div id="userGate">
+<h2>AŪREOR</h2>
+<p>Qui pilote l’application aujourd’hui ?</p>
+<div class="choices">
+<button type="button" data-user="Omar">OMAR</button>
+<button type="button" data-user="Désiré">DESIRÉ</button>
+</div>
+</div>
 <div class="toast" id="toast"></div>
-<footer>Mon Budget A\u016aREOR \u00b7 version professionnelle. Identity A\u016aREOR. Evite d'y stocker des informations bancaires sensibles.</footer>
+<footer>Mon Budget AŪREOR · version professionnelle. Identity AŪREOR. Evite d'y stocker des informations bancaires sensibles.</footer>
 
 <canvas id="canvasExport" style="position:fixed;left:-9999px;top:-9999px"></canvas>
 <nav>
-<button class="active" data-page="home"><span class="ico">\ud83c\udfe0</span>Accueil</button>
-<button data-page="expenses"><span class="ico">\ud83d\udcb0</span>Depenses</button>
-<button data-page="clients"><span class="ico">\ud83d\udc65</span>Clients</button>
-<button data-page="bilan"><span class="ico">\ud83d\udcca</span>Bilan</button>
-<button data-page="menu"><span class="ico">\u2630</span>Menu</button>
+<button class="active" data-page="home"><span class="ico">🏠</span>Accueil</button>
+<button data-page="expenses"><span class="ico">💰</span>Depenses</button>
+<button data-page="clients"><span class="ico">👥</span>Clients</button>
+<button data-page="bilan"><span class="ico">📊</span>Bilan</button>
+<button data-page="menu"><span class="ico">⚙️</span>Menu</button>
 </nav>
 
 <script>
@@ -251,7 +271,7 @@ function money(n){return new Intl.NumberFormat("fr-FR",{style:"currency",currenc
 function esc(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]})}
 function escAttr(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>"'\s]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"," ":"&#32;","\t":"&#9;","\n":"&#10;","\r":"&#13;"}[c]||c})}
 function isValidHexColor(c){return typeof c==="string"&&/^#([0-9A-Fa-f]{3}){1,2}$/.test(c)}
-function hasInvisibleChars(s){return typeof s==="string"&&/[\u200B-\u206F\uFEFF]/.test(s)}
+function hasInvisibleChars(s){return typeof s==="string"&&/[​-⁯﻿]/.test(s)}
 var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)};
 
 function setErr(id,msg,show){var el=$(id);el.textContent=msg||"";el.classList.toggle("show",!!show)}
@@ -341,7 +361,7 @@ function monthsSVG(){
 
 function expenseRow(x){
  var c=catOf(x.category);
- return '<div class="item"><span class="dot" style="background:'+escAttr(c.color)+';flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong><br><small>'+esc(x.date)+' \u00b7 '+esc(c.label)+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-expense="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">\u2715</button></div>';
+ return '<div class="item"><span class="dot" style="background:'+escAttr(c.color)+';flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong><br><small>'+esc(x.date)+' · '+esc(c.label)+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-expense="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
 }
 
 // ==================== FONCTIONS EXPORT PNG AUREOR ====================
@@ -365,7 +385,7 @@ function drawBillDocument(canvas,bill,isGrouped,groupedData){
  ctx.textAlign="center";
  ctx.textBaseline="middle";
  var spacing=28*0.35;
- var aureorText="A\u016aREOR";
+ var aureorText="AŪREOR";
  for(var i=0;i<aureorText.length;i++){
   ctx.fillText(aureorText[i],width/2-(aureorText.length*spacing)/2+i*spacing,headerHeight/2);
  }
@@ -506,7 +526,7 @@ function drawClientDocument(canvas,bill,isGrouped,groupedData){
  ctx.textAlign="center";
  ctx.textBaseline="middle";
  var spacing=28*0.35;
- var aureorText="A\u016aREOR";
+ var aureorText="AŪREOR";
  for(var i=0;i<aureorText.length;i++){
   ctx.fillText(aureorText[i],width/2-(aureorText.length*spacing)/2+i*spacing,headerHeight/2);
  }
@@ -622,7 +642,7 @@ function render(){
  $("monthLabel").textContent=new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
  $("spent").textContent=money(total);
  var rem=$("remaining");
- rem.textContent=budget?money(budget-total):"\u2014";
+ rem.textContent=budget?money(budget-total):"—";
  rem.style.color=budget&&total>budget?"var(--danger)":budget&&budget-total<budget*0.2?"var(--amber)":"";
  $("unpaid").textContent=money(data.bills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0));
  $("caHome").textContent=money(data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0));
@@ -649,10 +669,10 @@ function render(){
  var sorted=[].concat(data.bills).sort(function(a,b){return (a.paid-b.paid)||a.due.localeCompare(b.due)});
  $("blist").innerHTML=sorted.map(function(x){
   var late=!x.paid&&x.due<today();
-  return '<div class="item"><input class="check" type="checkbox" data-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Charge payee"><div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>Echeance : '+esc(x.due)+' \u00b7 '+esc(catOf(x.category).label)+(x.paid?" \u00b7 Payee":late?' \u00b7 <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" \u00b7 a payer")+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">\u2715</button><button class="primary" data-export-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">\ud83d\udce5</button></div>';
+  return '<div class="item"><input class="check" type="checkbox" data-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Charge payee"><div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>Echeance : '+esc(x.due)+' · '+esc(catOf(x.category).label)+(x.paid?" · Payee":late?' · <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" · a payer")+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button><button class="primary" data-export-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button></div>';
  }).join("")||'<div class="empty">Aucune facture enregistre.</div>';
  var tk=[].concat(data.tasks).sort(function(a,b){return a.done-b.done});
- $("tlist").innerHTML=tk.map(function(x){return '<div class="item"><input class="check" type="checkbox" data-task="'+escAttr(x.id)+'" '+(x.done?"checked":"")+' aria-label="Tache terminee"><div class="details '+(x.done?"done":"")+'">'+esc(x.text)+'</div><button class="danger" data-delete-task="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">\u2715</button></div>'}).join("")||'<div class="empty">Aucune tache.</div>';
+ $("tlist").innerHTML=tk.map(function(x){return '<div class="item"><input class="check" type="checkbox" data-task="'+escAttr(x.id)+'" '+(x.done?"checked":"")+' aria-label="Tache terminee"><div class="details '+(x.done?"done":"")+'">'+esc(x.text)+'</div><button class="danger" data-delete-task="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>'}).join("")||'<div class="empty">Aucune tache.</div>';
 
  // ==================== RENDU CLIENTS ====================
  var clientPaid=data.clientBills.filter(function(x){return x.paid});
@@ -668,7 +688,7 @@ function render(){
  var sortedClients=[].concat(data.clientBills).sort(function(a,b){return (a.paid-b.paid)||b.date.localeCompare(a.date)});
  $("clist").innerHTML=sortedClients.map(function(x){
   var late=!x.paid&&x.date<today();
-  return '<div class="item"><input class="check" type="checkbox" data-client-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Recapitulatif paye" style="accent-color:#B08D35">'+(x.clientName?'<span class="dot" style="background:#B08D35;flex:none"></span>':'')+'<div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>'+(x.clientName?'Client : '+esc(x.clientName)+' - ':'')+'Date : '+esc(x.date)+' - '+money(x.amount)+(x.paid?' - Paye':late?' - <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" - A encaisser")+'</small></div><button class="primary" data-export-client-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">\ud83d\udce5</button><button class="danger" data-delete-client-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">\u2715</button></div>';
+  return '<div class="item"><input class="check" type="checkbox" data-client-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Recapitulatif paye" style="accent-color:#B08D35">'+(x.clientName?'<span class="dot" style="background:#B08D35;flex:none"></span>':'')+'<div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>'+(x.clientName?'Client : '+esc(x.clientName)+' - ':'')+'Date : '+esc(x.date)+' - '+money(x.amount)+(x.paid?' - Paye':late?' - <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" - A encaisser")+'</small></div><button class="primary" data-export-client-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button><button class="danger" data-delete-client-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
  }).join("")||'<div class="empty">Aucun recapitulatif client.</div>';
 
  // ==================== RENDU BILAN ====================
@@ -688,11 +708,11 @@ function render(){
 
  var alertHtml="";
  if(netProfit<0){
-  alertHtml='<div class="card" style="border-color:var(--danger);background:#241420">\u26a0 Benefice negatif: '+money(netProfit)+' \u20ac</div>';
+  alertHtml='<div class="card" style="border-color:var(--danger);background:#241420">⚠ Benefice negatif: '+money(netProfit)+' €</div>';
  }else if(netProfit<marginTarget){
-  alertHtml='<div class="card" style="border-color:var(--amber);background:#2a2418">\u25b6 Objectif non atteint: '+money(marginTarget-netProfit)+' \u20ac restant</div>';
+  alertHtml='<div class="card" style="border-color:var(--amber);background:#2a2418">▶ Objectif non atteint: '+money(marginTarget-netProfit)+' € restant</div>';
  }else if(netProfit>=marginTarget*2){
-  alertHtml='<div class="card" style="border-color:#34d399;background:#0f2418">\u2705 Excellent! Objectif depasse de '+money(netProfit-marginTarget)+' \u20ac</div>';
+  alertHtml='<div class="card" style="border-color:#34d399;background:#0f2418">✅ Excellent! Objectif depasse de '+money(netProfit-marginTarget)+' €</div>';
  }
  $("bilanAlert").innerHTML=alertHtml;
  $("bilanHint").textContent="Objectif: "+money(marginTarget)+" ("+Math.round(targetProgress)+"% atteint)";
@@ -702,7 +722,7 @@ function render(){
   {label:"Charges a payer",value:money(allBills)},
   {label:"Total charges",value:money(totalCharges)}
  ];
- $("bilanDetails").innerHTML=chargeDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">\u2022 '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucune charge.</div>';
+ $("bilanDetails").innerHTML=chargeDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucune charge.</div>';
 
  var caPaid=data.clientBills.filter(function(x){return x.paid}).reduce(function(s,x){return s+x.amount},0);
  var caUnpaid=data.clientBills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0);
@@ -711,12 +731,12 @@ function render(){
   {label:"CA a encaisser",value:money(caUnpaid)},
   {label:"CA total",value:money(caTotal)}
  ];
- $("caDetails").innerHTML=caDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">\u2022 '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucun CA.</div>';
+ $("caDetails").innerHTML=caDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucun CA.</div>';
 
  renderChips();
 }
 
-var TITLES={home:"Tableau de bord",expenses:"D\u00e9penses",clients:"Clients",bilan:"Bilan",menu:"Menu"};
+var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients",bilan:"Bilan",menu:"Menu"};
 document.querySelector("nav").addEventListener("click",function(e){
  var b=e.target.closest("[data-page]");if(!b)return;
  var btns=document.querySelectorAll("nav button");
@@ -949,6 +969,22 @@ $("clear").addEventListener("click",function(){
 
 $("exportAllBills").addEventListener("click",exportAllBillsAsPNG);
 
+var userKey="aureor_user";
+function applyUser(){
+ var u=null;try{u=localStorage.getItem(userKey)}catch(e){}
+ $("hdrUser").textContent=u?(u==="Désiré"?"Heureux de te revoir, Désiré":"Bonjour Omar"):"";
+ $("userGate").classList.toggle("show",!u);
+}
+$("userGate").addEventListener("click",function(e){
+ var b=e.target.closest("[data-user]");if(!b)return;
+ try{localStorage.setItem(userKey,b.dataset.user)}catch(e2){}
+ applyUser();toast("Bonjour "+b.dataset.user+" !");
+});
+$("switchUser").addEventListener("click",function(){
+ try{localStorage.removeItem(userKey)}catch(e){}
+ applyUser();
+});
+applyUser();
 render();
 })();
 </script>
