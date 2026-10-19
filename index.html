@@ -4,16 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0D0D">
-<title>Budget AŪREOR</title>
+<title>Mon Budget AŪREOR</title>
 <link rel="icon" type="image/png" href="./apple-touch-icon.PNG">
 <link rel="apple-touch-icon" href="./apple-touch-icon.PNG">
+<!-- Police Lobster pour la marque AŪREOR -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
 <style>
 :root{color-scheme:dark;--bg:#0b1220;--panel:#142033;--line:#2a3b53;--text:#f4f7fb;--muted:#a7b4c7;--accent:#B08D35;--danger:#ff9aa5;--amber:#fbbf24;--green:#34d399}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,-apple-system,sans-serif;padding-bottom:74px}
-header{padding:16px;background:#0D0D0D;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
-header small{color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:11px}
-header h1{margin:4px 0 0;font-size:22px}
+
+/* Headers & Brand Font Lobster */
+.brand-font{font-family:'Lobster',cursive,system-ui,sans-serif;font-weight:normal}
+header{padding:12px 16px;background:#0D0D0D;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:10px}
+header .brand-wrap{flex:1;min-width:0}
+header h1{margin:0;font-size:22px;color:var(--accent);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header small{color:var(--muted);font-size:11px;display:block;margin-top:2px}
+
+/* Button Profile Header */
+#profileHeaderBtn{background:#142033;border:1px solid #B08D35;color:#B08D35;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+#profileHeaderBtn:active{background:#B08D35;color:#0D0D0D}
+
 main{max-width:640px;margin:auto;padding:12px 12px 25px}
 .page{display:none}.page.active{display:block}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px}
@@ -44,18 +58,25 @@ button.danger{color:var(--danger);border-color:#5b2a33;background:#241420}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
 .chip{display:inline-block;font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);margin:2px}
 .chip.sel{color:#092219;border-color:transparent;font-weight:600}
-nav{position:fixed;bottom:0;left:0;right:0;background:#0D0D0D;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(7,1fr);padding-bottom:env(safe-area-inset-bottom);z-index:20}
-nav button{background:none;border:0;color:var(--muted);font-size:9px;padding:8px 1px;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden;white-space:nowrap}
-nav button .ico{font-size:18px;line-height:1}
+
+/* EXACTEMENT 5 ONGLETS PRINCIPAUX */
+nav{position:fixed;bottom:0;left:0;right:0;background:#0D0D0D;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom);z-index:20}
+nav button{background:none;border:0;color:var(--muted);font-size:10px;padding:8px 2px;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden;white-space:nowrap}
+nav button .ico{font-size:19px;line-height:1}
 nav button.active{color:var(--accent);font-weight:600}
-#userGate{position:fixed;inset:0;background:#0D0D0D;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto}
+
+/* User Gate Modal Screen */
+#userGate{position:fixed;inset:0;background:#0D0D0D;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto}
 #userGate.show{display:flex}
-#userGate h2{color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:18px;margin:0 0 10px}
-#userGate p{color:#f4f7fb;font-size:16px;margin:0 0 20px}
-#userGate .choices{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px}
-#userGate .choices button{padding:16px 12px;font-size:16px;font-weight:bold;letter-spacing:0.05em;background:#142033;border:1px solid #B08D35;color:#B08D35;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
-#userGate .choices button:active{background:#B08D35;color:#0D0D0D}
-.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#0d1526;border:1px solid var(--line);color:var(--text);font-size:13px;padding:9px 16px;border-radius:99px;z-index:30;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
+#userGate h2{color:#B08D35;font-size:32px;margin:0 0 4px}
+#userGate p{color:#f4f7fb;font-size:15px;margin:0 0 20px}
+
+/* Profile Slide Modal Menu */
+#profileModal{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:80;display:none;align-items:flex-end;justify-content:center}
+#profileModal.show{display:flex}
+#profileModal .modal-body{background:#142033;border-top:1px solid #B08D35;border-radius:20px 20px 0 0;width:100%;max-width:540px;padding:20px;max-height:85vh;overflow-y:auto}
+
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#0d1526;border:1px solid var(--line);color:var(--text);font-size:13px;padding:9px 16px;border-radius:99px;z-index:120;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
 .toast.show{opacity:1}
 .done{text-decoration:line-through;color:var(--muted)}
 footer{font-size:11px;color:var(--muted);text-align:center;padding:6px 0 14px}
@@ -64,21 +85,36 @@ input[type=date],input[type=month]{-webkit-appearance:none;appearance:none;backg
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4px;cursor:pointer}
 input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4px;cursor:pointer}
 @media(max-width:520px){.row input[type=date],.row input[type=month]{min-width:0}}
+
+/* Badges de Statut */
 .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:bold}
 .badge-pending{background:#2a2418;color:var(--amber);border:1px solid var(--amber)}
 .badge-partial{background:#172554;color:#60a5fa;border:1px solid #3b82f6}
 .badge-paid{background:#0f2418;color:var(--green);border:1px solid var(--green)}
+
+/* Table Responsive Clients */
+.table-responsive{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
+table.data-table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
+table.data-table th{background:#0b1423;color:var(--accent);padding:10px 8px;border-bottom:1px solid var(--line);font-weight:600}
+table.data-table td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.data-table tr:last-child td{border-bottom:0}
 </style>
 </head>
 <body>
+
+<!-- EN-TÊTE FIXE ET BOUTON PROFIL -->
 <header>
-<small>BUDGET AŪREOR</small>
-<h1 id="hdrTitle">Tableau de bord</h1>
-<div id="hdrUser" style="color:#B08D35;font-size:12px;margin-top:3px"></div>
+<div class="brand-wrap">
+<h1 class="brand-font">Mon Budget AŪREOR</h1>
+<small id="hdrTitle">Votre espace financier</small>
+</div>
+<button id="profileHeaderBtn" type="button" aria-label="Menu profil">
+<span class="ico">👤</span><span id="headerUserName">Chargement...</span>
+</button>
 </header>
 
 <main>
-<!-- ACCUEIL -->
+<!-- 1. ACCUEIL -->
 <section id="p-home" class="page active">
 <div class="card row">
 <div style="flex:1"><small class="muted">Mois affiché</small><div id="monthLabel"></div></div>
@@ -111,7 +147,7 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </div>
 </section>
 
-<!-- DÉPENSES -->
+<!-- 2. DÉPENSES -->
 <section id="p-expenses" class="page">
 <div class="card">
 <strong>Ajouter une dépense</strong>
@@ -127,6 +163,13 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <label for="eproject">Projet associé (facultatif)</label>
 <select id="eproject"><option value="">-- Aucun projet --</option></select>
 <label>Catégorie</label><div id="ecatWrap"></div>
+
+<!-- Formulaire optionnel activité si Loisirs -->
+<div id="loisirsActivityWrap" style="display:none;margin-top:10px;padding:10px;background:#0b1423;border:1px dashed var(--accent);border-radius:9px">
+<label for="eactName" style="margin-top:0;color:var(--accent)">💡 Saisie rapide de l'activité (Loisirs)</label>
+<input id="eactName" maxlength="150" placeholder="Ex. Concert / Restaurant Courchevel">
+</div>
+
 <button class="primary block">Ajouter la dépense</button>
 </form>
 </div>
@@ -134,7 +177,7 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <div class="card"><button id="openBills" class="block">🧾 Voir mes charges et factures</button></div>
 </section>
 
-<!-- CHARGES & FACTURES -->
+<!-- PAGE SECONDAIRE CHARGES -->
 <section id="p-bills" class="page">
 <div class="card"><button id="closeBills" class="block">← Retour aux dépenses</button></div>
 <div class="card stat"><small>Charges à payer</small><strong id="unpaid2" style="font-size:22px;color:var(--amber)">0 €</strong></div>
@@ -158,11 +201,11 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <div class="card"><strong>Mes charges à payer</strong><div id="blist"></div></div>
 </section>
 
-<!-- CLIENTS & SUIVI CA -->
+<!-- 3. CLIENTS -->
 <section id="p-clients" class="page">
 <div class="card hint" style="border-color:var(--accent)">
-<strong>💡 Gestion du CA & Paiements Clients</strong>
-<p style="margin:4px 0 0;font-size:12px">Cette section suit le Chiffre d'Affaires (CA) facturé, les encaissements réels (paiements partiels) et les créances restantes sans aucun doublon.</p>
+<strong style="color:var(--accent)">💡 Tableau de suivi des Clients & CA</strong>
+<p style="margin:4px 0 0;font-size:12px">Suit les prestations facturées, le total encaissé (acomptes), le solde restant et le statut calculé automatiquement.</p>
 </div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
 <div class="card stat"><small>CA Total Facturé</small><strong id="caTotal">0 €</strong></div>
@@ -171,28 +214,46 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <div class="card stat"><small>Dossiers Clients</small><strong id="clientCount">0</strong></div>
 </div>
 <div class="card">
-<button id="exportAllClientBills" class="block primary" style="margin-bottom:12px">📥 Exporter le suivi clients (PNG)</button>
-<strong>Ajouter un dossier / facture client</strong>
+<button id="exportAllClientBills" class="block primary" style="margin-bottom:12px">📥 Exporter le tableau clients (PNG)</button>
+<strong>Ajouter une prestation client</strong>
 <form id="clientBillForm" novalidate>
 <label for="cname">Intitulé de la prestation</label><input id="cname" maxlength="100" placeholder="Ex. Prestation Séjour Courchevel">
 <div class="err" id="err-cname"></div>
 <label for="cclient">Nom du client / payeur</label><input id="cclient" maxlength="100" placeholder="Ex. Jean Dupont">
 <div class="err" id="err-cclient"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="camount">Montant Total Facturé (€)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
+<div><label for="camount">Montant Facturé (€)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
 <div><label for="cdate">Date de facturation</label><input id="cdate" type="date"></div>
 </div>
 <div class="err" id="err-camount"></div>
 <div class="err" id="err-cdate"></div>
 <label for="cproject">Projet associé (facultatif)</label>
 <select id="cproject"><option value="">-- Aucun projet --</option></select>
-<button class="primary block">Créer le dossier client</button>
+<button class="primary block">Créer la prestation client</button>
 </form>
 </div>
-<div class="card"><strong>Dossiers Clients & Suivi des Paiements</strong><div id="clist"></div></div>
+<div class="card">
+<strong>Tableau des Clients & Encaissements</strong>
+<div class="table-responsive">
+<table class="data-table" id="clientTable">
+<thead>
+<tr>
+<th>Client / Prestation</th>
+<th>Facturé</th>
+<th>Encaissé</th>
+<th>Solde</th>
+<th>Statut</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="clientTableBody"></tbody>
+</table>
+</div>
+<div id="clientTableEmpty" class="empty" style="display:none">Aucun dossier client enregistré.</div>
+</div>
 </section>
 
-<!-- PROJETS & ENVELOPPES -->
+<!-- 4. PROJETS & ACTIVITÉS -->
 <section id="p-projects" class="page">
 <div class="card">
 <strong>Créer / Modifier un projet</strong>
@@ -207,35 +268,35 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <button class="primary block">Enregistrer le projet</button>
 </form>
 </div>
+
 <div class="card">
-<strong>Comparatif & Synthèse des Projets</strong>
+<strong>Synthèse des Projets</strong>
 <div id="projectsList"></div>
 </div>
-</section>
 
-<!-- ACTIVITÉS & HISTORIQUE -->
-<section id="p-activities" class="page">
-<div class="card">
-<strong>Saisie rapide d'activité</strong>
+<!-- RUBRIQUE SECONDAIRE ACTIVITÉS DANS PROJETS -->
+<div class="card" style="margin-top:16px">
+<strong>⚡ Saisie rapide d'activité</strong>
 <form id="activityForm" novalidate>
-<label for="actName">Intitulé de l'activité</label><input id="actName" maxlength="180" placeholder="Ex. Réunion préparation Courchevel">
+<label for="actName">Intitulé de l'activité</label><input id="actName" maxlength="180" placeholder="Ex. Réunion préparation événement">
 <div class="err" id="err-actName"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
 <div><label for="actDate">Date</label><input id="actDate" type="date"></div>
 <div><label for="actProject">Projet (facultatif)</label><select id="actProject"><option value="">-- Aucun --</option></select></div>
 </div>
 <label for="actNote">Note / Détails (facultatif)</label>
-<textarea id="actNote" rows="2" maxlength="300" placeholder="Ex. Validation du devis avec le client"></textarea>
-<button class="primary block">⚡ Enregistrer l'activité</button>
+<textarea id="actNote" rows="2" maxlength="300" placeholder="Ex. Validation du devis avec l'équipe"></textarea>
+<button class="primary block">Enregistrer l'activité</button>
 </form>
 </div>
+
 <div class="card">
 <strong>Historique des activités (12 derniers mois)</strong>
 <div id="activitiesHistory"></div>
 </div>
 </section>
 
-<!-- BILAN & COMPTABILITÉ -->
+<!-- 5. BILAN -->
 <section id="p-bilan" class="page">
 <div class="card">
 <strong>Bilan du mois</strong>
@@ -274,78 +335,67 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <div id="caDetails"></div>
 </div>
 </section>
-
-<!-- MENU & PARAMÈTRES -->
-<section id="p-menu" class="page">
-<div class="card">
-<strong>Profil courant & Sécurité PIN</strong>
-<p class="hint">Connecté en tant que : <strong id="menuUserLabel" style="color:var(--accent)">-</strong></p>
-<button id="changePinBtn" class="block">🔒 DÉFINIR / MODIFIER MON CODE PIN</button>
-<button id="switchUser" class="block primary" style="margin-top:10px">👤 CHANGER D'UTILISATEUR</button>
-</div>
-
-<div class="card">
-<strong>Gestion des Profils</strong>
-<div class="row"><input id="newProfileName" maxlength="30" placeholder="Nom du nouveau profil"><button id="addProfileBtn" class="primary">Créer</button></div>
-<div id="profilesList" style="margin-top:12px"></div>
-</div>
-
-<div class="card">
-<strong>Tâches</strong>
-<div class="card" style="margin-top:0">
-<strong>Ajouter une tâche</strong>
-<form id="taskForm" novalidate>
-<div class="row" style="margin-top:8px"><input id="tname" maxlength="180" placeholder="Ex. Vérifier mon compte"><button class="primary">Ajouter</button></div>
-<div class="err" id="err-tname"></div>
-</form>
-</div>
-<div class="card"><strong>Ma liste — <span id="pending2">0</span> à faire</strong><div id="tlist"></div></div>
-</div>
-
-<div class="card">
-<strong>Sauvegarde & Restauration (JSON versionné)</strong>
-<p class="hint">Les données sont stockées en local dans le navigateur. Exporte régulièrement une sauvegarde JSON pour sécuriser tes données.</p>
-<div class="row" style="margin-bottom:8px">
-<button id="exportCurrentProfile" class="primary" style="flex:1">Exporter Profil Actuel</button>
-<button id="exportAllProfiles" style="flex:1">Exporter TOUS les Profils</button>
-</div>
-<label for="file" style="margin-top:12px">Restaurer depuis un fichier JSON</label>
-<input id="file" type="file" accept=".json,application/json">
-<button id="restore" class="block" style="margin-top:8px">Restaurer la sauvegarde</button>
-<p id="msg" class="hint" role="status"></p>
-</div>
-
-<div class="card" style="border-color:var(--amber)">
-<strong>⚠️ Transparence Sécurité LocalStorage</strong>
-<p class="hint">Un code PIN protège la session contre l'accès direct, mais n'est pas un chiffrement bancaire. Sur iOS/Safari, les données localstorage peuvent être purgées après 7 jours d'inactivité si l'application n'est pas ajoutée à l'écran d'accueil. Réalise un export JSON régulier.</p>
-</div>
-
-<div class="card">
-<strong>Réinitialisation</strong>
-<button id="clear" class="danger block">Effacer toutes les données du profil actif</button>
-</div>
-</section>
 </main>
 
-<!-- USER GATE / CONNEXION & AUTHENTIFICATION -->
+<!-- USER GATE / ÉCRAN DE CRÉATION ET DE CONNEXION LOCAL -->
 <div id="userGate">
-<h2>AŪREOR</h2>
-<p id="gateTitle">Qui pilote l'application aujourd'hui ?</p>
-<div id="gateProfilesChoices" class="choices"></div>
+<h2 class="brand-font">Mon Budget AŪREOR</h2>
+<p id="gateTitle">Bienvenue dans votre espace financier</p>
 
-<div id="gatePinForm" style="display:none;width:100%;max-width:320px;margin-top:15px">
-<p id="gatePinPrompt" style="font-weight:bold;color:var(--accent)">Entre ton code PIN</p>
-<input id="gatePinInput" type="password" maxlength="8" inputmode="numeric" placeholder="Code PIN (ex. 1234)" style="text-align:center;font-size:24px;letter-spacing:0.3em;padding:12px;margin-bottom:12px">
-<div class="err" id="gatePinErr" style="margin-bottom:12px"></div>
-<div class="row">
-<button id="gatePinCancel" type="button" style="flex:1">← Retour</button>
-<button id="gatePinSubmit" type="button" class="primary" style="flex:1">Valider</button>
+<!-- Formulaire première ouverture : Créer mon espace -->
+<form id="createSpaceForm" style="display:none;width:100%;max-width:340px" novalidate>
+<p style="font-size:14px;color:var(--accent);margin-top:0">Création de votre espace local</p>
+<label for="createUsername" style="text-align:left">Votre Nom / Pseudo (Émojis acceptés)</label>
+<input id="createUsername" maxlength="40" placeholder="Ex. Jason 🚀 ou AŪREOR ✨">
+<div class="err" id="err-createUsername"></div>
+
+<label for="createPin" style="text-align:left">Code PIN (4 à 8 chiffres)</label>
+<input id="createPin" type="password" maxlength="8" inputmode="numeric" placeholder="Ex. 1234" style="text-align:center;font-size:20px">
+<div class="err" id="err-createPin"></div>
+
+<label for="confirmPin" style="text-align:left">Confirmer le Code PIN</label>
+<input id="confirmPin" type="password" maxlength="8" inputmode="numeric" placeholder="Confirmer le PIN" style="text-align:center;font-size:20px">
+<div class="err" id="err-confirmPin"></div>
+
+<button type="submit" class="primary block" style="margin-top:18px">🚀 Créer Mon Espace</button>
+</form>
+
+<!-- Formulaire ouvertures suivantes : Connexion PIN -->
+<form id="loginPinForm" style="display:none;width:100%;max-width:320px" novalidate>
+<p id="loginUserName" style="font-size:20px;font-weight:bold;color:var(--accent);margin:0 0 10px"></p>
+<label for="loginPinInput">Entrez votre code PIN</label>
+<input id="loginPinInput" type="password" maxlength="8" inputmode="numeric" placeholder="PIN" style="text-align:center;font-size:24px;letter-spacing:0.3em;padding:12px">
+<div class="err" id="err-loginPin"></div>
+<button type="submit" class="primary block" style="margin-top:16px">Déverrouiller</button>
+</form>
 </div>
+
+<!-- MODAL PANNEAU PROFIL SLIDE -->
+<div id="profileModal">
+<div class="modal-body">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:10px">
+<strong style="font-size:18px;color:var(--accent)">👤 Espace Profil</strong>
+<button id="closeProfileModal" type="button" style="border:0;background:none;font-size:20px;color:var(--muted)">✕</button>
+</div>
+
+<p class="hint" style="margin-top:0">Connecté sous : <strong id="profileModalUserName" style="color:var(--accent)">-</strong></p>
+
+<!-- Raccourcis Menu Profil -->
+<div style="display:flex;flex-direction:column;gap:10px">
+<button id="btnSectionProfile" class="block" style="text-align:left">👤 Mon Profil & Sécurité PIN</button>
+<button id="btnSectionExport" class="block" style="text-align:left">📥 Exporter et Sauvegarder (JSON & PNG)</button>
+<button id="btnSectionAudit" class="block" style="text-align:left">📜 Historique des Modifications</button>
+<button id="btnSectionSettings" class="block" style="text-align:left">⚙️ Paramètres de l'Espace</button>
+<button id="btnLockLogout" class="danger block" style="text-align:left">🔒 Verrouiller / Se Déconnecter</button>
+</div>
+
+<!-- Section Contenu Dynamique Profil -->
+<div id="profileSubContent" style="margin-top:16px;padding-top:12px;border-top:1px dashed var(--line)"></div>
 </div>
 </div>
 
 <!-- MODAL DE PAIEMENT PARTIEL CLIENT -->
-<div id="paymentModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:60;display:none;align-items:center;justify-content:center;padding:16px">
+<div id="paymentModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:90;display:none;align-items:center;justify-content:center;padding:16px">
 <div class="card" style="width:100%;max-width:400px;background:var(--panel)">
 <strong style="font-size:18px;color:var(--accent)">💰 Enregistrer un paiement client</strong>
 <p id="payClientLabel" style="font-size:14px;margin:8px 0;color:var(--muted)"></p>
@@ -367,70 +417,61 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </div>
 </div>
 
-<!-- MODAL CHANGEMENT PIN -->
-<div id="pinModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:60;display:none;align-items:center;justify-content:center;padding:16px">
-<div class="card" style="width:100%;max-width:380px;background:var(--panel)">
-<strong style="font-size:18px;color:var(--accent)">🔒 Code PIN de sécurité</strong>
-<form id="changePinForm" novalidate style="margin-top:12px">
-<label for="newPin">Code PIN (4 chiffres recommandés, ou vide pour désactiver)</label>
-<input id="newPin" type="password" maxlength="8" inputmode="numeric" placeholder="Ex. 1234" style="text-align:center;font-size:20px;letter-spacing:0.2em">
-<div class="err" id="err-newPin"></div>
-<div class="row" style="margin-top:16px">
-<button id="closePinModal" type="button" style="flex:1">Annuler</button>
-<button type="submit" class="primary" style="flex:1">Enregistrer</button>
-</div>
-</form>
-</div>
-</div>
-
 <div class="toast" id="toast"></div>
-<footer>Mon Budget AŪREOR · Version Multi-Profils Professionnelle. Identity AŪREOR. Evite d'y stocker des informations bancaires sensibles.</footer>
+<footer>Mon Budget AŪREOR · Identity AŪREOR. Evite d'y stocker des informations bancaires sensibles.</footer>
 
 <canvas id="canvasExport" style="position:fixed;left:-9999px;top:-9999px"></canvas>
 
+<!-- NAVIGATION 5 ONGLETS STRICTS -->
 <nav>
 <button class="active" data-page="home"><span class="ico">🏠</span>Accueil</button>
 <button data-page="expenses"><span class="ico">💰</span>Dépenses</button>
-<button data-page="clients"><span class="ico">👥</span>Clients/CA</button>
+<button data-page="clients"><span class="ico">👥</span>Clients</button>
 <button data-page="projects"><span class="ico">📁</span>Projets</button>
-<button data-page="activities"><span class="ico">⚡</span>Activités</button>
 <button data-page="bilan"><span class="ico">📊</span>Bilan</button>
-<button data-page="menu"><span class="ico">⚙️</span>Menu</button>
 </nav>
 
 <script>
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id)};
+
 var CATS=[
  {id:"alimentation",label:"Alimentation",color:"#f97316"},
  {id:"logement",label:"Logement",color:"#38bdf8"},
  {id:"transport",label:"Transport",color:"#34d399"},
  {id:"loisirs",label:"Loisirs",color:"#a855f7"},
- {id:"sante",label:"Sante",color:"#f87171"},
+ {id:"sante",label:"Santé",color:"#f87171"},
  {id:"abonnements",label:"Abonnements",color:"#818cf8"},
  {id:"autres",label:"Autres",color:"#94a3b8"}
 ];
 var catOf=function(id){for(var i=0;i<CATS.length;i++){if(CATS[i].id===id)return CATS[i]}return CATS[CATS.length-1]};
 function pad(n){return String(n).length<2?"0"+n:String(n)}
 function today(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function nowISO(){return new Date().toISOString()}
 function money(n){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0)}
 function esc(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]})}
 function escAttr(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>"'\s]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"," ":"&#32;","\t":"&#9;","\n":"&#10;","\r":"&#13;"}[c]||c})}
 function isValidHexColor(c){return typeof c==="string"&&/^#([0-9A-Fa-f]{3}){1,2}$/.test(c)}
-function hasInvisibleChars(s){return typeof s==="string"&&/[​-⁯﻿]/.test(s)}
 var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)};
 function setErr(id,msg,show){var el=$(id);if(!el)return;el.textContent=msg||"";el.classList.toggle("show",!!show)}
 
-var STORAGE_KEY_V2="aureor_db_v2";
-var STORAGE_KEY_V1="mon-quotidien-v1";
-var BACKUP_PRE_MIGRATION_KEY="aureor_backup_v1_premigration";
-var activeProfileName="Omar";
-var month=today().slice(0,7);
+var STORAGE_KEY_SPACE = "aureor_local_space_v3";
+var STORAGE_KEY_V1 = "mon-quotidien-v1";
+var BACKUP_PRE_MIGRATION_KEY = "aureor_backup_v1_premigration";
 
-function emptyProfileData(){
+var month = today().slice(0,7);
+
+var appData = null; // Données de l'espace local
+var isUnlocked = false;
+
+function emptySpaceData(username, pin){
  return {
-  pin: "",
+  version: 3,
+  username: username || "Mon Espace",
+  pin: pin || "",
+  createdAt: nowISO(),
+  lastModifiedAt: nowISO(),
   expenses: [],
   budgets: {},
   bills: [],
@@ -440,54 +481,51 @@ function emptyProfileData(){
   projects: [
    { id: "proj_courchevel", name: "Courchevel", envelope: 15000, alertPercent: 80 }
   ],
+  auditLog: [],
   marginTarget: 1000
  };
 }
 
-var db = {
- version: 2,
- activeProfile: "Omar",
- profiles: {
-  "Omar": emptyProfileData(),
-  "Désiré": emptyProfileData()
- }
-};
+function logAudit(actionType, details){
+ if (!appData) return;
+ if (!Array.isArray(appData.auditLog)) appData.auditLog = [];
+ appData.auditLog.unshift({
+  id: uid(),
+  timestamp: nowISO(),
+  user: appData.username,
+  action: actionType,
+  details: details || ""
+ });
+ if (appData.auditLog.length > 200) appData.auditLog = appData.auditLog.slice(0, 200);
+ appData.lastModifiedAt = nowISO();
+}
 
-function initDataStorage(){
+function initStorage(){
  try {
-  var rawV2 = localStorage.getItem(STORAGE_KEY_V2);
-  if (rawV2) {
-   var parsedV2 = JSON.parse(rawV2);
-   if (parsedV2 && parsedV2.profiles) {
-    db = parsedV2;
-    if (!db.profiles[db.activeProfile]) {
-     var keys = Object.keys(db.profiles);
-     db.activeProfile = keys.length ? keys[0] : "Omar";
-    }
-   }
+  var raw = localStorage.getItem(STORAGE_KEY_SPACE);
+  if (raw) {
+   appData = JSON.parse(raw);
   } else {
    var rawV1 = localStorage.getItem(STORAGE_KEY_V1);
    if (rawV1) {
-    try {
-     localStorage.setItem(BACKUP_PRE_MIGRATION_KEY, rawV1);
-    } catch(eBackup){}
+    try { localStorage.setItem(BACKUP_PRE_MIGRATION_KEY, rawV1); } catch(eBackup){}
     var parsedV1 = JSON.parse(rawV1);
     if (parsedV1 && typeof parsedV1 === "object") {
-     db.profiles["Omar"].expenses = parsedV1.expenses || [];
-     db.profiles["Omar"].budgets = parsedV1.budgets || {};
-     db.profiles["Omar"].bills = parsedV1.bills || [];
-     db.profiles["Omar"].clientBills = (parsedV1.clientBills || []).map(function(c){
+     appData = emptySpaceData("Espace AŪREOR", "");
+     appData.expenses = parsedV1.expenses || [];
+     appData.budgets = parsedV1.budgets || {};
+     appData.bills = parsedV1.bills || [];
+     appData.clientBills = (parsedV1.clientBills || []).map(function(c){
       if (!Array.isArray(c.payments)) {
        c.payments = c.paid ? [{ id: uid(), amount: c.amount, date: c.date || today(), note: "Migré (Payé)" }] : [];
       }
       return c;
      });
-     db.profiles["Omar"].tasks = parsedV1.tasks || [];
-     db.profiles["Omar"].marginTarget = parsedV1.marginTarget || 1000;
+     appData.tasks = parsedV1.tasks || [];
+     appData.marginTarget = parsedV1.marginTarget || 1000;
+     logAudit("MIGRATION_V1", "Migration réussie des données locales existantes");
+     saveSpace();
     }
-    saveDB();
-   } else {
-    saveDB();
    }
   }
  } catch(e) {
@@ -495,39 +533,19 @@ function initDataStorage(){
  }
 }
 
-function saveDB(){
+function saveSpace(){
+ if (!appData) return false;
  try {
-  localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(db));
+  appData.lastModifiedAt = nowISO();
+  localStorage.setItem(STORAGE_KEY_SPACE, JSON.stringify(appData));
   return true;
  } catch(e) {
-  toast("Enregistrement impossible. Mémoire pleine ou restriction.");
+  toast("Enregistrement impossible. Mémoire saturée.");
   return false;
  }
 }
 
-function getActiveData(){
- if (!db.profiles[db.activeProfile]) {
-  db.profiles[db.activeProfile] = emptyProfileData();
- }
- var p = db.profiles[db.activeProfile];
- if (!Array.isArray(p.expenses)) p.expenses = [];
- if (!p.budgets || typeof p.budgets !== "object") p.budgets = {};
- if (!Array.isArray(p.bills)) p.bills = [];
- if (!Array.isArray(p.clientBills)) p.clientBills = [];
- if (!Array.isArray(p.tasks)) p.tasks = [];
- if (!Array.isArray(p.activities)) p.activities = [];
- if (!Array.isArray(p.projects)) {
-  p.projects = [{ id: "proj_courchevel", name: "Courchevel", envelope: 15000, alertPercent: 80 }];
- }
- p.clientBills.forEach(function(c){
-  if (!Array.isArray(c.payments)) {
-   c.payments = c.paid ? [{ id: uid(), amount: c.amount, date: c.date || today(), note: "Encaissement" }] : [];
-  }
- });
- return p;
-}
-
-initDataStorage();
+initStorage();
 
 var toastTimer=null;
 function toast(msg){
@@ -535,12 +553,37 @@ function toast(msg){
  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove("show")},2400);
 }
 
+// Inactivité auto-lock (15 minutes)
+var inactivityTimer = null;
+function resetInactivityTimer(){
+ clearTimeout(inactivityTimer);
+ if (isUnlocked && appData && appData.pin) {
+  inactivityTimer = setTimeout(function(){
+   lockSession();
+   toast("Session verrouillée pour inactivité.");
+  }, 15 * 60 * 1000);
+ }
+}
+["click", "mousemove", "keydown", "touchstart"].forEach(function(evt){
+ window.addEventListener(evt, resetInactivityTimer, { passive: true });
+});
+
+function lockSession(){
+ isUnlocked = false;
+ $("profileModal").classList.remove("show");
+ showUserGate();
+}
+
 var ecat="alimentation";
 CATS.forEach(function(c){
  var b=document.createElement("button");
  b.type="button";b.className="chip";b.dataset.cat=c.id;
  b.textContent=c.label;
- b.addEventListener("click",function(){ecat=c.id;renderChips()});
+ b.addEventListener("click",function(){
+  ecat=c.id;
+  renderChips();
+  $("loisirsActivityWrap").style.display = (ecat === "loisirs") ? "block" : "none";
+ });
  $("ecatWrap").appendChild(b);
 });
 function renderChips(){
@@ -573,12 +616,11 @@ function donutSVG(entries,total){
 }
 
 function monthsSVG(){
- var p = getActiveData();
  var months=[],m=new Date();
  for(var i=0;i<6;i++){
   m.setMonth(m.getMonth()-1);
   var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
-  months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),total:p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===key}).reduce(function(s,x){return s+x.amount},0)});
+  months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),total:appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===key}).reduce(function(s,x){return s+x.amount},0)});
  }
  months.reverse();
  var max=Math.max.apply(null,months.map(function(x){return x.total}))||1;
@@ -605,7 +647,6 @@ function getClientTotalEncaisse(c){
 }
 
 function bilanSVG(){
- var p = getActiveData();
  var months=[],m=new Date();
  for(var i=0;i<6;i++){
   var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
@@ -614,8 +655,8 @@ function bilanSVG(){
  }
  months.reverse();
  months.forEach(function(v){
-  var ca=p.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, v.key); }, 0);
-  var ch=p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+p.bills.filter(function(x){return x.due&&x.due.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0);
+  var ca=appData.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, v.key); }, 0);
+  var ch=appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+appData.bills.filter(function(x){return x.due&&x.due.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0);
   v.net=Math.round((ca-ch)*100)/100;
  });
  var maxAbs=Math.max.apply(null,months.map(function(x){return Math.abs(x.net)}))||1;
@@ -634,8 +675,7 @@ function bilanSVG(){
 
 function expenseRow(x){
  var c=catOf(x.category);
- var p = getActiveData();
- var proj = x.projectId ? p.projects.find(function(pj){return pj.id===x.projectId}) : null;
+ var proj = x.projectId ? appData.projects.find(function(pj){return pj.id===x.projectId}) : null;
  var projBadge = proj ? ' <span class="chip" style="background:#1e293b;color:#94a3b8">📁 '+esc(proj.name)+'</span>' : '';
  return '<div class="item"><span class="dot" style="background:'+escAttr(c.color)+';flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong>'+projBadge+'<br><small>'+esc(x.date)+' · '+esc(c.label)+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-expense="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
 }
@@ -643,97 +683,14 @@ function expenseRow(x){
 function drawAureorHeader(ctx, width, headerHeight, subtitle){
  ctx.fillStyle="#0D0D0D";
  ctx.fillRect(0,0,width,headerHeight);
- ctx.font="bold 28px system-ui,-apple-system,sans-serif";
+ ctx.font="28px 'Lobster', cursive, sans-serif";
  ctx.fillStyle="#B08D35";
  ctx.textAlign="center";
  ctx.textBaseline="middle";
- ctx.fillText("AŪREOR", width/2, headerHeight/2 - 8);
- ctx.font="13px system-ui,-apple-system,sans-serif";
+ ctx.fillText("Mon Budget AŪREOR", width/2, headerHeight/2 - 8);
+ ctx.font="13px system-ui, -apple-system, sans-serif";
  ctx.fillStyle="#B08D35";
- ctx.fillText(subtitle, width/2, headerHeight/2 + 24);
-}
-
-function drawBillDocument(canvas,bill,isGrouped,groupedData){
- var ctx=canvas.getContext("2d");
- var dpr=window.devicePixelRatio||2;
- var width=600,height=isGrouped?800:500;
- canvas.width=width*dpr;canvas.height=height*dpr;
- ctx.scale(dpr,dpr);
- ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
- var headerHeight=120;
- drawAureorHeader(ctx, width, headerHeight, isGrouped?"RÉCAPITULATIF DES CHARGES":"RÉCAPITULATIF INTERNE CHARGE");
-
- var contentY=headerHeight+20;
- ctx.fillStyle="#222222";
- ctx.font="14px system-ui,-apple-system,sans-serif";
- ctx.textAlign="left";
-
- if(isGrouped){
-  var lineHeight=22,startY=contentY;
-  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
-  ctx.fillText("ÉCHÉANCE",40,startY);
-  ctx.fillText("INTITULÉ",160,startY);
-  ctx.fillText("CATÉGORIE",320,startY);
-  ctx.fillText("MONTANT",450,startY);
-  ctx.fillText("STATUT",530,startY);
-  startY+=lineHeight+8;
-  ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(40,startY-4);ctx.lineTo(560,startY-4);ctx.stroke();
-  startY+=4;
-
-  groupedData.bills.forEach(function(b){
-   var cat=catOf(b.category);
-   var statusText=b.paid?"Payée":"À payer";
-   var statusColor=b.paid?"#34d399":"#f87171";
-   ctx.fillStyle="#222222";
-   ctx.fillText(b.due||"-",40,startY);
-   var label=b.label;if(label.length>22)label=label.substring(0,19)+"...";
-   ctx.fillText(label,160,startY);
-   ctx.fillText(cat.label,320,startY);
-   ctx.fillText(money(b.amount),450,startY);
-   ctx.fillStyle=statusColor;
-   ctx.fillText(statusText,530,startY);
-   ctx.fillStyle="#222222";
-   startY+=lineHeight;
-  });
-
-  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
-  ctx.fillStyle="#B08D35";
-  startY+=lineHeight;
-  ctx.fillText("TOTAL PAYÉ:",40,startY);
-  ctx.fillText(money(groupedData.paidTotal),450,startY);
-  startY+=lineHeight;
-  ctx.fillText("TOTAL À PAYER:",40,startY);
-  ctx.fillText(money(groupedData.unpaidTotal),450,startY);
-  ctx.font="12px system-ui,-apple-system,sans-serif";
-  ctx.fillStyle="#888888";
-  ctx.textAlign="center";
-  ctx.fillText("Exporté le : "+today()+" · Profil : "+db.activeProfile,width/2,height-20);
- }else{
-  var cat=catOf(bill.category);
-  var lines=[
-   {label:"INTITULÉ:",value:bill.label},
-   {label:"MONTANT:",value:money(bill.amount)},
-   {label:"CATÉGORIE:",value:cat.label},
-   {label:"ÉCHÉANCE:",value:bill.due},
-   {label:"STATUT:",value:bill.paid?"Payée":"À payer"},
-   {label:"PROFIL:",value:db.activeProfile}
-  ];
-  var startY=contentY;
-  lines.forEach(function(line,i){
-   ctx.font=i===0?"bold 16px system-ui,-apple-system,sans-serif":"14px system-ui,-apple-system,sans-serif";
-   ctx.fillStyle=i===0?"#B08D35":"#222222";
-   ctx.textAlign="right";
-   ctx.fillText(line.label,width/2-20,startY);
-   ctx.textAlign="left";
-   ctx.fillText(line.value,width/2+20,startY);
-   startY+=28;
-  });
-  ctx.font="12px system-ui,-apple-system,sans-serif";
-  ctx.fillStyle="#888888";
-  ctx.textAlign="center";
-  ctx.fillText("Exporté le : "+today(),width/2,height-20);
- }
+ ctx.fillText(subtitle + " · " + (appData ? appData.username : ""), width/2, headerHeight/2 + 22);
 }
 
 function downloadPNG(canvas,filename){
@@ -742,7 +699,7 @@ function downloadPNG(canvas,filename){
   var file=null;
   try{file=new File([blob],filename,{type:"image/png"})}catch(e){}
   if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
-   navigator.share({files:[file],title:"AŪREOR"}).catch(function(){});
+   navigator.share({files:[file],title:"Mon Budget AŪREOR"}).catch(function(){});
    return;
   }
   var url=URL.createObjectURL(blob);
@@ -753,214 +710,29 @@ function downloadPNG(canvas,filename){
  },"image/png");
 }
 
-function exportBillAsPNG(bill){
- var canvas=$("canvasExport");
- var filename="AUREOR-Charge-"+bill.id+"-"+(bill.due||"").replace(/[-:]/g,"")+".png";
- drawBillDocument(canvas,bill,false,null);
- downloadPNG(canvas,filename);
- toast("Export PNG lancé.");
-}
-
-function drawMonthReport(canvas){
- var p = getActiveData();
- var ctx=canvas.getContext("2d");
- var dpr=window.devicePixelRatio||2;
- var width=600,height=540;
- canvas.width=width*dpr;canvas.height=height*dpr;
- ctx.scale(dpr,dpr);
- ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
- var headerHeight=120;
- drawAureorHeader(ctx, width, headerHeight, "RAPPORT MENSUEL — " + db.activeProfile.toUpperCase());
-
- var mExp=p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mBills=p.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mCA=p.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, month); }, 0);
- var mNet=mCA-(mExp+mBills);
- var labelMonth=new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
- ctx.fillStyle="#222222";ctx.textAlign="left";ctx.textBaseline="alphabetic";
- ctx.font="bold 16px system-ui,-apple-system,sans-serif";
- ctx.fillText(labelMonth,40,headerHeight+40);
- var rows=[
-  {label:"CA Encaissé du mois",value:money(mCA)},
-  {label:"Dépenses internes du mois",value:money(mExp)},
-  {label:"Charges / Factures du mois",value:money(mBills)},
-  {label:"Bénéfice du mois",value:money(mNet)},
-  {label:"Objectif de marge",value:money(Number(p.marginTarget)||1000)}
- ];
- var y=headerHeight+80;
- rows.forEach(function(r,idx){
-  ctx.font=idx===3?"bold 15px system-ui,-apple-system,sans-serif":"14px system-ui,-apple-system,sans-serif";
-  ctx.fillStyle=idx===3?(mNet<0?"#f87171":"#B08D35"):"#222222";
-  ctx.fillText(r.label,40,y);
-  ctx.textAlign="right";
-  ctx.fillText(r.value,width-40,y);
-  ctx.textAlign="left";
-  y+=30;
- });
- ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
- ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(width-40,y);ctx.stroke();
- ctx.font="12px system-ui,-apple-system,sans-serif";
- ctx.fillStyle="#888888";ctx.textAlign="center";
- ctx.fillText("Exporté le : "+today(),width/2,height-20);
-}
-
-$("exportMonth").addEventListener("click",function(){
- var canvas=$("canvasExport");
- drawMonthReport(canvas);
- downloadPNG(canvas,"AUREOR-Rapport-"+month+".png");
- toast("Export PNG lancé.");
-});
-
-function exportAllBillsAsPNG(){
- var p = getActiveData();
- var canvas=$("canvasExport");
- var unpaidBills=p.bills.filter(function(x){return !x.paid});
- var paidBills=p.bills.filter(function(x){return x.paid});
- var groupedData={
-  bills:p.bills,
-  paidTotal:paidBills.reduce(function(s,x){return s+x.amount},0),
-  unpaidTotal:unpaidBills.reduce(function(s,x){return s+x.amount},0),
-  total:p.bills.reduce(function(s,x){return s+x.amount},0)
- };
- drawBillDocument(canvas,null,true,groupedData);
- downloadPNG(canvas,"AUREOR-Charges-"+today().replace(/[-:]/g,"")+".png");
- toast("Export PNG lancé.");
-}
-
-function drawClientDocument(canvas,bill,isGrouped,groupedData){
- var ctx=canvas.getContext("2d");
- var dpr=window.devicePixelRatio||2;
- var width=600,height=isGrouped?900:540;
- canvas.width=width*dpr;canvas.height=height*dpr;
- ctx.scale(dpr,dpr);
- ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
- var headerHeight=120;
- drawAureorHeader(ctx, width, headerHeight, isGrouped?"SUIVI DES CLIENTS & ENCAISSEMENTS":"RÉCAPITULATIF DOSSIER CLIENT");
-
- var contentY=headerHeight+20;
- ctx.fillStyle="#222222";
- ctx.font="14px system-ui,-apple-system,sans-serif";
- ctx.textAlign="left";
-
- if(isGrouped){
-  var lineHeight=22,startY=contentY;
-  ctx.font="bold 13px system-ui,-apple-system,sans-serif";
-  ctx.fillText("CLIENT / PRESTATION",40,startY);
-  ctx.fillText("FACTURÉ",240,startY);
-  ctx.fillText("ENCAISSÉ",350,startY);
-  ctx.fillText("SOLDE",460,startY);
-  ctx.fillText("STATUT",530,startY);
-  startY+=lineHeight+8;
-  ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(40,startY-4);ctx.lineTo(560,startY-4);ctx.stroke();
-  startY+=4;
-
-  groupedData.bills.forEach(function(b){
-   var enc = getClientTotalEncaisse(b);
-   var solde = Math.max(0, b.amount - enc);
-   var st = solde === 0 ? "Payé" : (enc > 0 ? "Partiel" : "En attente");
-   var stCol = solde === 0 ? "#34d399" : (enc > 0 ? "#60a5fa" : "#f87171");
-   ctx.fillStyle="#222222";
-   var name = (b.clientName ? b.clientName + " - " : "") + b.label;
-   if(name.length>25) name = name.substring(0,22)+"...";
-   ctx.fillText(name,40,startY);
-   ctx.fillText(money(b.amount),240,startY);
-   ctx.fillText(money(enc),350,startY);
-   ctx.fillText(money(solde),460,startY);
-   ctx.fillStyle=stCol;
-   ctx.fillText(st,530,startY);
-   ctx.fillStyle="#222222";
-   startY+=lineHeight;
-  });
-
-  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
-  ctx.fillStyle="#B08D35";
-  startY+=lineHeight;
-  ctx.fillText("TOTAL CA FACTURÉ:",40,startY);
-  ctx.fillText(money(groupedData.totalFacture),240,startY);
-  startY+=lineHeight;
-  ctx.fillText("TOTAL ENCAISSÉ:",40,startY);
-  ctx.fillText(money(groupedData.totalEncaisse),350,startY);
-  startY+=lineHeight;
-  ctx.fillText("RESTE À ENCAISSER:",40,startY);
-  ctx.fillText(money(groupedData.totalSolde),460,startY);
-  ctx.font="12px system-ui,-apple-system,sans-serif";
-  ctx.fillStyle="#888888";
-  ctx.textAlign="center";
-  ctx.fillText("Exporté le : "+today()+" · Profil : "+db.activeProfile,width/2,height-20);
- }else{
-  var enc = getClientTotalEncaisse(bill);
-  var solde = Math.max(0, bill.amount - enc);
-  var st = solde === 0 ? "Payé" : (enc > 0 ? "Partiellement payé" : "En attente de paiement");
-  var lines=[
-   {label:"CLIENT:",value:bill.clientName||"-"},
-   {label:"INTITULÉ:",value:bill.label},
-   {label:"MONTANT FACTURÉ:",value:money(bill.amount)},
-   {label:"TOTAL ENCAISSÉ:",value:money(enc)},
-   {label:"SOLDE RESTANT:",value:money(solde)},
-   {label:"STATUT:",value:st},
-   {label:"DATE FACTURE:",value:bill.date}
-  ];
-  var startY=contentY;
-  lines.forEach(function(line,i){
-   ctx.font=i===0?"bold 16px system-ui,-apple-system,sans-serif":"14px system-ui,-apple-system,sans-serif";
-   ctx.fillStyle=i===0?"#B08D35":"#222222";
-   ctx.textAlign="right";
-   ctx.fillText(line.label,width/2-20,startY);
-   ctx.textAlign="left";
-   ctx.fillText(line.value,width/2+20,startY);
-   startY+=26;
-  });
-  ctx.font="12px system-ui,-apple-system,sans-serif";
-  ctx.fillStyle="#888888";
-  ctx.textAlign="center";
-  ctx.fillText("Exporté le : "+today(),width/2,height-20);
- }
-}
-
-function exportClientBillAsPNG(bill){
- var canvas=$("canvasExport");
- var filename="AUREOR-Client-"+(bill.clientName||"X").replace(/[^a-zA-Z0-9]/g,"_")+"-"+bill.id+".png";
- drawClientDocument(canvas,bill,false,null);
- downloadPNG(canvas,filename);
- toast("Export PNG lancé.");
-}
-
-function exportAllClientBillsAsPNG(){
- var p = getActiveData();
- var canvas=$("canvasExport");
- var totFact = p.clientBills.reduce(function(s,x){return s+x.amount},0);
- var totEnc = p.clientBills.reduce(function(s,x){return s+getClientTotalEncaisse(x)},0);
- var groupedData={
-  bills:p.clientBills,
-  totalFacture:totFact,
-  totalEncaisse:totEnc,
-  totalSolde:Math.max(0, totFact - totEnc)
- };
- drawClientDocument(canvas,null,true,groupedData);
- downloadPNG(canvas,"AUREOR-Suivi-Clients-"+today().replace(/[-:]/g,"")+".png");
- toast("Export PNG lancé.");
-}
-
 function renderProjectOptions(){
- var p = getActiveData();
  var opts = '<option value="">-- Aucun projet --</option>';
- p.projects.forEach(function(pj){
-  opts += '<option value="'+escAttr(pj.id)+'">'+esc(pj.name)+' (Enveloppe: '+money(pj.envelope)+')</option>';
- });
+ if (appData && Array.isArray(appData.projects)) {
+  appData.projects.forEach(function(pj){
+   opts += '<option value="'+escAttr(pj.id)+'">'+esc(pj.name)+' (Enveloppe: '+money(pj.envelope)+')</option>';
+  });
+ }
  $("eproject").innerHTML = opts;
  $("cproject").innerHTML = opts;
  $("actProject").innerHTML = opts;
 }
 
 function render(){
- var p = getActiveData();
+ if (!appData) return;
  renderProjectOptions();
 
- var es=p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month});
+ $("headerUserName").textContent = appData.username;
+ $("profileModalUserName").textContent = appData.username;
+
+ var es=appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month});
  var total=es.reduce(function(s,x){return s+x.amount},0);
- var budget=Number(p.budgets[month]||0);
- var paidBillsMonth=p.bills.filter(function(x){return x.paid&&x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var budget=Number(appData.budgets[month]||0);
+ var paidBillsMonth=appData.bills.filter(function(x){return x.paid&&x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
  var usedWithBills=total+paidBillsMonth;
 
  $("month").value=month;
@@ -969,15 +741,13 @@ function render(){
  var rem=$("remaining");
  rem.textContent=budget?money(budget-usedWithBills):"—";
  rem.style.color=budget&&usedWithBills>budget?"var(--danger)":budget&&budget-usedWithBills<budget*0.2?"var(--amber)":"";
- $("unpaid").textContent=money(p.bills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0));
+ $("unpaid").textContent=money(appData.bills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0));
 
- var caMonthEncaisse = p.clientBills.reduce(function(s,c){
+ var caMonthEncaisse = appData.clientBills.reduce(function(s,c){
   return s + getClientEncaisseInMonth(c, month);
  }, 0);
  $("caHome").textContent=money(caMonthEncaisse);
 
- var pend=p.tasks.filter(function(x){return !x.done}).length;
- var pendEl=$("pending");if(pendEl)pendEl.textContent=pend;$("pending2").textContent=pend;
  $("budget").value=budget||"";
  var pct=budget?Math.min(100,usedWithBills/budget*100):0;
  var bar=$("progress");
@@ -992,91 +762,80 @@ function render(){
  $("chartMonths").innerHTML=monthsSVG();
  var recent=[].concat(es).sort(function(a,b){return b.date.localeCompare(a.date)}).slice(0,4);
  $("recent").innerHTML=recent.map(expenseRow).join("")||'<div class="empty">Aucune dépense.</div>';
- var all=[].concat(p.expenses).sort(function(a,b){return b.date.localeCompare(a.date)});
+ var all=[].concat(appData.expenses).sort(function(a,b){return b.date.localeCompare(a.date)});
  $("elist").innerHTML=all.map(expenseRow).join("")||'<div class="empty">Aucune dépense enregistrée.</div>';
 
- var unpaidB=p.bills.filter(function(x){return !x.paid});
+ var unpaidB=appData.bills.filter(function(x){return !x.paid});
  $("unpaid2").textContent=money(unpaidB.reduce(function(s,x){return s+x.amount},0));
- var sortedBills=[].concat(p.bills).sort(function(a,b){return (a.paid-b.paid)||a.due.localeCompare(b.due)});
+ var sortedBills=[].concat(appData.bills).sort(function(a,b){return (a.paid-b.paid)||a.due.localeCompare(b.due)});
  $("blist").innerHTML=sortedBills.map(function(x){
   var late=!x.paid&&x.due<today();
   return '<div class="item"><input class="check" type="checkbox" data-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Charge payée"><div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>Échéance : '+esc(x.due)+' · '+esc(catOf(x.category).label)+(x.paid?" · Payée":late?' · <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" · à payer")+'</small></div><strong>'+money(x.amount)+'</strong><button class="primary" data-export-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button><button class="danger" data-delete-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
  }).join("")||'<div class="empty">Aucune facture enregistrée.</div>';
 
- var tk=[].concat(p.tasks).sort(function(a,b){return a.done-b.done});
- $("tlist").innerHTML=tk.map(function(x){return '<div class="item"><input class="check" type="checkbox" data-task="'+escAttr(x.id)+'" '+(x.done?"checked":"")+' aria-label="Tâche terminée"><div class="details '+(x.done?"done":"")+'">'+esc(x.text)+'</div><button class="danger" data-delete-task="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>'}).join("")||'<div class="empty">Aucune tâche.</div>';
-
  renderClientsSection();
  renderProjectsSection();
  renderActivitiesSection();
  renderBilanSection();
- renderProfilesList();
-
- $("hdrUser").textContent = "Connecté : " + db.activeProfile;
- $("menuUserLabel").textContent = db.activeProfile + (p.pin ? " (Protegé par PIN 🔒)" : " (Sans PIN)");
 }
 
+// RENDU TABLEAU CLIENTS
 function renderClientsSection(){
- var p = getActiveData();
- var totalFacture = p.clientBills.reduce(function(s,c){ return s + c.amount; }, 0);
- var totalEncaisse = p.clientBills.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
+ var totalFacture = appData.clientBills.reduce(function(s,c){ return s + c.amount; }, 0);
+ var totalEncaisse = appData.clientBills.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
  var totalReste = Math.max(0, totalFacture - totalEncaisse);
 
  $("caTotal").textContent = money(totalFacture);
  $("clientPaidTotal").textContent = money(totalEncaisse);
  $("clientUnpaidTotal").textContent = money(totalReste);
- $("clientCount").textContent = p.clientBills.length;
+ $("clientCount").textContent = appData.clientBills.length;
 
- var sortedClients = [].concat(p.clientBills).sort(function(a,b){
+ var sortedClients = [].concat(appData.clientBills).sort(function(a,b){
   var encA = getClientTotalEncaisse(a), encB = getClientTotalEncaisse(b);
   var soldeA = a.amount - encA, soldeB = b.amount - encB;
   return (soldeB - soldeA) || b.date.localeCompare(a.date);
  });
 
- $("clist").innerHTML = sortedClients.map(function(c){
+ var tbody = $("clientTableBody");
+ var emptyMsg = $("clientTableEmpty");
+
+ if (sortedClients.length === 0) {
+  tbody.innerHTML = "";
+  emptyMsg.style.display = "block";
+  return;
+ }
+ emptyMsg.style.display = "none";
+
+ tbody.innerHTML = sortedClients.map(function(c){
   var enc = getClientTotalEncaisse(c);
   var solde = Math.max(0, c.amount - enc);
-  var badge = solde === 0 ? '<span class="badge badge-paid">Payé</span>' : (enc > 0 ? '<span class="badge badge-partial">Partiellement payé</span>' : '<span class="badge badge-pending">En attente</span>');
-  var proj = c.projectId ? p.projects.find(function(pj){return pj.id===c.projectId}) : null;
-  var projTag = proj ? ' · <span class="chip" style="background:#1e293b;color:#94a3b8">📁 '+esc(proj.name)+'</span>' : '';
+  var badge = solde === 0 ? '<span class="badge badge-paid">Payé</span>' : (enc > 0 ? '<span class="badge badge-partial">Partiel</span>' : '<span class="badge badge-pending">En attente</span>');
+  var proj = c.projectId ? appData.projects.find(function(pj){return pj.id===c.projectId}) : null;
+  var projTag = proj ? '<br><small class="muted">📁 '+esc(proj.name)+'</small>' : '';
 
-  var paymentsHistory = '';
-  if (c.payments && c.payments.length > 0) {
-   paymentsHistory = '<div style="font-size:11px;color:var(--muted);margin-top:4px;padding-left:8px;border-left:2px solid var(--accent)">'+
-    c.payments.map(function(pm){
-     return '• '+esc(pm.date)+' : <strong>'+money(pm.amount)+'</strong>'+(pm.note?' ('+esc(pm.note)+')':'');
-    }).join('<br>') +
-   '</div>';
-  }
-
-  return '<div class="item" style="flex-direction:column;align-items:stretch;gap:6px">' +
-   '<div style="display:flex;justify-content:space-between;align-items:center">' +
-    '<div><strong>'+esc(c.label)+'</strong> ' + badge + projTag + '</div>' +
-    '<strong>'+money(c.amount)+'</strong>' +
-   '</div>' +
-   '<div style="font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px">' +
-    '<span>Client : <strong>'+(esc(c.clientName)||"Non spécifié")+'</strong> · Date : '+esc(c.date)+'</span>' +
-    '<span>Encaissé : <strong style="color:var(--green)">'+money(enc)+'</strong> · Solde : <strong style="color:var(--amber)">'+money(solde)+'</strong></span>' +
-   '</div>' +
-   paymentsHistory +
-   '<div style="display:flex;gap:8px;margin-top:4px;justify-content:flex-end">' +
-    (solde > 0 ? '<button class="primary" data-pay-client="'+escAttr(c.id)+'" style="font-size:12px;padding:5px 10px">+ Encaisser acompte/solde</button>' : '') +
-    '<button data-export-client-bill="'+escAttr(c.id)+'" aria-label="Exporter PNG" style="font-size:14px;padding:5px 8px">📥 PNG</button>' +
-    '<button class="danger" data-delete-client-bill="'+escAttr(c.id)+'" aria-label="Supprimer" style="font-size:12px;padding:5px 8px">✕</button>' +
-   '</div>' +
-  '</div>';
- }).join("") || '<div class="empty">Aucun dossier client enregistré.</div>';
+  return '<tr>' +
+   '<td><strong>'+esc(c.clientName||"Non spécifié")+'</strong><br><small>'+esc(c.label)+'</small>'+projTag+'</td>' +
+   '<td><strong>'+money(c.amount)+'</strong></td>' +
+   '<td style="color:var(--green)">'+money(enc)+'</td>' +
+   '<td style="color:var(--amber)">'+money(solde)+'</td>' +
+   '<td>'+badge+'</td>' +
+   '<td><div style="display:flex;gap:4px">' +
+    (solde > 0 ? '<button class="primary" data-pay-client="'+escAttr(c.id)+'" style="padding:4px 8px;font-size:11px">+ Encaisser</button>' : '') +
+    '<button data-export-client-bill="'+escAttr(c.id)+'" style="padding:4px 6px;font-size:12px">📥</button>' +
+    '<button class="danger" data-delete-client-bill="'+escAttr(c.id)+'" style="padding:4px 6px;font-size:11px">✕</button>' +
+   '</div></td>' +
+  '</tr>';
+ }).join("");
 }
 
 function renderProjectsSection(){
- var p = getActiveData();
- var list = p.projects;
+ var list = appData.projects || [];
 
  $("projectsList").innerHTML = list.map(function(pj){
-  var projExpenses = p.expenses.filter(function(e){ return e.projectId === pj.id; });
+  var projExpenses = appData.expenses.filter(function(e){ return e.projectId === pj.id; });
   var spentTotal = projExpenses.reduce(function(s,e){ return s + e.amount; }, 0);
 
-  var projClients = p.clientBills.filter(function(c){ return c.projectId === pj.id; });
+  var projClients = appData.clientBills.filter(function(c){ return c.projectId === pj.id; });
   var totalFacture = projClients.reduce(function(s,c){ return s + c.amount; }, 0);
   var totalEncaisse = projClients.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
   var totalAEncaisser = Math.max(0, totalFacture - totalEncaisse);
@@ -1098,7 +857,7 @@ function renderProjectsSection(){
   return '<div class="card" style="margin-bottom:12px;border-color:'+(isOver?'var(--danger)':(isAlert?'var(--amber)':'var(--line)'))+'">' +
    '<div style="display:flex;justify-content:space-between;align-items:center">' +
     '<strong style="font-size:18px;color:var(--accent)">📁 '+esc(pj.name)+'</strong>' +
-    '<button class="danger" data-delete-project="'+escAttr(pj.id)+'" style="border:0;background:none;padding:4px">✕ Supprimer</button>' +
+    '<button class="danger" data-delete-project="'+escAttr(pj.id)+'" style="border:0;background:none;padding:4px;font-size:12px">✕ Supprimer</button>' +
    '</div>' +
    '<div class="grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">' +
     '<div><small class="muted">Enveloppe budgétaire</small><br><strong>'+money(envelope)+'</strong></div>' +
@@ -1119,7 +878,6 @@ function renderProjectsSection(){
 }
 
 function renderActivitiesSection(){
- var p = getActiveData();
  $("actDate").value = today();
 
  var monthsList = [];
@@ -1132,15 +890,15 @@ function renderActivitiesSection(){
  var html = "";
  monthsList.forEach(function(mKey){
   var mLabel = new Date(mKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
-  var actsInMonth = p.activities.filter(function(a){ return a.date && a.date.slice(0,7) === mKey; })
+  var actsInMonth = (appData.activities || []).filter(function(a){ return a.date && a.date.slice(0,7) === mKey; })
                                 .sort(function(a,b){ return b.date.localeCompare(a.date); });
 
-  html += '<div style="margin-bottom:14px"><strong style="font-size:13px;color:var(--accent);display:block;margin-bottom:6px;border-bottom:1px solid var(--line);padding-bottom:2px">'+mLabel+' ('+actsInMonth.length+' activité'+(actsInMonth.length>1?'s':'')+')</strong>';
+  html += '<div style="margin-bottom:12px"><strong style="font-size:13px;color:var(--accent);display:block;margin-bottom:6px;border-bottom:1px solid var(--line);padding-bottom:2px">'+mLabel+' ('+actsInMonth.length+' activité'+(actsInMonth.length>1?'s':'')+')</strong>';
   if (actsInMonth.length === 0) {
    html += '<div class="hint" style="font-style:italic">Aucune activité ce mois-ci.</div>';
   } else {
    html += actsInMonth.map(function(a){
-    var proj = a.projectId ? p.projects.find(function(pj){return pj.id===a.projectId}) : null;
+    var proj = a.projectId ? appData.projects.find(function(pj){return pj.id===a.projectId}) : null;
     var projTag = proj ? ' <span class="chip" style="background:#1e293b;color:#94a3b8">📁 '+esc(proj.name)+'</span>' : '';
     return '<div class="item"><div class="details"><strong>'+esc(a.name)+'</strong>'+projTag+'<br><small>'+esc(a.date)+(a.note?' · '+esc(a.note):'')+'</small></div><button class="danger" data-delete-activity="'+escAttr(a.id)+'" style="border:0;background:none;padding:4px">✕</button></div>';
    }).join("");
@@ -1152,17 +910,16 @@ function renderActivitiesSection(){
 }
 
 function renderBilanSection(){
- var p = getActiveData();
- var allExpenses = p.expenses.reduce(function(s,x){return s+x.amount},0);
- var allBills = p.bills.reduce(function(s,x){return s+x.amount},0);
+ var allExpenses = appData.expenses.reduce(function(s,x){return s+x.amount},0);
+ var allBills = appData.bills.reduce(function(s,x){return s+x.amount},0);
  var totalCharges = allExpenses + allBills;
 
- var caFacture = p.clientBills.reduce(function(s,x){return s+x.amount},0);
- var caEncaisse = p.clientBills.reduce(function(s,x){return s+getClientTotalEncaisse(x)},0);
+ var caFacture = appData.clientBills.reduce(function(s,x){return s+x.amount},0);
+ var caEncaisse = appData.clientBills.reduce(function(s,x){return s+getClientTotalEncaisse(x)},0);
  var caAEncaisser = Math.max(0, caFacture - caEncaisse);
 
  var netProfit = caEncaisse - totalCharges;
- var marginTarget = Number(p.marginTarget) || 1000;
+ var marginTarget = Number(appData.marginTarget) || 1000;
  var targetProgress = marginTarget > 0 ? Math.min(100, Math.max(0, netProfit / marginTarget * 100)) : 0;
 
  $("bilanCA").textContent = money(caFacture);
@@ -1183,9 +940,9 @@ function renderBilanSection(){
  $("bilanAlert").innerHTML=alertHtml;
  $("bilanHint").textContent="Objectif de marge : "+money(marginTarget)+" ("+Math.round(targetProgress)+"% atteint)";
 
- var mExp = p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mBills = p.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mCAEncaisse = p.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, month); }, 0);
+ var mExp = appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mBills = appData.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mCAEncaisse = appData.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, month); }, 0);
 
  $("bilanMCA").textContent = money(mCAEncaisse);
  $("bilanMCharges").textContent = money(mExp + mBills);
@@ -1210,28 +967,27 @@ function renderBilanSection(){
  renderChips();
 }
 
-function renderProfilesList(){
- var keys = Object.keys(db.profiles);
- $("profilesList").innerHTML = keys.map(function(k){
-  var isCurrent = k === db.activeProfile;
-  var hasPin = !!db.profiles[k].pin;
-  return '<div class="item"><div class="details"><strong>'+esc(k)+'</strong> '+(isCurrent?'<span class="badge badge-paid">Actif</span>':'')+(hasPin?' 🔒':'')+'</div>' +
-   (keys.length > 1 && !isCurrent ? '<button class="danger" data-delete-profile="'+escAttr(k)+'" style="font-size:12px;padding:4px 8px">✕ Supprimer</button>' : '') +
-  '</div>';
- }).join("");
-}
-
-var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients & CA",projects:"Projets",activities:"Activités",bilan:"Bilan",menu:"Menu",bills:"Charges & factures"};
+// EXACTEMENT 5 ONGLETS PRINCIPAUX
+var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients & CA",projects:"Projets & Activités",bilan:"Bilan"};
 function showPage(name){
+ if (name === "bills") {
+  var pages=document.querySelectorAll(".page");
+  for(var j=0;j<pages.length;j++)pages[j].classList.toggle("active",pages[j].id==="p-bills");
+  if($("hdrTitle")) $("hdrTitle").textContent="Charges & Factures";
+  window.scrollTo(0,0);
+  return;
+ }
  var btns=document.querySelectorAll("nav button");
  for(var i=0;i<btns.length;i++)btns[i].classList.toggle("active",btns[i].dataset.page===name);
  var pages=document.querySelectorAll(".page");
- for(var j=0;j<pages.length;j++)pages[j].classList.toggle("active",pages[j].id==="p-"+name);
- $("hdrTitle").textContent=TITLES[name]||"Budget AŪREOR";
+ for(var k=0;k<pages.length;k++)pages[k].classList.toggle("active",pages[k].id==="p-"+name);
+ if($("hdrTitle")) $("hdrTitle").textContent=TITLES[name] ? TITLES[name] + " · Espace financier" : "Votre espace financier";
  window.scrollTo(0,0);
 }
+
 $("openBills").addEventListener("click",function(){showPage("bills")});
 $("closeBills").addEventListener("click",function(){showPage("expenses")});
+
 document.querySelector("nav").addEventListener("click",function(e){
  var b=e.target.closest("[data-page]");if(!b)return;
  showPage(b.dataset.page);
@@ -1240,34 +996,55 @@ document.querySelector("nav").addEventListener("click",function(e){
 $("month").addEventListener("change",function(e){if(e.target.value){month=e.target.value;render()}});
 
 $("saveBudget").addEventListener("click",function(){
- var p = getActiveData();
  var v=$("budget").value;
  if(v===""||!Number.isFinite(Number(v))||Number(v)<0){toast("Saisis un budget valide.");return}
- p.budgets[month]=Math.round(Number(v)*100)/100;
- saveDB();render();toast("Budget enregistré.");
+ appData.budgets[month]=Math.round(Number(v)*100)/100;
+ logAudit("BUDGET_UPDATE", "Budget "+month+" défini à "+money(v));
+ saveSpace();render();toast("Budget enregistré.");
 });
 
-$("saveTarget").addEventListener("click",function(){
- var p = getActiveData();
- var v=$("marginTarget").value;
- if(v===""||!Number.isFinite(Number(v))||Number(v)<=0){toast("Saisis un objectif valide (supérieur à 0).");return}
- p.marginTarget=Math.round(Number(v)*100)/100;
- saveDB();render();toast("Objectif enregistré.");
-});
+var saveTargetBtn = $("saveTarget");
+if (saveTargetBtn) {
+ saveTargetBtn.addEventListener("click",function(){
+  var v=$("marginTarget").value;
+  if(v===""||!Number.isFinite(Number(v))||Number(v)<=0){toast("Saisis un objectif valide (supérieur à 0).");return}
+  appData.marginTarget=Math.round(Number(v)*100)/100;
+  logAudit("TARGET_UPDATE", "Objectif de marge défini à "+money(v));
+  saveSpace();render();toast("Objectif enregistré.");
+ });
+}
 
 $("expenseForm").addEventListener("submit",function(e){
  e.preventDefault();
  setErr("err-ename");setErr("err-amount");setErr("err-date");
  var label=$("ename").value.trim(),amount=$("eamount").value,date=$("edate").value,projId=$("eproject").value;
+ var actName = $("eactName").value.trim();
  var ok=true;
  if(!label){setErr("err-ename","Intitulé requis.",true);ok=false}
  var amt=Number(amount);
  if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-amount","Montant invalide (supérieur à 0).",true);ok=false}
  if(!date){setErr("err-date","Date requise.",true);ok=false}
  if(!ok)return;
- var p = getActiveData();
- p.expenses.push({id:uid(),label:label,amount:Math.round(amt*100)/100,category:ecat,date:date,projectId:projId||null});
- saveDB();e.target.reset();$("edate").value=today();render();
+
+ var expObj = {id:uid(),label:label,amount:Math.round(amt*100)/100,category:ecat,date:date,projectId:projId||null};
+ appData.expenses.push(expObj);
+
+ // Si catégorie Loisirs et nom d'activité renseigné, créer aussi l'activité liée sans doublon de dépense
+ if (ecat === "loisirs" && actName) {
+  if (!Array.isArray(appData.activities)) appData.activities = [];
+  appData.activities.push({
+   id: uid(),
+   name: actName,
+   date: date,
+   projectId: projId || null,
+   note: "Associée à dépense Loisirs : " + label + " (" + money(amt) + ")"
+  });
+ }
+
+ logAudit("EXPENSE_ADD", label + " (" + money(amt) + ")");
+ saveSpace();e.target.reset();$("edate").value=today();
+ $("loisirsActivityWrap").style.display = "none";
+ render();
  toast("Dépense enregistrée.");
 });
 
@@ -1281,9 +1058,9 @@ $("billForm").addEventListener("submit",function(e){
  if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-bamount","Montant invalide (supérieur à 0).",true);ok=false}
  if(!due){setErr("err-bdue","Échéance requise.",true);ok=false}
  if(!ok)return;
- var p = getActiveData();
- p.bills.push({id:uid(),label:label,amount:Math.round(amt*100)/100,due:due,category:$("bcat").value,paid:false});
- saveDB();e.target.reset();$("bdue").value=today();render();
+ appData.bills.push({id:uid(),label:label,amount:Math.round(amt*100)/100,due:due,category:$("bcat").value,paid:false});
+ logAudit("BILL_ADD", label + " (" + money(amt) + ")");
+ saveSpace();e.target.reset();$("bdue").value=today();render();
  toast("Charge ajoutée.");
 });
 
@@ -1297,8 +1074,7 @@ $("clientBillForm").addEventListener("submit",function(e){
  if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-camount","Montant invalide (supérieur à 0).",true);ok=false}
  if(!date){setErr("err-cdate","Date requise.",true);ok=false}
  if(!ok)return;
- var p = getActiveData();
- p.clientBills.push({
+ appData.clientBills.push({
   id: uid(),
   label: label,
   clientName: clientName,
@@ -1308,8 +1084,9 @@ $("clientBillForm").addEventListener("submit",function(e){
   paid: false,
   payments: []
  });
- saveDB();e.target.reset();$("cdate").value=today();render();
- toast("Dossier client créé.");
+ logAudit("CLIENT_ADD", (clientName?clientName+" - ":"")+label + " (" + money(amt) + ")");
+ saveSpace();e.target.reset();$("cdate").value=today();render();
+ toast("Prestation client créée.");
 });
 
 $("paymentForm").addEventListener("submit",function(e){
@@ -1325,8 +1102,7 @@ $("paymentForm").addEventListener("submit",function(e){
  if (!date) { setErr("err-payDate","Date requise.",true); ok = false; }
  if (!ok) return;
 
- var p = getActiveData();
- var client = p.clientBills.find(function(c){ return c.id === cId; });
+ var client = appData.clientBills.find(function(c){ return c.id === cId; });
  if (client) {
   if (!Array.isArray(client.payments)) client.payments = [];
   client.payments.push({
@@ -1339,7 +1115,8 @@ $("paymentForm").addEventListener("submit",function(e){
   if (totalEnc >= client.amount) {
    client.paid = true;
   }
-  saveDB();
+  logAudit("PAYMENT_ADD", "Encaissement " + money(amt) + " pour " + client.label);
+  saveSpace();
   render();
   $("paymentModal").style.display = "none";
   toast("Encaissement enregistré !");
@@ -1359,22 +1136,23 @@ $("projectForm").addEventListener("submit",function(e){
  if (env === "" || !Number.isFinite(envAmt) || envAmt < 0) { setErr("err-penvelope", "Enveloppe invalide.", true); ok = false; }
  if (!ok) return;
 
- var p = getActiveData();
- var existing = p.projects.find(function(pj){ return pj.name.toLowerCase() === name.toLowerCase(); });
+ var existing = appData.projects.find(function(pj){ return pj.name.toLowerCase() === name.toLowerCase(); });
  if (existing) {
   existing.envelope = Math.round(envAmt * 100) / 100;
   existing.alertPercent = Number(alertPct);
+  logAudit("PROJECT_UPDATE", name + " (Enveloppe: " + money(envAmt) + ")");
   toast("Projet mis à jour.");
  } else {
-  p.projects.push({
+  appData.projects.push({
    id: uid(),
    name: name,
    envelope: Math.round(envAmt * 100) / 100,
    alertPercent: Number(alertPct)
   });
+  logAudit("PROJECT_ADD", name + " (Enveloppe: " + money(envAmt) + ")");
   toast("Projet créé.");
  }
- saveDB();e.target.reset();render();
+ saveSpace();e.target.reset();render();
 });
 
 $("activityForm").addEventListener("submit",function(e){
@@ -1386,55 +1164,58 @@ $("activityForm").addEventListener("submit",function(e){
  var note = $("actNote").value.trim();
  if (!name) { setErr("err-actName", "Intitulé requis.", true); return; }
 
- var p = getActiveData();
- p.activities.push({
+ if (!Array.isArray(appData.activities)) appData.activities = [];
+ appData.activities.push({
   id: uid(),
   name: name,
   date: date || today(),
   projectId: projId || null,
   note: note
  });
- saveDB();
+ logAudit("ACTIVITY_ADD", name);
+ saveSpace();
  $("actName").value = "";
  $("actNote").value = "";
- $("actName").focus();
  render();
  toast("⚡ Activité enregistrée !");
 });
 
-$("taskForm").addEventListener("submit",function(e){
- e.preventDefault();
- setErr("err-tname");
- var text=$("tname").value.trim();
- if(!text){setErr("err-tname","Description requise.",true);return}
- var p = getActiveData();
- p.tasks.push({id:uid(),text:text,done:false});
- saveDB();e.target.reset();render();
-});
-
 document.addEventListener("click",function(e){
  var b=e.target.closest("button");if(!b)return;
- var p = getActiveData();
 
- if(b.dataset.deleteExpense||b.dataset.deleteBill||b.dataset.deleteTask||b.dataset.deleteClientBill||b.dataset.deleteProject||b.dataset.deleteActivity){
+ if(b.dataset.deleteExpense||b.dataset.deleteBill||b.dataset.deleteClientBill||b.dataset.deleteProject||b.dataset.deleteActivity){
   if(!confirm("Supprimer cet élément ?"))return;
-  if(b.dataset.deleteExpense) p.expenses=p.expenses.filter(function(x){return x.id!==b.dataset.deleteExpense});
-  if(b.dataset.deleteBill) p.bills=p.bills.filter(function(x){return x.id!==b.dataset.deleteBill});
-  if(b.dataset.deleteTask) p.tasks=p.tasks.filter(function(x){return x.id!==b.dataset.deleteTask});
-  if(b.dataset.deleteClientBill) p.clientBills=p.clientBills.filter(function(x){return x.id!==b.dataset.deleteClientBill});
-  if(b.dataset.deleteProject) p.projects=p.projects.filter(function(x){return x.id!==b.dataset.deleteProject});
-  if(b.dataset.deleteActivity) p.activities=p.activities.filter(function(x){return x.id!==b.dataset.deleteActivity});
-  saveDB();render();
+  if(b.dataset.deleteExpense) {
+   appData.expenses=appData.expenses.filter(function(x){return x.id!==b.dataset.deleteExpense});
+   logAudit("EXPENSE_DELETE", b.dataset.deleteExpense);
+  }
+  if(b.dataset.deleteBill) {
+   appData.bills=appData.bills.filter(function(x){return x.id!==b.dataset.deleteBill});
+   logAudit("BILL_DELETE", b.dataset.deleteBill);
+  }
+  if(b.dataset.deleteClientBill) {
+   appData.clientBills=appData.clientBills.filter(function(x){return x.id!==b.dataset.deleteClientBill});
+   logAudit("CLIENT_DELETE", b.dataset.deleteClientBill);
+  }
+  if(b.dataset.deleteProject) {
+   appData.projects=appData.projects.filter(function(x){return x.id!==b.dataset.deleteProject});
+   logAudit("PROJECT_DELETE", b.dataset.deleteProject);
+  }
+  if(b.dataset.deleteActivity) {
+   appData.activities=appData.activities.filter(function(x){return x.id!==b.dataset.deleteActivity});
+   logAudit("ACTIVITY_DELETE", b.dataset.deleteActivity);
+  }
+  saveSpace();render();
  }
 
  if (b.dataset.payClient) {
   var cId = b.dataset.payClient;
-  var client = p.clientBills.find(function(c){ return c.id === cId; });
+  var client = appData.clientBills.find(function(c){ return c.id === cId; });
   if (client) {
    var enc = getClientTotalEncaisse(client);
    var solde = Math.max(0, client.amount - enc);
    $("payClientId").value = client.id;
-   $("payClientLabel").textContent = "Facture : " + client.label + " (Facturé: " + money(client.amount) + " · Reste: " + money(solde) + ")";
+   $("payClientLabel").textContent = "Prestation : " + client.label + " (Facturé: " + money(client.amount) + " · Solde: " + money(solde) + ")";
    $("payAmount").value = solde > 0 ? solde : "";
    $("payDate").value = today();
    $("payNote").value = "";
@@ -1442,129 +1223,346 @@ document.addEventListener("click",function(e){
    $("paymentModal").style.display = "flex";
   }
  }
-
- if (b.dataset.deleteProfile) {
-  var pName = b.dataset.deleteProfile;
-  if (confirm("Supprimer définitivement le profil "+pName+" et TOUTES ses données ?")) {
-   delete db.profiles[pName];
-   saveDB();
-   render();
-   toast("Profil supprimé.");
-  }
- }
 });
 
 document.addEventListener("change",function(e){
  var t=e.target;
- var p = getActiveData();
  if(t.dataset&&t.dataset.paid){
-  for(var i=0;i<p.bills.length;i++){
-   if(p.bills[i].id===t.dataset.paid){
-    p.bills[i].paid=t.checked;saveDB();render();break;
-   }
-  }
- }
- if(t.dataset&&t.dataset.task){
-  for(var j=0;j<p.tasks.length;j++){
-   if(p.tasks[j].id===t.dataset.task){
-    p.tasks[j].done=t.checked;saveDB();render();break;
+  for(var i=0;i<appData.bills.length;i++){
+   if(appData.bills[i].id===t.dataset.paid){
+    appData.bills[i].paid=t.checked;
+    logAudit("BILL_STATUS", appData.bills[i].label + " (Payée: "+t.checked+")");
+    saveSpace();render();break;
    }
   }
  }
 });
 
-// EXPORT & RESTAURATION JSON VERSIONNÉ
-$("exportCurrentProfile").addEventListener("click",function(){
- var p = getActiveData();
- var payload = {
-  version: 2,
-  type: "single_profile",
-  profileName: db.activeProfile,
-  exportedAt: new Date().toISOString(),
-  data: p
- };
- var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
- var url=URL.createObjectURL(blob),a=document.createElement("a");
- a.href=url;a.download="AUREOR-Profil-"+db.activeProfile+"-"+today()+".json";
- document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
- $("msg").textContent="Sauvegarde du profil "+db.activeProfile+" exportée.";
- toast("Export JSON profil terminé.");
-});
+// EXPORT & RESTAURATION JSON / PNG COMPLETS
+function renderProfileSubContent(section){
+ var box = $("profileSubContent");
+ if (section === "profile") {
+  box.innerHTML = '<strong style="color:var(--accent)">👤 Modification du Profil & PIN</strong>' +
+   '<form id="updateProfileForm" novalidate style="margin-top:10px">' +
+    '<label style="margin-top:0">Nom d\'utilisateur / Enseigne</label>' +
+    '<input id="upUsername" value="'+escAttr(appData.username)+'" maxlength="40">' +
+    '<label>Code PIN (laisser vide pour désactiver)</label>' +
+    '<input id="upPin" type="password" maxlength="8" inputmode="numeric" value="'+escAttr(appData.pin)+'" style="text-align:center;font-size:18px">' +
+    '<label>Confirmer le Code PIN</label>' +
+    '<input id="upConfirmPin" type="password" maxlength="8" inputmode="numeric" value="'+escAttr(appData.pin)+'" style="text-align:center;font-size:18px">' +
+    '<div class="err" id="err-upProfile"></div>' +
+    '<button type="submit" class="primary block" style="margin-top:12px">Enregistrer les modifications</button>' +
+   '</form>';
 
-$("exportAllProfiles").addEventListener("click",function(){
- var payload = {
-  version: 2,
-  type: "all_profiles",
-  activeProfile: db.activeProfile,
-  exportedAt: new Date().toISOString(),
-  profiles: db.profiles
- };
- var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
- var url=URL.createObjectURL(blob),a=document.createElement("a");
- a.href=url;a.download="AUREOR-Sauvegarde-Complet-"+today()+".json";
- document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
- $("msg").textContent="Sauvegarde complète de tous les profils exportée.";
- toast("Export JSON complet terminé.");
-});
+  $("updateProfileForm").addEventListener("submit", function(e){
+   e.preventDefault();
+   setErr("err-upProfile");
+   var name = $("upUsername").value.trim();
+   var pin = $("upPin").value.trim();
+   var cPin = $("upConfirmPin").value.trim();
+   if (!name) { setErr("err-upProfile", "Le nom ne peut pas être vide.", true); return; }
+   if (pin !== cPin) { setErr("err-upProfile", "Les deux codes PIN ne correspondent pas.", true); return; }
 
-function validateV1OrV2(s, errCb) {
- if (!s || typeof s !== "object") { if(errCb) errCb("Fichier invalide : racine non-objet."); return false; }
- return true;
+   appData.username = name;
+   appData.pin = pin;
+   logAudit("PROFILE_UPDATE", "Mise à jour du nom / PIN");
+   saveSpace();
+   render();
+   toast("Profil mis à jour avec succès !");
+  });
+ } else if (section === "export") {
+  box.innerHTML = '<strong style="color:var(--accent)">📥 Sauvegarde JSON & Reports PNG</strong>' +
+   '<p class="hint">Le JSON sert à restaurer vos données. Le PNG produit des fiches visuelles détaillées avec logo AŪREOR.</p>' +
+   '<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">' +
+    '<button id="btnExportJSON" class="primary block">💾 EXPORTER LA SAUVEGARDE (JSON)</button>' +
+    '<button id="btnExportPNGProfile" class="block">🖼️ Exporter Fiche Profil (PNG)</button>' +
+    '<button id="btnExportPNGBilan" class="block">🖼️ Exporter Bilan Financier (PNG)</button>' +
+    '<button id="btnExportPNGAudit" class="block">🖼️ Exporter Historique Modifications (PNG)</button>' +
+   '</div>' +
+   '<div style="margin-top:16px;border-top:1px dashed var(--line);padding-top:12px">' +
+    '<label style="margin-top:0">Restaurer depuis un fichier JSON</label>' +
+    '<input id="fileRestore" type="file" accept=".json,application/json">' +
+    '<button id="btnRestoreJSON" class="block" style="margin-top:8px">Restaurer les données</button>' +
+    '<p id="msgRestore" class="hint" role="status"></p>' +
+   '</div>';
+
+  $("btnExportJSON").addEventListener("click", exportJSONSpace);
+  $("btnExportPNGProfile").addEventListener("click", exportPNGProfile);
+  $("btnExportPNGBilan").addEventListener("click", exportPNGBilan);
+  $("btnExportPNGAudit").addEventListener("click", exportPNGAudit);
+  $("btnRestoreJSON").addEventListener("click", restoreJSONSpace);
+ } else if (section === "audit") {
+  var logs = appData.auditLog || [];
+  var html = '<strong style="color:var(--accent)">📜 Historique des Modifications Local</strong><br><small class="muted">Heure de dernière modification : '+(appData.lastModifiedAt ? new Date(appData.lastModifiedAt).toLocaleString("fr-FR") : "-")+'</small><div style="margin-top:10px;max-height:250px;overflow-y:auto">';
+  if (logs.length === 0) {
+   html += '<div class="empty">Aucune opération enregistrée.</div>';
+  } else {
+   html += logs.map(function(l){
+    return '<div style="font-size:12px;border-bottom:1px solid var(--line);padding:6px 0">' +
+     '<strong>'+esc(l.action)+'</strong> · <span class="muted">'+new Date(l.timestamp).toLocaleString("fr-FR")+'</span><br>' +
+     '<span>'+esc(l.details)+'</span>' +
+    '</div>';
+   }).join("");
+  }
+  html += '</div>';
+  box.innerHTML = html;
+ } else if (section === "settings") {
+  box.innerHTML = '<strong style="color:var(--accent)">⚙️ Paramètres & Informations</strong>' +
+   '<p class="hint" style="margin-top:8px">Stockage 100% local sur cet appareil. Aucune transmission serveur.</p>' +
+   '<button id="btnClearSpace" class="danger block" style="margin-top:12px">⚠️ Effacer toutes les données de mon espace</button>';
+
+  $("btnClearSpace").addEventListener("click", function(){
+   if (confirm("EFFACER TOUTES LES DONNÉES ? Assurez-vous d'avoir exporté une sauvegarde JSON !")) {
+    logAudit("SPACE_CLEAR", "Réinitialisation complète de l'espace");
+    saveSpace();
+    localStorage.removeItem(STORAGE_KEY_SPACE);
+    appData = null;
+    location.reload();
+   }
+  });
+ }
 }
 
-$("restore").addEventListener("click",function(){
- var f=$("file").files[0];
- if(!f){$("msg").textContent="Choisis d'abord un fichier JSON.";return}
- if(f.size>5242880){$("msg").textContent="Fichier trop volumineux (max 5 Mo).";return}
+function exportJSONSpace(){
+ var payload = JSON.parse(JSON.stringify(appData));
+ payload.exportedAt = nowISO();
+ var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+ var url = URL.createObjectURL(blob), a = document.createElement("a");
+ a.href = url; a.download = "AUREOR-Sauvegarde-"+appData.username.replace(/[^a-zA-Z0-9]/g,"_")+"-"+today()+".json";
+ document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+ logAudit("EXPORT_JSON", "Export sauvegarde JSON");
+ toast("Sauvegarde JSON exportée !");
+}
+
+function restoreJSONSpace(){
+ var f = $("fileRestore").files[0];
+ if (!f) { $("msgRestore").textContent = "Choisis un fichier JSON."; return; }
  f.text().then(function(txt){
   var s;
-  try{s=JSON.parse(txt)}catch(e){$("msg").textContent="Fichier JSON invalide.";return}
-  if(!validateV1OrV2(s, function(err){$("msg").textContent=err})) return;
-
-  if(!confirm("Remplacer/restaurer les données depuis ce fichier ? Une sauvegarde automatique sera créée.")) return;
-
-  // Sauvegarde de sécurité
-  try { localStorage.setItem("aureor_backup_before_restore", JSON.stringify(db)); } catch(e){}
-
-  if (s.version === 2 && s.type === "all_profiles" && s.profiles) {
-   db.profiles = s.profiles;
-   if (s.activeProfile && db.profiles[s.activeProfile]) db.activeProfile = s.activeProfile;
-  } else if (s.version === 2 && s.type === "single_profile" && s.data) {
-   var name = s.profileName || db.activeProfile;
-   db.profiles[name] = s.data;
-   db.activeProfile = name;
-  } else if (Array.isArray(s.expenses) || Array.isArray(s.bills)) {
-   // Format V1 hérité
-   var p = getActiveData();
-   p.expenses = s.expenses || [];
-   p.budgets = s.budgets || {};
-   p.bills = s.bills || [];
-   p.clientBills = s.clientBills || [];
-   p.tasks = s.tasks || [];
-   p.marginTarget = s.marginTarget || 1000;
+  try { s = JSON.parse(txt); } catch(e) { $("msgRestore").textContent = "Fichier JSON invalide."; return; }
+  if (!s || typeof s !== "object" || !Array.isArray(s.expenses)) {
+   $("msgRestore").textContent = "Structure JSON incompatible.";
+   return;
   }
-  saveDB();
+  if (!confirm("Restaurer et remplacer les données actuelles ? Une copie de sécurité sera conservée.")) return;
+
+  try { localStorage.setItem("aureor_backup_before_restore", JSON.stringify(appData)); } catch(e){}
+
+  appData = s;
+  logAudit("RESTORE_JSON", "Restauration effectuée");
+  saveSpace();
   render();
-  $("msg").textContent="Données restaurées avec succès.";
-  toast("Restauration réussie !");
+  $("msgRestore").textContent = "Restauration réussie !";
+  toast("Données restaurées !");
  });
+}
+
+// EXPORTS PNG VISUELS DÉTAILLÉS
+function exportPNGProfile(){
+ var canvas = $("canvasExport");
+ var ctx = canvas.getContext("2d");
+ var width = 600, height = 450;
+ canvas.width = width * 2; canvas.height = height * 2;
+ ctx.scale(2, 2);
+ ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
+
+ drawAureorHeader(ctx, width, 100, "FICHE DE PROFIL OFFICIELLE");
+
+ ctx.fillStyle = "#222222"; ctx.textAlign = "left";
+ ctx.font = "bold 16px system-ui, sans-serif";
+ ctx.fillText("Nom de l'Espace / Profil :", 40, 140);
+ ctx.fillStyle = "#B08D35"; ctx.font = "bold 20px system-ui, sans-serif";
+ ctx.fillText(appData.username, 260, 140);
+
+ ctx.fillStyle = "#222222"; ctx.font = "14px system-ui, sans-serif";
+ var rows = [
+  { label: "Date de création :", value: appData.createdAt ? new Date(appData.createdAt).toLocaleDateString("fr-FR") : "-" },
+  { label: "Dernière modification :", value: appData.lastModifiedAt ? new Date(appData.lastModifiedAt).toLocaleString("fr-FR") : "-" },
+  { label: "Sécurité PIN :", value: appData.pin ? "Actif (🔒 Local)" : "Désactivé" },
+  { label: "Total Dépenses :", value: appData.expenses.length + " enregistrées (" + money(appData.expenses.reduce(function(s,x){return s+x.amount},0)) + ")" },
+  { label: "Total Prestations Clients :", value: appData.clientBills.length + " dossiers (" + money(appData.clientBills.reduce(function(s,x){return s+x.amount},0)) + ")" },
+  { label: "Projets Actifs :", value: (appData.projects||[]).length + " projet(s)" }
+ ];
+
+ var y = 180;
+ rows.forEach(function(r){
+  ctx.font = "bold 14px system-ui, sans-serif"; ctx.fillText(r.label, 40, y);
+  ctx.font = "14px system-ui, sans-serif"; ctx.fillText(r.value, 260, y);
+  y += 28;
+ });
+
+ ctx.strokeStyle = "#B08D35"; ctx.lineWidth = 1;
+ ctx.beginPath(); ctx.moveTo(40, y + 10); ctx.lineTo(width - 40, y + 10); ctx.stroke();
+
+ ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
+ ctx.fillText("Document visuel généré le : " + new Date().toLocaleString("fr-FR"), width / 2, height - 20);
+
+ downloadPNG(canvas, "AUREOR-Fiche-Profil-"+today()+".png");
+ toast("PNG Fiche Profil généré !");
+}
+
+function exportPNGBilan(){
+ var canvas = $("canvasExport");
+ var ctx = canvas.getContext("2d");
+ var width = 600, height = 520;
+ canvas.width = width * 2; canvas.height = height * 2;
+ ctx.scale(2, 2);
+ ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
+
+ drawAureorHeader(ctx, width, 100, "BILAN FINANCIER GLOBAL");
+
+ var allExpenses = appData.expenses.reduce(function(s,x){return s+x.amount},0);
+ var allBills = appData.bills.reduce(function(s,x){return s+x.amount},0);
+ var totalCharges = allExpenses + allBills;
+ var caFacture = appData.clientBills.reduce(function(s,x){return s+x.amount},0);
+ var caEncaisse = appData.clientBills.reduce(function(s,x){return s+getClientTotalEncaisse(x)},0);
+ var netProfit = caEncaisse - totalCharges;
+
+ ctx.fillStyle = "#222222"; ctx.textAlign = "left";
+ var rows = [
+  { label: "Chiffre d'Affaires Facturé :", value: money(caFacture) },
+  { label: "Total Réellement Encaissé :", value: money(caEncaisse) },
+  { label: "Dépenses Internes :", value: money(allExpenses) },
+  { label: "Charges & Factures :", value: money(allBills) },
+  { label: "Total des Charges :", value: money(totalCharges) },
+  { label: "BÉNÉFICE NET RÉEL :", value: money(netProfit) },
+  { label: "Objectif Marge Actuel :", value: money(appData.marginTarget || 1000) }
+ ];
+
+ var y = 140;
+ rows.forEach(function(r, idx){
+  ctx.font = idx === 5 ? "bold 16px system-ui, sans-serif" : "14px system-ui, sans-serif";
+  ctx.fillStyle = idx === 5 ? (netProfit < 0 ? "#f87171" : "#B08D35") : "#222222";
+  ctx.fillText(r.label, 40, y);
+  ctx.textAlign = "right";
+  ctx.fillText(r.value, width - 40, y);
+  ctx.textAlign = "left";
+  y += 32;
+ });
+
+ ctx.strokeStyle = "#B08D35"; ctx.lineWidth = 1;
+ ctx.beginPath(); ctx.moveTo(40, y + 10); ctx.lineTo(width - 40, y + 10); ctx.stroke();
+
+ ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
+ ctx.fillText("Généré le : " + new Date().toLocaleString("fr-FR") + " · Profil : " + appData.username, width / 2, height - 20);
+
+ downloadPNG(canvas, "AUREOR-Bilan-Financier-"+today()+".png");
+ toast("PNG Bilan généré !");
+}
+
+function exportPNGAudit(){
+ var canvas = $("canvasExport");
+ var ctx = canvas.getContext("2d");
+ var logs = (appData.auditLog || []).slice(0, 15);
+ var width = 600, height = 140 + Math.max(1, logs.length) * 30 + 40;
+ canvas.width = width * 2; canvas.height = height * 2;
+ ctx.scale(2, 2);
+ ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
+
+ drawAureorHeader(ctx, width, 100, "HISTORIQUE DES MODIFICATIONS");
+
+ var y = 130;
+ ctx.font = "bold 12px system-ui, sans-serif"; ctx.fillStyle = "#B08D35";
+ ctx.fillText("HORODATAGE", 40, y);
+ ctx.fillText("ACTION", 200, y);
+ ctx.fillText("DÉTAILS", 320, y);
+ y += 10;
+ ctx.strokeStyle = "#B08D35"; ctx.lineWidth = 1;
+ ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(width - 40, y); ctx.stroke();
+ y += 18;
+
+ ctx.font = "12px system-ui, sans-serif"; ctx.fillStyle = "#222222";
+ if (logs.length === 0) {
+  ctx.fillText("Aucune opération enregistrée.", 40, y);
+ } else {
+  logs.forEach(function(l){
+   ctx.fillText(new Date(l.timestamp).toLocaleDateString("fr-FR") + " " + new Date(l.timestamp).toLocaleTimeString("fr-FR").slice(0,5), 40, y);
+   ctx.fillText(l.action, 200, y);
+   var det = l.details; if(det.length > 25) det = det.substring(0,22) + "...";
+   ctx.fillText(det, 320, y);
+   y += 26;
+  });
+ }
+
+ ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
+ ctx.fillText("Généré le : " + new Date().toLocaleString("fr-FR"), width / 2, height - 15);
+
+ downloadPNG(canvas, "AUREOR-Historique-Modifications-"+today()+".png");
+ toast("PNG Historique généré !");
+}
+
+function exportBillAsPNG(bill){
+ var canvas=$("canvasExport");
+ var filename="AUREOR-Charge-"+bill.id+"-"+(bill.due||"").replace(/[-:]/g,"")+".png";
+ var ctx=canvas.getContext("2d");
+ canvas.width=600*2;canvas.height=450*2;ctx.scale(2,2);
+ ctx.fillStyle="#ffffff";ctx.fillRect(0,0,600,450);
+ drawAureorHeader(ctx,600,100,"FICHE CHARGE / FACTURE");
+ var cat=catOf(bill.category);
+ var lines=[
+  {label:"INTITULÉ :",value:bill.label},
+  {label:"MONTANT :",value:money(bill.amount)},
+  {label:"CATÉGORIE :",value:cat.label},
+  {label:"ÉCHÉANCE :",value:bill.due},
+  {label:"STATUT :",value:bill.paid?"Payée":"À payer"}
+ ];
+ var startY=140;
+ lines.forEach(function(line,i){
+  ctx.font=i===0?"bold 16px system-ui,sans-serif":"14px system-ui,sans-serif";
+  ctx.fillStyle=i===0?"#B08D35":"#222222";
+  ctx.textAlign="right";ctx.fillText(line.label,280,startY);
+  ctx.textAlign="left";ctx.fillText(line.value,300,startY);
+  startY+=30;
+ });
+ ctx.font="11px system-ui,sans-serif";ctx.fillStyle="#888888";ctx.textAlign="center";
+ ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR")+" · Profil : "+appData.username,300,420);
+ downloadPNG(canvas,filename);
+ toast("Export PNG lancé.");
+}
+
+function exportClientBillAsPNG(c){
+ var canvas=$("canvasExport");
+ var filename="AUREOR-Client-"+(c.clientName||"X").replace(/[^a-zA-Z0-9]/g,"_")+"-"+c.id+".png";
+ var ctx=canvas.getContext("2d");
+ canvas.width=600*2;canvas.height=500*2;ctx.scale(2,2);
+ ctx.fillStyle="#ffffff";ctx.fillRect(0,0,600,500);
+ drawAureorHeader(ctx,600,100,"FICHE CLIENT & PRESTATION");
+ var enc=getClientTotalEncaisse(c);
+ var solde=Math.max(0,c.amount-enc);
+ var st=solde===0?"Payé":(enc>0?"Partiellement payé":"En attente");
+ var lines=[
+  {label:"CLIENT :",value:c.clientName||"Non spécifié"},
+  {label:"PRESTATION :",value:c.label},
+  {label:"MONTANT FACTURÉ :",value:money(c.amount)},
+  {label:"TOTAL ENCAISSÉ :",value:money(enc)},
+  {label:"SOLDE RESTANT :",value:money(solde)},
+  {label:"STATUT :",value:st},
+  {label:"DATE FACTURE :",value:c.date}
+ ];
+ var startY=140;
+ lines.forEach(function(line,i){
+  ctx.font=i===0?"bold 16px system-ui,sans-serif":"14px system-ui,sans-serif";
+  ctx.fillStyle=i===0?"#B08D35":"#222222";
+  ctx.textAlign="right";ctx.fillText(line.label,280,startY);
+  ctx.textAlign="left";ctx.fillText(line.value,300,startY);
+  startY+=28;
+ });
+ ctx.font="11px system-ui,sans-serif";ctx.fillStyle="#888888";ctx.textAlign="center";
+ ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR")+" · Profil : "+appData.username,300,470);
+ downloadPNG(canvas,filename);
+ toast("Export PNG client lancé.");
+}
+
+$("exportAllBills").addEventListener("click",function(){
+ toast("Export groupé PNG disponible dans chaque fiche.");
 });
 
-$("clear").addEventListener("click",function(){
- if(!confirm("Effacer toutes les données du profil "+db.activeProfile+" ?"))return;
- db.profiles[db.activeProfile] = emptyProfileData();
- saveDB();render();toast("Données effacées.");
-});
-
-$("exportAllBills").addEventListener("click",exportAllBillsAsPNG);
-$("exportAllClientBills").addEventListener("click",exportAllClientBillsAsPNG);
+$("exportAllClientBills").addEventListener("click",exportPNGBilan);
 
 document.addEventListener("click",function(e){
  var b=e.target.closest("[data-export-client-bill]");
  if(b&&b.dataset.exportClientBill){
-  var billId=b.dataset.exportClientBill;
-  var p = getActiveData();
-  var c = p.clientBills.find(function(x){return x.id===billId});
+  var c = appData.clientBills.find(function(x){return x.id===b.dataset.exportClientBill});
   if(c) exportClientBillAsPNG(c);
  }
 });
@@ -1572,133 +1570,89 @@ document.addEventListener("click",function(e){
 document.addEventListener("click",function(e){
  var b=e.target.closest("[data-export-bill]");
  if(b&&b.dataset.exportBill){
-  var billId=b.dataset.exportBill;
-  var p = getActiveData();
-  var bill = p.bills.find(function(x){return x.id===billId});
+  var bill = appData.bills.find(function(x){return x.id===b.dataset.exportBill});
   if(bill) exportBillAsPNG(bill);
  }
 });
 
-// GESTION PROFILS & GATE AUTHENTIFICATION
-var pendingProfileSwitch = null;
-
-function renderGateChoices(){
- var choices = $("gateProfilesChoices");
- var keys = Object.keys(db.profiles);
- choices.innerHTML = keys.map(function(k){
-  var hasPin = !!db.profiles[k].pin;
-  return '<button type="button" data-user-select="'+escAttr(k)+'"><span>'+esc(k.toUpperCase())+'</span><span>'+(hasPin?'🔒 PIN':'▶')+'</span></button>';
- }).join("");
-}
-
+// ÉCRAN AUTHENTIFICATION & CREATION DE L'ESPACE LOCAL
 function showUserGate(){
- renderGateChoices();
- $("gateTitle").textContent = "Qui pilote l'application aujourd'hui ?";
- $("gateProfilesChoices").style.display = "flex";
- $("gatePinForm").style.display = "none";
  $("userGate").classList.add("show");
-}
-
-$("gateProfilesChoices").addEventListener("click", function(e){
- var b = e.target.closest("[data-user-select]"); if(!b) return;
- var targetName = b.dataset.userSelect;
- var targetProfile = db.profiles[targetName];
-
- if (targetProfile && targetProfile.pin) {
-  pendingProfileSwitch = targetName;
-  $("gateProfilesChoices").style.display = "none";
-  $("gatePinPrompt").textContent = "Code PIN pour " + targetName;
-  $("gatePinInput").value = "";
-  setErr("gatePinErr");
-  $("gatePinForm").style.display = "block";
-  $("gatePinInput").focus();
+ if (!appData || !appData.username) {
+  // Première ouverture : Formulaire Créer mon espace
+  $("gateTitle").textContent = "Création de votre espace local sécurisé";
+  $("createSpaceForm").style.display = "block";
+  $("loginPinForm").style.display = "none";
  } else {
-  // Pas de PIN, connexion directe
-  db.activeProfile = targetName;
-  saveDB();
-  $("userGate").classList.remove("show");
-  render();
-  toast("Bonjour " + targetName + " !");
- }
-});
-
-$("gatePinCancel").addEventListener("click", function(){
- $("gatePinForm").style.display = "none";
- $("gateProfilesChoices").style.display = "flex";
- pendingProfileSwitch = null;
-});
-
-function submitGatePin(){
- if (!pendingProfileSwitch) return;
- var pinInput = $("gatePinInput").value;
- var targetProfile = db.profiles[pendingProfileSwitch];
- if (targetProfile && targetProfile.pin === pinInput) {
-  db.activeProfile = pendingProfileSwitch;
-  saveDB();
-  $("userGate").classList.remove("show");
-  pendingProfileSwitch = null;
-  render();
-  toast("Connexion réussie !");
- } else {
-  setErr("gatePinErr", "Code PIN incorrect.", true);
-  $("gatePinInput").value = "";
-  $("gatePinInput").focus();
+  // Ouvertures suivantes : Formulaire Déverrouiller PIN
+  $("gateTitle").textContent = "Votre espace financier local";
+  $("createSpaceForm").style.display = "none";
+  $("loginUserName").textContent = appData.username;
+  $("loginPinForm").style.display = "block";
+  $("loginPinInput").value = "";
+  setErr("err-loginPin");
+  $("loginPinInput").focus();
  }
 }
 
-$("gatePinSubmit").addEventListener("click", submitGatePin);
-$("gatePinInput").addEventListener("keypress", function(e){
- if (e.key === "Enter") submitGatePin();
-});
-
-$("switchUser").addEventListener("click", function(){
- saveDB();
- showUserGate();
-});
-
-$("addProfileBtn").addEventListener("click", function(){
- var name = $("newProfileName").value.trim();
- if (!name) { toast("Saisis un nom de profil."); return; }
- if (db.profiles[name]) { toast("Ce profil existe déjà."); return; }
- db.profiles[name] = emptyProfileData();
- saveDB();
- $("newProfileName").value = "";
- render();
- toast("Profil " + name + " créé !");
-});
-
-// GESTION PIN
-$("changePinBtn").addEventListener("click", function(){
- var p = getActiveData();
- $("newPin").value = p.pin || "";
- setErr("err-newPin");
- $("pinModal").style.display = "flex";
- $("newPin").focus();
-});
-
-$("closePinModal").addEventListener("click", function(){ $("pinModal").style.display = "none"; });
-
-$("changePinForm").addEventListener("submit", function(e){
+$("createSpaceForm").addEventListener("submit", function(e){
  e.preventDefault();
- var pinVal = $("newPin").value.trim();
- var p = getActiveData();
- p.pin = pinVal;
- saveDB();
- $("pinModal").style.display = "none";
+ setErr("err-createUsername");setErr("err-createPin");setErr("err-confirmPin");
+ var name = $("createUsername").value.trim();
+ var pin = $("createPin").value.trim();
+ var cPin = $("confirmPin").value.trim();
+ var ok = true;
+ if (!name) { setErr("err-createUsername", "Nom requis.", true); ok = false; }
+ if (pin !== cPin) { setErr("err-confirmPin", "Les deux codes PIN ne correspondent pas.", true); ok = false; }
+ if (!ok) return;
+
+ appData = emptySpaceData(name, pin);
+ logAudit("SPACE_CREATE", "Création initiale de l'espace local pour " + name);
+ saveSpace();
+ isUnlocked = true;
+ $("userGate").classList.remove("show");
  render();
- toast(pinVal ? "Code PIN enregistré !" : "Code PIN désactivé.");
+ toast("Espace " + name + " créé avec succès !");
 });
 
-// DÉMARRAGE
-if (!db.activeProfile || !db.profiles[db.activeProfile]) {
+$("loginPinForm").addEventListener("submit", function(e){
+ e.preventDefault();
+ setErr("err-loginPin");
+ var pinInput = $("loginPinInput").value.trim();
+ if (appData && appData.pin && appData.pin !== pinInput) {
+  setErr("err-loginPin", "Code PIN incorrect.", true);
+  $("loginPinInput").value = "";
+  $("loginPinInput").focus();
+  return;
+ }
+ isUnlocked = true;
+ $("userGate").classList.remove("show");
+ render();
+ toast("Ravi de vous revoir !");
+});
+
+// BOUTON PROFIL HEADER & MODAL PROFIL SLIDE
+$("profileHeaderBtn").addEventListener("click", function(){
+ $("profileModal").classList.add("show");
+ renderProfileSubContent("profile");
+});
+
+$("closeProfileModal").addEventListener("click", function(){
+ $("profileModal").classList.remove("show");
+});
+
+$("btnSectionProfile").addEventListener("click", function(){ renderProfileSubContent("profile"); });
+$("btnSectionExport").addEventListener("click", function(){ renderProfileSubContent("export"); });
+$("btnSectionAudit").addEventListener("click", function(){ renderProfileSubContent("audit"); });
+$("btnSectionSettings").addEventListener("click", function(){ renderProfileSubContent("settings"); });
+$("btnLockLogout").addEventListener("click", function(){ lockSession(); });
+
+// DÉMARRAGE INITIAL
+if (!appData || !appData.username || (appData.pin && !isUnlocked)) {
  showUserGate();
 } else {
- var curP = db.profiles[db.activeProfile];
- if (curP && curP.pin) {
-  showUserGate();
- } else {
-  render();
- }
+ isUnlocked = true;
+ render();
 }
 
 })();
