@@ -44,18 +44,18 @@ button.danger{color:var(--danger);border-color:#5b2a33;background:#241420}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
 .chip{display:inline-block;font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);margin:2px}
 .chip.sel{color:#092219;border-color:transparent;font-weight:600}
-nav{position:fixed;bottom:0;left:0;right:0;background:#0D0D0D;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
-nav button{background:none;border:0;color:var(--muted);font-size:10px;padding:8px 2px;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden;white-space:nowrap}
-nav button .ico{font-size:19px;line-height:1}
+nav{position:fixed;bottom:0;left:0;right:0;background:#0D0D0D;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(7,1fr);padding-bottom:env(safe-area-inset-bottom);z-index:20}
+nav button{background:none;border:0;color:var(--muted);font-size:9px;padding:8px 1px;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden;white-space:nowrap}
+nav button .ico{font-size:18px;line-height:1}
 nav button.active{color:var(--accent);font-weight:600}
-#userGate{position:fixed;inset:0;background:#0D0D0D;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+#userGate{position:fixed;inset:0;background:#0D0D0D;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto}
 #userGate.show{display:flex}
-#userGate h2{color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:15px;margin:0 0 10px}
-#userGate p{color:#f4f7fb;font-size:19px;margin:0 0 30px}
-#userGate .choices{display:flex;gap:14px;width:100%;max-width:420px}
-#userGate .choices button{flex:1;padding:24px 10px;font-size:19px;font-weight:bold;letter-spacing:0.08em;background:#142033;border:1px solid #B08D35;color:#B08D35;border-radius:14px}
+#userGate h2{color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:18px;margin:0 0 10px}
+#userGate p{color:#f4f7fb;font-size:16px;margin:0 0 20px}
+#userGate .choices{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px}
+#userGate .choices button{padding:16px 12px;font-size:16px;font-weight:bold;letter-spacing:0.05em;background:#142033;border:1px solid #B08D35;color:#B08D35;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
 #userGate .choices button:active{background:#B08D35;color:#0D0D0D}
-.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#0d1526;border:1px solid var(--line);color:var(--text);font-size:13px;padding:9px 16px;border-radius:99px;z-index:20;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#0d1526;border:1px solid var(--line);color:var(--text);font-size:13px;padding:9px 16px;border-radius:99px;z-index:30;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
 .toast.show{opacity:1}
 .done{text-decoration:line-through;color:var(--muted)}
 footer{font-size:11px;color:var(--muted);text-align:center;padding:6px 0 14px}
@@ -64,6 +64,10 @@ input[type=date],input[type=month]{-webkit-appearance:none;appearance:none;backg
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4px;cursor:pointer}
 input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4px;cursor:pointer}
 @media(max-width:520px){.row input[type=date],.row input[type=month]{min-width:0}}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:bold}
+.badge-pending{background:#2a2418;color:var(--amber);border:1px solid var(--amber)}
+.badge-partial{background:#172554;color:#60a5fa;border:1px solid #3b82f6}
+.badge-paid{background:#0f2418;color:var(--green);border:1px solid var(--green)}
 </style>
 </head>
 <body>
@@ -74,43 +78,45 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </header>
 
 <main>
+<!-- ACCUEIL -->
 <section id="p-home" class="page active">
 <div class="card row">
-<div style="flex:1"><small class="muted">Mois affiche</small><div id="monthLabel"></div></div>
+<div style="flex:1"><small class="muted">Mois affiché</small><div id="monthLabel"></div></div>
 <input type="month" id="month" aria-label="Choisir le mois" style="max-width:160px">
 </div>
 <div class="grid">
-<div class="card stat"><small>Depenses internes</small><strong id="spent">0 €</strong></div>
+<div class="card stat"><small>Dépenses internes</small><strong id="spent">0 €</strong></div>
 <div class="card stat"><small>Budget restant</small><strong id="remaining">—</strong></div>
-<div class="card stat"><small>Charges a payer</small><strong id="unpaid">0 €</strong></div>
-<div class="card stat"><small>CA clients</small><strong id="caHome">0 €</strong></div>
+<div class="card stat"><small>Charges à payer</small><strong id="unpaid">0 €</strong></div>
+<div class="card stat"><small>CA Encaissé (Mois)</small><strong id="caHome">0 €</strong></div>
 </div>
 <div class="card">
 <strong>Budget mensuel</strong>
 <label for="budget">Budget du mois (€)</label>
 <div class="row"><input id="budget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 800"><button id="saveBudget">OK</button></div>
 <div class="bar"><span id="progress" style="width:0;background:var(--accent)"></span></div>
-<small id="budgetHint" class="muted">Definis ton budget mensuel.</small>
+<small id="budgetHint" class="muted">Définis ton budget mensuel.</small>
 </div>
 <div class="card">
-<strong>Repartition par categorie</strong>
-<div id="chartCats" class="empty">Aucune depense ce mois-ci.</div>
+<strong>Répartition par catégorie</strong>
+<div id="chartCats" class="empty">Aucune dépense ce mois-ci.</div>
 </div>
 <div class="card">
-<strong>Tendance 12 mois</strong>
+<strong>Tendance 6 mois</strong>
 <div id="chartMonths"></div>
 </div>
 <div class="card">
-<strong>Dernieres depenses</strong>
-<div id="recent" class="empty">Aucune depense.</div>
+<strong>Dernières dépenses</strong>
+<div id="recent" class="empty">Aucune dépense.</div>
 </div>
 </section>
 
+<!-- DÉPENSES -->
 <section id="p-expenses" class="page">
 <div class="card">
-<strong>Ajouter une depense</strong>
+<strong>Ajouter une dépense</strong>
 <form id="expenseForm" novalidate>
-<label for="ename">Intitule</label><input id="ename" maxlength="100" placeholder="Ex. Courses">
+<label for="ename">Intitulé</label><input id="ename" maxlength="100" placeholder="Ex. Courses">
 <div class="err" id="err-ename"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
 <div><label for="eamount">Montant (€)</label><input id="eamount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="12,50"></div>
@@ -118,121 +124,123 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </div>
 <div class="err" id="err-amount"></div>
 <div class="err" id="err-date"></div>
-<label>Categorie</label><div id="ecatWrap"></div>
-<label for="eproj">Projet (facultatif)</label><select id="eproj"></select>
-<div id="eactBox" style="display:none;margin-top:4px;border:1px solid var(--line);border-radius:12px;padding:12px;background:#101b2c">
-<div class="row"><input type="checkbox" id="eactCheck" class="check"><label for="eactCheck" style="margin:0;color:var(--text);font-size:14px">C'est aussi une activité (revenu)</label></div>
-<label for="eactname">Nom de l'activité</label><input id="eactname" maxlength="100" placeholder="Pré-rempli depuis l'intitulé">
-<label for="eactamount">Prix encaissé (€)</label><input id="eactamount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="Pré-rempli depuis le montant">
-<div class="err" id="err-eactamount"></div>
-<small class="muted">Ajuste le prix si l'argent encaissé diffère du montant de la dépense.</small>
-</div>
-<button class="primary block">Ajouter la depense</button>
+<label for="eproject">Projet associé (facultatif)</label>
+<select id="eproject"><option value="">-- Aucun projet --</option></select>
+<label>Catégorie</label><div id="ecatWrap"></div>
+<button class="primary block">Ajouter la dépense</button>
 </form>
 </div>
-<div class="card"><strong>Historique</strong><div id="elist"></div></div>
+<div class="card"><strong>Historique des dépenses</strong><div id="elist"></div></div>
 <div class="card"><button id="openBills" class="block">🧾 Voir mes charges et factures</button></div>
 </section>
 
+<!-- CHARGES & FACTURES -->
 <section id="p-bills" class="page">
 <div class="card"><button id="closeBills" class="block">← Retour aux dépenses</button></div>
 <div class="card stat"><small>Charges à payer</small><strong id="unpaid2" style="font-size:22px;color:var(--amber)">0 €</strong></div>
 <div class="card">
-<button id="exportAllBills" class="block" style="margin-bottom:12px">📥 Exporter toutes les factures (PNG)</button>
-<strong>Ajouter une charge</strong>
+<button id="exportAllBills" class="block" style="margin-bottom:12px">📥 Exporter toutes les charges (PNG)</button>
+<strong>Ajouter une charge / facture</strong>
 <form id="billForm" novalidate>
-<label for="bname">Intitule</label><input id="bname" maxlength="100" placeholder="Ex. Electricite">
+<label for="bname">Intitulé</label><input id="bname" maxlength="100" placeholder="Ex. Électricité">
 <div class="err" id="err-bname"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
 <div><label for="bamount">Montant (€)</label><input id="bamount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
-<div><label for="bdue">Echeance</label><input id="bdue" type="date"></div>
+<div><label for="bdue">Échéance</label><input id="bdue" type="date"></div>
 </div>
 <div class="err" id="err-bamount"></div>
 <div class="err" id="err-bdue"></div>
-<label for="bcat">Categorie</label>
+<label for="bcat">Catégorie</label>
 <select id="bcat"></select>
-<label for="bproj">Projet (facultatif)</label><select id="bproj"></select>
 <button class="primary block">Ajouter la facture</button>
 </form>
 </div>
-<div class="card"><strong>Mes charges</strong><div id="blist"></div></div>
+<div class="card"><strong>Mes charges à payer</strong><div id="blist"></div></div>
 </section>
 
+<!-- CLIENTS & SUIVI CA -->
 <section id="p-clients" class="page">
+<div class="card hint" style="border-color:var(--accent)">
+<strong>💡 Gestion du CA & Paiements Clients</strong>
+<p style="margin:4px 0 0;font-size:12px">Cette section suit le Chiffre d'Affaires (CA) facturé, les encaissements réels (paiements partiels) et les créances restantes sans aucun doublon.</p>
+</div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-<div class="card stat"><small>CA total</small><strong id="caTotal">0 €</strong></div>
-<div class="card stat"><small>Encaissements</small><strong id="clientPaidTotal">0 €</strong></div>
-<div class="card stat"><small>Reste à encaisser</small><strong id="clientUnpaidTotal">0 €</strong></div>
-<div class="card stat"><small>Récapitulatifs</small><strong id="clientCount">0</strong></div>
+<div class="card stat"><small>CA Total Facturé</small><strong id="caTotal">0 €</strong></div>
+<div class="card stat"><small>Total Encaissé</small><strong id="clientPaidTotal" style="color:var(--green)">0 €</strong></div>
+<div class="card stat"><small>Solde / Créances</small><strong id="clientUnpaidTotal" style="color:var(--amber)">0 €</strong></div>
+<div class="card stat"><small>Dossiers Clients</small><strong id="clientCount">0</strong></div>
 </div>
 <div class="card">
-<strong>Tableau clients</strong>
-<div id="ctable" style="overflow-x:auto;margin-top:10px"></div>
-</div>
-<div class="card">
-<button id="exportAllClientBills" class="block primary" style="margin-bottom:12px">📥 Exporter tous les récapitulatifs (PNG)</button>
-<strong>Ajouter un récapitulatif client</strong>
+<button id="exportAllClientBills" class="block primary" style="margin-bottom:12px">📥 Exporter le suivi clients (PNG)</button>
+<strong>Ajouter un dossier / facture client</strong>
 <form id="clientBillForm" novalidate>
-<label for="cname">Intitulé</label><input id="cname" maxlength="100" placeholder="Ex. Séjour Courchevel">
+<label for="cname">Intitulé de la prestation</label><input id="cname" maxlength="100" placeholder="Ex. Prestation Séjour Courchevel">
 <div class="err" id="err-cname"></div>
-<label for="cclient">Nom du client / payeur (facultatif)</label><input id="cclient" maxlength="100" placeholder="Ex. Jean Dupont">
+<label for="cclient">Nom du client / payeur</label><input id="cclient" maxlength="100" placeholder="Ex. Jean Dupont">
 <div class="err" id="err-cclient"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="camount">Montant (€)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
-<div><label for="cdate">Date</label><input id="cdate" type="date"></div>
+<div><label for="camount">Montant Total Facturé (€)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
+<div><label for="cdate">Date de facturation</label><input id="cdate" type="date"></div>
 </div>
 <div class="err" id="err-camount"></div>
 <div class="err" id="err-cdate"></div>
-<label for="cproj">Projet (facultatif)</label><select id="cproj"></select>
-<div class="row" style="margin-top:8px"><label for="cpaid" style="margin:0">Payé</label><input id="cpaid" type="checkbox" style="margin-left:8px"></div>
-<button class="primary block">Ajouter le récapitulatif</button>
+<label for="cproject">Projet associé (facultatif)</label>
+<select id="cproject"><option value="">-- Aucun projet --</option></select>
+<button class="primary block">Créer le dossier client</button>
 </form>
 </div>
-<div class="card"><strong>Récapitulatifs clients</strong><div id="clist"></div></div>
+<div class="card"><strong>Dossiers Clients & Suivi des Paiements</strong><div id="clist"></div></div>
+</section>
+
+<!-- PROJETS & ENVELOPPES -->
+<section id="p-projects" class="page">
+<div class="card">
+<strong>Créer / Modifier un projet</strong>
+<form id="projectForm" novalidate>
+<label for="pname">Nom du projet</label><input id="pname" maxlength="100" placeholder="Ex. Courchevel">
+<div class="err" id="err-pname"></div>
+<div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
+<div><label for="penvelope">Enveloppe budgétaire (€)</label><input id="penvelope" type="number" min="0" step=".01" inputmode="decimal" placeholder="15000"></div>
+<div><label for="palert">Seuil alerte dépense (%)</label><input id="palert" type="number" min="1" max="100" placeholder="80" value="80"></div>
+</div>
+<div class="err" id="err-penvelope"></div>
+<button class="primary block">Enregistrer le projet</button>
+</form>
+</div>
+<div class="card">
+<strong>Comparatif & Synthèse des Projets</strong>
+<div id="projectsList"></div>
+</div>
+</section>
+
+<!-- ACTIVITÉS & HISTORIQUE -->
+<section id="p-activities" class="page">
 <div class="card">
 <strong>Saisie rapide d'activité</strong>
 <form id="activityForm" novalidate>
-<label for="aname">Nom de l'activité</label><input id="aname" maxlength="100" placeholder="Ex. Forfait ski">
-<div class="err" id="err-aname"></div>
+<label for="actName">Intitulé de l'activité</label><input id="actName" maxlength="180" placeholder="Ex. Réunion préparation Courchevel">
+<div class="err" id="err-actName"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="aamount">Prix (€)</label><input id="aamount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
-<div><label for="adate">Date</label><input id="adate" type="date"></div>
+<div><label for="actDate">Date</label><input id="actDate" type="date"></div>
+<div><label for="actProject">Projet (facultatif)</label><select id="actProject"><option value="">-- Aucun --</option></select></div>
 </div>
-<label for="aproj">Projet (facultatif)</label><select id="aproj"></select>
-<label for="anote">Note (facultatif)</label><input id="anote" maxlength="200">
-<div class="err" id="err-aamount"></div>
-<div class="err" id="err-adate"></div>
-<button class="primary block">Enregistrer et continuer</button>
+<label for="actNote">Note / Détails (facultatif)</label>
+<textarea id="actNote" rows="2" maxlength="300" placeholder="Ex. Validation du devis avec le client"></textarea>
+<button class="primary block">⚡ Enregistrer l'activité</button>
 </form>
-<div id="alist" style="margin-top:8px"></div>
-<strong style="display:block;margin-top:14px">Historique activités — 12 derniers mois</strong>
-<div id="acthist" style="overflow-x:auto"></div>
 </div>
-</section>
-
-<section id="p-projects" class="page">
 <div class="card">
-<strong>Nouveau projet</strong>
-<form id="projectForm" novalidate>
-<label for="pjname">Nom du projet</label><input id="pjname" maxlength="60" placeholder="Ex. Courchevel">
-<div class="err" id="err-pjname"></div>
-<div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="pjenvelope">Enveloppe budget (€)</label><input id="pjenvelope" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 15000"></div>
-<div><label for="pjalert">Alerte si % consommé atteint</label><input id="pjalert" type="number" min="1" max="200" step="1" inputmode="numeric" value="100"></div>
+<strong>Historique des activités (12 derniers mois)</strong>
+<div id="activitiesHistory"></div>
 </div>
-<div class="err" id="err-pjenvelope"></div>
-<button class="primary block">Créer le projet</button>
-</form>
-</div>
-<div class="card"><strong>Mes projets</strong><div id="pjlist"></div></div>
-<div class="card"><strong>Comparaison des projets</strong><div id="pjtable" style="overflow-x:auto;margin-top:10px"></div></div>
 </section>
 
+<!-- BILAN & COMPTABILITÉ -->
 <section id="p-bilan" class="page">
 <div class="card">
 <strong>Bilan du mois</strong>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
-<div class="stat"><small>CA du mois</small><strong id="bilanMCA">0 €</strong></div>
+<div class="stat"><small>CA Encaissé Mois</small><strong id="bilanMCA">0 €</strong></div>
 <div class="stat"><small>Charges du mois</small><strong id="bilanMCharges">0 €</strong></div>
 <div class="stat"><small>Bénéfice du mois</small><strong id="bilanMNet">0 €</strong></div>
 </div>
@@ -242,10 +250,10 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <div class="card">
 <strong>Bilan global (tout l’historique)</strong>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
-<div class="stat"><small>Chiffre d'affaires</small><strong id="bilanCA">0 €</strong></div>
-<div class="stat"><small>Charges internes</small><strong id="bilanCharges">0 €</strong></div>
-<div class="stat"><small>Bénéfice net</small><strong id="bilanNet">0 €</strong></div>
-<div class="stat"><small>Objectif marge</small><strong id="bilanTarget">1 000 €</strong></div>
+<div class="stat"><small>CA Total Facturé</small><strong id="bilanCA">0 €</strong></div>
+<div class="stat"><small>Total Encaissé</small><strong id="bilanCAEncaisse" style="color:var(--green)">0 €</strong></div>
+<div class="stat"><small>Charges Globales</small><strong id="bilanCharges">0 €</strong></div>
+<div class="stat"><small>Bénéfice Net Réel</small><strong id="bilanNet">0 €</strong></div>
 </div>
 <div id="bilanAlert" style="margin-top:16px"></div>
 <div class="bar" style="margin-top:16px"><span id="bilanProgress" style="width:0;background:#B08D35"></span></div>
@@ -254,7 +262,7 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <div class="row"><input id="marginTarget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 1000" value="1000"><button id="saveTarget" class="primary">OK</button></div>
 </div>
 <div class="card">
-<strong>Bénéfice sur 12 mois</strong>
+<strong>Bénéfice sur 6 mois</strong>
 <div id="chartBilan"></div>
 </div>
 <div class="card">
@@ -267,7 +275,21 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </div>
 </section>
 
+<!-- MENU & PARAMÈTRES -->
 <section id="p-menu" class="page">
+<div class="card">
+<strong>Profil courant & Sécurité PIN</strong>
+<p class="hint">Connecté en tant que : <strong id="menuUserLabel" style="color:var(--accent)">-</strong></p>
+<button id="changePinBtn" class="block">🔒 DÉFINIR / MODIFIER MON CODE PIN</button>
+<button id="switchUser" class="block primary" style="margin-top:10px">👤 CHANGER D'UTILISATEUR</button>
+</div>
+
+<div class="card">
+<strong>Gestion des Profils</strong>
+<div class="row"><input id="newProfileName" maxlength="30" placeholder="Nom du nouveau profil"><button id="addProfileBtn" class="primary">Créer</button></div>
+<div id="profilesList" style="margin-top:12px"></div>
+</div>
+
 <div class="card">
 <strong>Tâches</strong>
 <div class="card" style="margin-top:0">
@@ -279,65 +301,99 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </div>
 <div class="card"><strong>Ma liste — <span id="pending2">0</span> à faire</strong><div id="tlist"></div></div>
 </div>
+
 <div class="card">
-<strong>Sauvegarde de mes données</strong>
-<p class="hint">Les données sont enregistrées dans le navigateur de cet appareil (elles ne se synchronisent pas entre appareils). Exporte régulièrement une copie JSON.</p>
-<p class="hint" style="margin-top:8px">Note sécurité : le code PIN identifie les profils mais ne chiffre pas les données. Toute personne ayant accès à cet appareil peut lire le stockage local. Ne stocke pas d'informations bancaires sensibles.</p>
-<button id="export" class="primary block">Exporter une sauvegarde (fichier JSON)</button>
-<button id="exportAllP" class="block">Exporter tous les profils (JSON)</button>
-<label for="file" style="margin-top:16px">Restaurer depuis un fichier</label>
+<strong>Sauvegarde & Restauration (JSON versionné)</strong>
+<p class="hint">Les données sont stockées en local dans le navigateur. Exporte régulièrement une sauvegarde JSON pour sécuriser tes données.</p>
+<div class="row" style="margin-bottom:8px">
+<button id="exportCurrentProfile" class="primary" style="flex:1">Exporter Profil Actuel</button>
+<button id="exportAllProfiles" style="flex:1">Exporter TOUS les Profils</button>
+</div>
+<label for="file" style="margin-top:12px">Restaurer depuis un fichier JSON</label>
 <input id="file" type="file" accept=".json,application/json">
-<button id="restore" class="block">Restaurer la sauvegarde</button>
+<button id="restore" class="block" style="margin-top:8px">Restaurer la sauvegarde</button>
 <p id="msg" class="hint" role="status"></p>
 </div>
+
+<div class="card" style="border-color:var(--amber)">
+<strong>⚠️ Transparence Sécurité LocalStorage</strong>
+<p class="hint">Un code PIN protège la session contre l'accès direct, mais n'est pas un chiffrement bancaire. Sur iOS/Safari, les données localstorage peuvent être purgées après 7 jours d'inactivité si l'application n'est pas ajoutée à l'écran d'accueil. Réalise un export JSON régulier.</p>
+</div>
+
 <div class="card">
 <strong>Réinitialisation</strong>
-<button id="clear" class="danger block">Effacer toutes les données</button>
-</div>
-<div class="card">
-<strong>Profil</strong>
-<button id="switchUser" class="block">Changer d’utilisateur</button>
+<button id="clear" class="danger block">Effacer toutes les données du profil actif</button>
 </div>
 </section>
-
 </main>
 
+<!-- USER GATE / CONNEXION & AUTHENTIFICATION -->
 <div id="userGate">
 <h2>AŪREOR</h2>
-<div id="gateSelect" style="width:100%;max-width:420px">
-<p>Qui pilote l’application aujourd’hui ?</p>
-<div class="choices" id="gateUsers" style="flex-direction:column"></div>
-<div class="row" style="margin-top:16px"><button type="button" id="gateNew" class="primary" style="flex:1">＋ Créer un profil</button></div>
-</div>
-<div id="gateLogin" style="display:none;width:100%;max-width:340px">
-<p id="gateLoginName" style="font-size:17px"></p>
-<label for="loginPin">Code PIN</label><input id="loginPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
-<div class="err" id="err-loginpin"></div>
-<button type="button" id="loginGo" class="primary block">Ouvrir mon espace</button>
-<button type="button" id="loginBack" class="block">← Retour</button>
-<button type="button" id="loginDel" class="danger block" style="margin-top:24px">Supprimer ce profil</button>
-</div>
-<div id="gateCreate" style="display:none;width:100%;max-width:340px">
-<p style="font-size:17px">Créer mon profil</p>
-<label for="uname">Prénom / nom</label><input id="uname" maxlength="30" autocomplete="off">
-<div class="err" id="err-uname"></div>
-<label for="upin">Code PIN (4 à 6 chiffres)</label><input id="upin" type="password" inputmode="numeric" maxlength="6">
-<div class="err" id="err-upin"></div>
-<label for="upin2">Confirmer le PIN</label><input id="upin2" type="password" inputmode="numeric" maxlength="6">
-<div class="err" id="err-upin2"></div>
-<button type="button" id="createGo" class="primary block">Créer mon profil</button>
-<button type="button" id="createBack" class="block" style="display:none">← Retour</button>
+<p id="gateTitle">Qui pilote l'application aujourd'hui ?</p>
+<div id="gateProfilesChoices" class="choices"></div>
+
+<div id="gatePinForm" style="display:none;width:100%;max-width:320px;margin-top:15px">
+<p id="gatePinPrompt" style="font-weight:bold;color:var(--accent)">Entre ton code PIN</p>
+<input id="gatePinInput" type="password" maxlength="8" inputmode="numeric" placeholder="Code PIN (ex. 1234)" style="text-align:center;font-size:24px;letter-spacing:0.3em;padding:12px;margin-bottom:12px">
+<div class="err" id="gatePinErr" style="margin-bottom:12px"></div>
+<div class="row">
+<button id="gatePinCancel" type="button" style="flex:1">← Retour</button>
+<button id="gatePinSubmit" type="button" class="primary" style="flex:1">Valider</button>
 </div>
 </div>
+</div>
+
+<!-- MODAL DE PAIEMENT PARTIEL CLIENT -->
+<div id="paymentModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:60;display:none;align-items:center;justify-content:center;padding:16px">
+<div class="card" style="width:100%;max-width:400px;background:var(--panel)">
+<strong style="font-size:18px;color:var(--accent)">💰 Enregistrer un paiement client</strong>
+<p id="payClientLabel" style="font-size:14px;margin:8px 0;color:var(--muted)"></p>
+<form id="paymentForm" novalidate>
+<input type="hidden" id="payClientId">
+<label for="payAmount">Montant encaissé (€)</label>
+<input id="payAmount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="100.00">
+<div class="err" id="err-payAmount"></div>
+<label for="payDate">Date d'encaissement</label>
+<input id="payDate" type="date">
+<div class="err" id="err-payDate"></div>
+<label for="payNote">Note / Référence (facultatif)</label>
+<input id="payNote" maxlength="100" placeholder="Ex. Virement Acompte 1">
+<div class="row" style="margin-top:16px">
+<button id="closePayModal" type="button" style="flex:1">Annuler</button>
+<button type="submit" class="primary" style="flex:1">Enregistrer</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- MODAL CHANGEMENT PIN -->
+<div id="pinModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:60;display:none;align-items:center;justify-content:center;padding:16px">
+<div class="card" style="width:100%;max-width:380px;background:var(--panel)">
+<strong style="font-size:18px;color:var(--accent)">🔒 Code PIN de sécurité</strong>
+<form id="changePinForm" novalidate style="margin-top:12px">
+<label for="newPin">Code PIN (4 chiffres recommandés, ou vide pour désactiver)</label>
+<input id="newPin" type="password" maxlength="8" inputmode="numeric" placeholder="Ex. 1234" style="text-align:center;font-size:20px;letter-spacing:0.2em">
+<div class="err" id="err-newPin"></div>
+<div class="row" style="margin-top:16px">
+<button id="closePinModal" type="button" style="flex:1">Annuler</button>
+<button type="submit" class="primary" style="flex:1">Enregistrer</button>
+</div>
+</form>
+</div>
+</div>
+
 <div class="toast" id="toast"></div>
-<footer>Mon Budget AŪREOR · version professionnelle. Identity AŪREOR. Evite d'y stocker des informations bancaires sensibles.</footer>
+<footer>Mon Budget AŪREOR · Version Multi-Profils Professionnelle. Identity AŪREOR. Evite d'y stocker des informations bancaires sensibles.</footer>
 
 <canvas id="canvasExport" style="position:fixed;left:-9999px;top:-9999px"></canvas>
+
 <nav>
 <button class="active" data-page="home"><span class="ico">🏠</span>Accueil</button>
-<button data-page="expenses"><span class="ico">💰</span>Depenses</button>
-<button data-page="clients"><span class="ico">👥</span>Clients</button>
-<button data-page="projects"><span class="ico">🎿</span>Projets</button>
+<button data-page="expenses"><span class="ico">💰</span>Dépenses</button>
+<button data-page="clients"><span class="ico">👥</span>Clients/CA</button>
+<button data-page="projects"><span class="ico">📁</span>Projets</button>
+<button data-page="activities"><span class="ico">⚡</span>Activités</button>
 <button data-page="bilan"><span class="ico">📊</span>Bilan</button>
 <button data-page="menu"><span class="ico">⚙️</span>Menu</button>
 </nav>
@@ -364,59 +420,114 @@ function escAttr(s){if(s===null||s===undefined)return "";s=String(s);return s.re
 function isValidHexColor(c){return typeof c==="string"&&/^#([0-9A-Fa-f]{3}){1,2}$/.test(c)}
 function hasInvisibleChars(s){return typeof s==="string"&&/[​-⁯﻿]/.test(s)}
 var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)};
-function paidAmountOf(b){
- if(b&&Array.isArray(b.payments)&&b.payments.length){return b.payments.reduce(function(s,p){return s+(Number(p.amount)||0)},0)}
- return b&&b.paid?(Number(b.amount)||0):0
-}
-function restOf(b){return Math.max(0,(Number(b.amount)||0)-paidAmountOf(b))}
-function payStatusOf(b){var r=restOf(b),p=paidAmountOf(b);return r<=0.001?"Paye":(p>0?"Partiellement paye":"En attente")}
-function actTotal(key){return data.activities.filter(function(x){return key?(x.date&&x.date.slice(0,7)===key):true}).reduce(function(s,x){return s+(Number(x.amount)||0)},0)}
-function projectStats(p){
- var id=p.id;
- var spent=data.expenses.filter(function(x){return x.projectId===id}).reduce(function(s,x){return s+x.amount},0)+data.bills.filter(function(x){return x.projectId===id}).reduce(function(s,x){return s+x.amount},0);
- var billsArr=data.clientBills.filter(function(x){return x.projectId===id});
- var due=billsArr.reduce(function(s,x){return s+(Number(x.amount)||0)},0);
- var enc=billsArr.reduce(function(s,x){return s+paidAmountOf(x)},0);
- var acts=data.activities.filter(function(x){return x.projectId===id});
- var actDue=acts.reduce(function(s,x){return s+(Number(x.amount)||0)},0);
- var revenue=due+actDue;
- var encaisse=enc+actDue;
- var benef=encaisse-spent;
- var envelope=Number(p.envelope)||0;
- var pct=envelope>0?Math.round(spent/envelope*100):0;
- var alertAt=Number(p.alertPct)||100;
- return{spent:spent,due:due,enc:enc,revenue:revenue,encaisse:encaisse,reste:revenue-encaisse,benef:benef,envelope:envelope,restEnv:envelope-spent,pct:pct,alert:pct>=alertAt,alertAt:alertAt};
-}
+function setErr(id,msg,show){var el=$(id);if(!el)return;el.textContent=msg||"";el.classList.toggle("show",!!show)}
 
-function setErr(id,msg,show){var el=$(id);el.textContent=msg||"";el.classList.toggle("show",!!show)}
-
+var STORAGE_KEY_V2="aureor_db_v2";
+var STORAGE_KEY_V1="mon-quotidien-v1";
+var BACKUP_PRE_MIGRATION_KEY="aureor_backup_v1_premigration";
+var activeProfileName="Omar";
 var month=today().slice(0,7);
-var data={expenses:[],budgets:{},bills:[],clientBills:[],tasks:[],activities:[],projects:[],marginTarget:1000};
-try{
- var saved=JSON.parse(localStorage.getItem("mon-quotidien-v1"));
- if(saved){
-  data.expenses=saved.expenses||[];
-  data.budgets=saved.budgets||{};
-  data.bills=saved.bills||[];
-  data.clientBills=saved.clientBills||[];
-  data.tasks=saved.tasks||[];
-  data.marginTarget=saved.marginTarget||1000;
- }
-}catch(e){}
 
-var currentProfileName=null;
-var legacyKey="mon-quotidien-v1";
-var profilesKey="aureor_profiles_v2";
-var activeKey="aureor_active_v2";
-var legacyDataPending=false;
-function profileDataKey(name){return "aureor_data_"+name}
-function save(){
- try{
-  if(currentProfileName){localStorage.setItem(profileDataKey(currentProfileName),JSON.stringify(data))}
-  else{localStorage.setItem(legacyKey,JSON.stringify(data))}
-  return true
- }catch(e){toast("Enregistrement impossible. Exporte une sauvegarde.");return false}
+function emptyProfileData(){
+ return {
+  pin: "",
+  expenses: [],
+  budgets: {},
+  bills: [],
+  clientBills: [],
+  tasks: [],
+  activities: [],
+  projects: [
+   { id: "proj_courchevel", name: "Courchevel", envelope: 15000, alertPercent: 80 }
+  ],
+  marginTarget: 1000
+ };
 }
+
+var db = {
+ version: 2,
+ activeProfile: "Omar",
+ profiles: {
+  "Omar": emptyProfileData(),
+  "Désiré": emptyProfileData()
+ }
+};
+
+function initDataStorage(){
+ try {
+  var rawV2 = localStorage.getItem(STORAGE_KEY_V2);
+  if (rawV2) {
+   var parsedV2 = JSON.parse(rawV2);
+   if (parsedV2 && parsedV2.profiles) {
+    db = parsedV2;
+    if (!db.profiles[db.activeProfile]) {
+     var keys = Object.keys(db.profiles);
+     db.activeProfile = keys.length ? keys[0] : "Omar";
+    }
+   }
+  } else {
+   var rawV1 = localStorage.getItem(STORAGE_KEY_V1);
+   if (rawV1) {
+    try {
+     localStorage.setItem(BACKUP_PRE_MIGRATION_KEY, rawV1);
+    } catch(eBackup){}
+    var parsedV1 = JSON.parse(rawV1);
+    if (parsedV1 && typeof parsedV1 === "object") {
+     db.profiles["Omar"].expenses = parsedV1.expenses || [];
+     db.profiles["Omar"].budgets = parsedV1.budgets || {};
+     db.profiles["Omar"].bills = parsedV1.bills || [];
+     db.profiles["Omar"].clientBills = (parsedV1.clientBills || []).map(function(c){
+      if (!Array.isArray(c.payments)) {
+       c.payments = c.paid ? [{ id: uid(), amount: c.amount, date: c.date || today(), note: "Migré (Payé)" }] : [];
+      }
+      return c;
+     });
+     db.profiles["Omar"].tasks = parsedV1.tasks || [];
+     db.profiles["Omar"].marginTarget = parsedV1.marginTarget || 1000;
+    }
+    saveDB();
+   } else {
+    saveDB();
+   }
+  }
+ } catch(e) {
+  console.error("Storage init error", e);
+ }
+}
+
+function saveDB(){
+ try {
+  localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(db));
+  return true;
+ } catch(e) {
+  toast("Enregistrement impossible. Mémoire pleine ou restriction.");
+  return false;
+ }
+}
+
+function getActiveData(){
+ if (!db.profiles[db.activeProfile]) {
+  db.profiles[db.activeProfile] = emptyProfileData();
+ }
+ var p = db.profiles[db.activeProfile];
+ if (!Array.isArray(p.expenses)) p.expenses = [];
+ if (!p.budgets || typeof p.budgets !== "object") p.budgets = {};
+ if (!Array.isArray(p.bills)) p.bills = [];
+ if (!Array.isArray(p.clientBills)) p.clientBills = [];
+ if (!Array.isArray(p.tasks)) p.tasks = [];
+ if (!Array.isArray(p.activities)) p.activities = [];
+ if (!Array.isArray(p.projects)) {
+  p.projects = [{ id: "proj_courchevel", name: "Courchevel", envelope: 15000, alertPercent: 80 }];
+ }
+ p.clientBills.forEach(function(c){
+  if (!Array.isArray(c.payments)) {
+   c.payments = c.paid ? [{ id: uid(), amount: c.amount, date: c.date || today(), note: "Encaissement" }] : [];
+  }
+ });
+ return p;
+}
+
+initDataStorage();
 
 var toastTimer=null;
 function toast(msg){
@@ -439,19 +550,13 @@ function renderChips(){
   b.classList.toggle("sel",sel);
   b.style.background=sel&&isValidHexColor(c.color)?escAttr(c.color):"";b.style.color=sel?"#0b1220":"";
  }
- var box=$("eactBox");
- if(box){box.style.display=(ecat==="loisirs")?"block":"none";if(ecat!=="loisirs"){$("eactCheck").checked=false;setErr("err-eactamount")}}
 }
-$("ename").addEventListener("input",function(){if(!$("eactname").dataset.touched)$("eactname").value=this.value});
-$("eamount").addEventListener("input",function(){if(!$("eactamount").dataset.touched)$("eactamount").value=this.value});
-$("eactname").addEventListener("input",function(){this.dataset.touched="1"});
-$("eactamount").addEventListener("input",function(){this.dataset.touched="1"});
 CATS.forEach(function(c){var o=document.createElement("option");o.value=c.id;o.textContent=c.label;$("bcat").appendChild(o)});
 
 function donutSVG(entries,total){
  var R=60,W=160,H=160,stroke=12;
  var cx=W/2,cy=H/2,r=R-stroke/2;
- var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="160" role="img" aria-label="Repartition par categorie">';
+ var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="160" role="img" aria-label="Répartition par catégorie">';
  var angle=0;
  for(var i=0;i<entries.length;i++){
   var e=entries[i],pct=e.value/total*360,rad=pct*Math.PI/180;
@@ -468,59 +573,85 @@ function donutSVG(entries,total){
 }
 
 function monthsSVG(){
- var months=[],m=new Date(),N=12;
- for(var i=0;i<N;i++){
-  var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
-  months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),total:data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===key}).reduce(function(s,x){return s+x.amount},0)});
+ var p = getActiveData();
+ var months=[],m=new Date();
+ for(var i=0;i<6;i++){
   m.setMonth(m.getMonth()-1);
+  var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
+  months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),total:p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===key}).reduce(function(s,x){return s+x.amount},0)});
  }
  months.reverse();
  var max=Math.max.apply(null,months.map(function(x){return x.total}))||1;
- var H=140,W=320,bw=16,gap=(W-N*bw)/(N+1);
+ var H=140,W=320,bw=28,gap=(W-6*bw)/7;
  var bars="";
  months.forEach(function(v,i){
   var h=max?v.total/max*H:0;
-  var x=10+gap+i*(bw+gap),y=H-h+10;
-  bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+Math.max(h,1)+'" rx="3" fill="'+(i===N-1?"#B08D35":"#33507a")+'"/>';
-  if(i%2===0)bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="9" fill="#a7b4c7">'+esc(v.label)+'</text>';
-  if(v.total>0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="8" fill="#f4f7fb">'+Math.round(v.total)+'</text>';
+  var x=34+i*(bw+gap),y=H-h+10;
+  bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+Math.max(h,1)+'" rx="5" fill="'+(i===5?"#B08D35":"#33507a")+'"/>';
+  bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="10" fill="#a7b4c7">'+esc(v.label)+'</text>';
+  if(v.total>0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="9" fill="#f4f7fb">'+Math.round(v.total)+'</text>';
  });
- return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Tendance sur 12 mois">'+bars+'</svg>';
+ return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Tendance sur 6 mois">'+bars+'</svg>';
+}
+
+function getClientEncaisseInMonth(c, monthKey){
+ if (!Array.isArray(c.payments)) return 0;
+ return c.payments.filter(function(p){ return p.date && p.date.slice(0,7)===monthKey; }).reduce(function(s,p){ return s + Number(p.amount||0); }, 0);
+}
+
+function getClientTotalEncaisse(c){
+ if (!Array.isArray(c.payments)) return 0;
+ return c.payments.reduce(function(s,p){ return s + Number(p.amount||0); }, 0);
 }
 
 function bilanSVG(){
- var months=[],m=new Date(),N=12;
- for(var i=0;i<N;i++){
+ var p = getActiveData();
+ var months=[],m=new Date();
+ for(var i=0;i<6;i++){
   var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
   months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),key:key});
   m.setMonth(m.getMonth()-1);
  }
  months.reverse();
  months.forEach(function(v){
-  var ca=data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+actTotal(v.key);
-  var ch=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+data.bills.filter(function(x){return x.due&&x.due.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0);
+  var ca=p.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, v.key); }, 0);
+  var ch=p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+p.bills.filter(function(x){return x.due&&x.due.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0);
   v.net=Math.round((ca-ch)*100)/100;
  });
  var maxAbs=Math.max.apply(null,months.map(function(x){return Math.abs(x.net)}))||1;
- var H=140,W=320,bw=16,gap=(W-N*bw)/(N+1);
+ var H=140,W=320,bw=28,gap=(W-6*bw)/7;
  var bars="";
  months.forEach(function(v,i){
   var h=Math.max(Math.abs(v.net)/maxAbs*H,1);
-  var x=10+gap+i*(bw+gap),y=H-h+10;
-  var fill=v.net<0?"#f87171":(i===N-1?"#B08D35":"#34d399");
-  bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3" fill="'+fill+'"/>';
-  if(i%2===0)bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="9" fill="#a7b4c7">'+esc(v.label)+'</text>';
-  if(v.net!==0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="8" fill="#f4f7fb">'+Math.round(v.net)+'</text>';
+  var x=34+i*(bw+gap),y=H-h+10;
+  var fill=v.net<0?"#f87171":(i===5?"#B08D35":"#34d399");
+  bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="5" fill="'+fill+'"/>';
+  bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="10" fill="#a7b4c7">'+esc(v.label)+'</text>';
+  if(v.net!==0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="9" fill="#f4f7fb">'+Math.round(v.net)+'</text>';
  });
- return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Bénéfice sur 12 mois">'+bars+'</svg>';
+ return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Bénéfice sur 6 mois">'+bars+'</svg>';
 }
 
 function expenseRow(x){
  var c=catOf(x.category);
- return '<div class="item"><span class="dot" style="background:'+escAttr(c.color)+';flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong><br><small>'+esc(x.date)+' · '+esc(c.label)+(x.by?' - '+esc(x.by):'')+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-expense="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
+ var p = getActiveData();
+ var proj = x.projectId ? p.projects.find(function(pj){return pj.id===x.projectId}) : null;
+ var projBadge = proj ? ' <span class="chip" style="background:#1e293b;color:#94a3b8">📁 '+esc(proj.name)+'</span>' : '';
+ return '<div class="item"><span class="dot" style="background:'+escAttr(c.color)+';flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong>'+projBadge+'<br><small>'+esc(x.date)+' · '+esc(c.label)+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-expense="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
 }
 
-// ==================== FONCTIONS EXPORT PNG AUREOR ====================
+function drawAureorHeader(ctx, width, headerHeight, subtitle){
+ ctx.fillStyle="#0D0D0D";
+ ctx.fillRect(0,0,width,headerHeight);
+ ctx.font="bold 28px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#B08D35";
+ ctx.textAlign="center";
+ ctx.textBaseline="middle";
+ ctx.fillText("AŪREOR", width/2, headerHeight/2 - 8);
+ ctx.font="13px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#B08D35";
+ ctx.fillText(subtitle, width/2, headerHeight/2 + 24);
+}
 
 function drawBillDocument(canvas,bill,isGrouped,groupedData){
  var ctx=canvas.getContext("2d");
@@ -529,27 +660,10 @@ function drawBillDocument(canvas,bill,isGrouped,groupedData){
  canvas.width=width*dpr;canvas.height=height*dpr;
  ctx.scale(dpr,dpr);
  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
-
- // En-tete AUREOR (fond sombre #0D0D0D)
  var headerHeight=120;
- ctx.fillStyle="#0D0D0D";
- ctx.fillRect(0,0,width,headerHeight);
+ drawAureorHeader(ctx, width, headerHeight, isGrouped?"RÉCAPITULATIF DES CHARGES":"RÉCAPITULATIF INTERNE CHARGE");
 
- // Texte AUREOR (dore #B08D35, espacement 0.35em, centre)
- ctx.font="bold 28px system-ui,-apple-system,sans-serif";
- ctx.fillStyle="#B08D35";
- ctx.textAlign="center";
- ctx.textBaseline="middle";
- ctx.fillText("A Ū R E O R",width/2,headerHeight/2);
-
- // Sous-titre
- ctx.font="14px system-ui,-apple-system,sans-serif";
- ctx.fillStyle="#B08D35";
- ctx.fillText(isGrouped?"RECAPITULATIF DES FACTURES":"RECAPITULATIF INTERNE",width/2,headerHeight/2+28);
-
- // Contenu (fond blanc)
  var contentY=headerHeight+20;
-
  ctx.fillStyle="#222222";
  ctx.font="14px system-ui,-apple-system,sans-serif";
  ctx.textAlign="left";
@@ -557,12 +671,11 @@ function drawBillDocument(canvas,bill,isGrouped,groupedData){
  if(isGrouped){
   var lineHeight=22,startY=contentY;
   ctx.font="bold 14px system-ui,-apple-system,sans-serif";
-  ctx.fillText("DATE",40,startY);
-  ctx.fillText("INTITULE",180,startY);
-  ctx.fillText("CATEGORIE",320,startY);
+  ctx.fillText("ÉCHÉANCE",40,startY);
+  ctx.fillText("INTITULÉ",160,startY);
+  ctx.fillText("CATÉGORIE",320,startY);
   ctx.fillText("MONTANT",450,startY);
   ctx.fillText("STATUT",530,startY);
-  ctx.font="14px system-ui,-apple-system,sans-serif";
   startY+=lineHeight+8;
   ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(40,startY-4);ctx.lineTo(560,startY-4);ctx.stroke();
@@ -570,13 +683,12 @@ function drawBillDocument(canvas,bill,isGrouped,groupedData){
 
   groupedData.bills.forEach(function(b){
    var cat=catOf(b.category);
-   var statusText=b.paid?"Payee":"A payer";
+   var statusText=b.paid?"Payée":"À payer";
    var statusColor=b.paid?"#34d399":"#f87171";
    ctx.fillStyle="#222222";
-   ctx.fillText(b.due,40,startY);
-   var label=b.label;
-   if(label.length>25)label=label.substring(0,22)+"...";
-   ctx.fillText(label,180,startY);
+   ctx.fillText(b.due||"-",40,startY);
+   var label=b.label;if(label.length>22)label=label.substring(0,19)+"...";
+   ctx.fillText(label,160,startY);
    ctx.fillText(cat.label,320,startY);
    ctx.fillText(money(b.amount),450,startY);
    ctx.fillStyle=statusColor;
@@ -588,27 +700,24 @@ function drawBillDocument(canvas,bill,isGrouped,groupedData){
   ctx.font="bold 14px system-ui,-apple-system,sans-serif";
   ctx.fillStyle="#B08D35";
   startY+=lineHeight;
-  ctx.fillText("TOTAL PAYE:",40,startY);
+  ctx.fillText("TOTAL PAYÉ:",40,startY);
   ctx.fillText(money(groupedData.paidTotal),450,startY);
   startY+=lineHeight;
-  ctx.fillText("TOTAL IMPAYE:",40,startY);
+  ctx.fillText("TOTAL À PAYER:",40,startY);
   ctx.fillText(money(groupedData.unpaidTotal),450,startY);
-  startY+=lineHeight;
-  ctx.fillText("TOTAL GENERAL:",40,startY);
-  ctx.fillText(money(groupedData.total),450,startY);
   ctx.font="12px system-ui,-apple-system,sans-serif";
   ctx.fillStyle="#888888";
   ctx.textAlign="center";
-  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+  ctx.fillText("Exporté le : "+today()+" · Profil : "+db.activeProfile,width/2,height-20);
  }else{
   var cat=catOf(bill.category);
   var lines=[
-   {label:"INTITULE:",value:bill.label},
+   {label:"INTITULÉ:",value:bill.label},
    {label:"MONTANT:",value:money(bill.amount)},
-   {label:"CATEGORIE:",value:cat.label},
-   {label:"ECHEANCE:",value:bill.due},
-   {label:"STATUT:",value:bill.paid?"Payee":"A payer"},
-   {label:"ID:",value:bill.id}
+   {label:"CATÉGORIE:",value:cat.label},
+   {label:"ÉCHÉANCE:",value:bill.due},
+   {label:"STATUT:",value:bill.paid?"Payée":"À payer"},
+   {label:"PROFIL:",value:db.activeProfile}
   ];
   var startY=contentY;
   lines.forEach(function(line,i){
@@ -623,7 +732,7 @@ function drawBillDocument(canvas,bill,isGrouped,groupedData){
   ctx.font="12px system-ui,-apple-system,sans-serif";
   ctx.fillStyle="#888888";
   ctx.textAlign="center";
-  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+  ctx.fillText("Exporté le : "+today(),width/2,height-20);
  }
 }
 
@@ -633,7 +742,7 @@ function downloadPNG(canvas,filename){
   var file=null;
   try{file=new File([blob],filename,{type:"image/png"})}catch(e){}
   if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
-   navigator.share({files:[file],title:"AUREOR"}).catch(function(){});
+   navigator.share({files:[file],title:"AŪREOR"}).catch(function(){});
    return;
   }
   var url=URL.createObjectURL(blob);
@@ -646,13 +755,14 @@ function downloadPNG(canvas,filename){
 
 function exportBillAsPNG(bill){
  var canvas=$("canvasExport");
- var filename="AUREOR-Recap-Facture-"+bill.id+"-"+bill.due.replace(/[-:]/g,"")+".png";
+ var filename="AUREOR-Charge-"+bill.id+"-"+(bill.due||"").replace(/[-:]/g,"")+".png";
  drawBillDocument(canvas,bill,false,null);
  downloadPNG(canvas,filename);
- toast("Export PNG lance : choisis Enregistrer dans Photos.");
+ toast("Export PNG lancé.");
 }
 
 function drawMonthReport(canvas){
+ var p = getActiveData();
  var ctx=canvas.getContext("2d");
  var dpr=window.devicePixelRatio||2;
  var width=600,height=540;
@@ -660,26 +770,22 @@ function drawMonthReport(canvas){
  ctx.scale(dpr,dpr);
  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
  var headerHeight=120;
- ctx.fillStyle="#0D0D0D";ctx.fillRect(0,0,width,headerHeight);
- ctx.font="bold 28px system-ui,-apple-system,sans-serif";
- ctx.fillStyle="#B08D35";ctx.textAlign="center";ctx.textBaseline="middle";
- ctx.fillText("A Ū R E O R",width/2,headerHeight/2);
- ctx.font="14px system-ui,-apple-system,sans-serif";
- ctx.fillText("RAPPORT MENSUEL",width/2,headerHeight/2+28);
- var mExp=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mBills=data.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mCA=data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0)+actTotal(month);
+ drawAureorHeader(ctx, width, headerHeight, "RAPPORT MENSUEL — " + db.activeProfile.toUpperCase());
+
+ var mExp=p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mBills=p.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mCA=p.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, month); }, 0);
  var mNet=mCA-(mExp+mBills);
  var labelMonth=new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
  ctx.fillStyle="#222222";ctx.textAlign="left";ctx.textBaseline="alphabetic";
  ctx.font="bold 16px system-ui,-apple-system,sans-serif";
  ctx.fillText(labelMonth,40,headerHeight+40);
  var rows=[
-  {label:"CA clients du mois",value:money(mCA)},
-  {label:"Depenses internes du mois",value:money(mExp)},
-  {label:"Factures du mois",value:money(mBills)},
-  {label:"Benefice du mois",value:money(mNet)},
-  {label:"Objectif de marge",value:money(Number(data.marginTarget)||1000)}
+  {label:"CA Encaissé du mois",value:money(mCA)},
+  {label:"Dépenses internes du mois",value:money(mExp)},
+  {label:"Charges / Factures du mois",value:money(mBills)},
+  {label:"Bénéfice du mois",value:money(mNet)},
+  {label:"Objectif de marge",value:money(Number(p.marginTarget)||1000)}
  ];
  var y=headerHeight+80;
  rows.forEach(function(r,idx){
@@ -695,57 +801,41 @@ function drawMonthReport(canvas){
  ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(width-40,y);ctx.stroke();
  ctx.font="12px system-ui,-apple-system,sans-serif";
  ctx.fillStyle="#888888";ctx.textAlign="center";
- ctx.fillText("Exporte le: "+today(),width/2,height-20);
+ ctx.fillText("Exporté le : "+today(),width/2,height-20);
 }
+
 $("exportMonth").addEventListener("click",function(){
  var canvas=$("canvasExport");
  drawMonthReport(canvas);
  downloadPNG(canvas,"AUREOR-Rapport-"+month+".png");
- toast("Export PNG lance : choisis Enregistrer dans Photos.");
+ toast("Export PNG lancé.");
 });
 
 function exportAllBillsAsPNG(){
+ var p = getActiveData();
  var canvas=$("canvasExport");
- var unpaidBills=data.bills.filter(function(x){return !x.paid});
- var paidBills=data.bills.filter(function(x){return x.paid});
+ var unpaidBills=p.bills.filter(function(x){return !x.paid});
+ var paidBills=p.bills.filter(function(x){return x.paid});
  var groupedData={
-  bills:data.bills,
+  bills:p.bills,
   paidTotal:paidBills.reduce(function(s,x){return s+x.amount},0),
   unpaidTotal:unpaidBills.reduce(function(s,x){return s+x.amount},0),
-  total:data.bills.reduce(function(s,x){return s+x.amount},0)
+  total:p.bills.reduce(function(s,x){return s+x.amount},0)
  };
  drawBillDocument(canvas,null,true,groupedData);
- downloadPNG(canvas,"AUREOR-Recap-Toutes-Factures-"+today().replace(/[-:]/g,"")+".png");
- toast("Export PNG lance : choisis Enregistrer dans Photos.");
+ downloadPNG(canvas,"AUREOR-Charges-"+today().replace(/[-:]/g,"")+".png");
+ toast("Export PNG lancé.");
 }
-
-
-// ==================== FONCTIONS EXPORT PNG CLIENTS AUREOR ====================
 
 function drawClientDocument(canvas,bill,isGrouped,groupedData){
  var ctx=canvas.getContext("2d");
  var dpr=window.devicePixelRatio||2;
- var width=600,height=isGrouped?900:500;
+ var width=600,height=isGrouped?900:540;
  canvas.width=width*dpr;canvas.height=height*dpr;
  ctx.scale(dpr,dpr);
  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
-
- // En-tete AUREOR
  var headerHeight=120;
- ctx.fillStyle="#0D0D0D";
- ctx.fillRect(0,0,width,headerHeight);
-
- // Texte AUREOR
- ctx.font="bold 28px system-ui,-apple-system,sans-serif";
- ctx.fillStyle="#B08D35";
- ctx.textAlign="center";
- ctx.textBaseline="middle";
- ctx.fillText("A Ū R E O R",width/2,headerHeight/2);
-
- // Sous-titre
- ctx.font="14px system-ui,-apple-system,sans-serif";
- ctx.fillStyle="#B08D35";
- ctx.fillText(isGrouped?"RECAPITULATIF CLIENTS":"RECAPITULATIF CLIENT",width/2,headerHeight/2+28);
+ drawAureorHeader(ctx, width, headerHeight, isGrouped?"SUIVI DES CLIENTS & ENCAISSEMENTS":"RÉCAPITULATIF DOSSIER CLIENT");
 
  var contentY=headerHeight+20;
  ctx.fillStyle="#222222";
@@ -754,32 +844,31 @@ function drawClientDocument(canvas,bill,isGrouped,groupedData){
 
  if(isGrouped){
   var lineHeight=22,startY=contentY;
-  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
-  ctx.fillText("DATE",40,startY);
-  ctx.fillText("CLIENT",120,startY);
-  ctx.fillText("INTITULE",240,startY);
-  ctx.fillText("MONTANT",420,startY);
-  ctx.fillText("STATUT",520,startY);
-  ctx.font="14px system-ui,-apple-system,sans-serif";
+  ctx.font="bold 13px system-ui,-apple-system,sans-serif";
+  ctx.fillText("CLIENT / PRESTATION",40,startY);
+  ctx.fillText("FACTURÉ",240,startY);
+  ctx.fillText("ENCAISSÉ",350,startY);
+  ctx.fillText("SOLDE",460,startY);
+  ctx.fillText("STATUT",530,startY);
   startY+=lineHeight+8;
   ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(40,startY-4);ctx.lineTo(560,startY-4);ctx.stroke();
   startY+=4;
 
   groupedData.bills.forEach(function(b){
-   var statusText=payStatusOf(b);
-   var statusColor=restOf(b)<=0.001?"#34d399":(paidAmountOf(b)>0?"#fbbf24":"#f87171");
+   var enc = getClientTotalEncaisse(b);
+   var solde = Math.max(0, b.amount - enc);
+   var st = solde === 0 ? "Payé" : (enc > 0 ? "Partiel" : "En attente");
+   var stCol = solde === 0 ? "#34d399" : (enc > 0 ? "#60a5fa" : "#f87171");
    ctx.fillStyle="#222222";
-   ctx.fillText(b.date,40,startY);
-   var clientName=b.clientName||"-";
-   if(clientName.length>15)clientName=clientName.substring(0,12)+"...";
-   ctx.fillText(clientName,120,startY);
-   var label=b.label;
-   if(label.length>20)label=label.substring(0,17)+"...";
-   ctx.fillText(label,240,startY);
-   ctx.fillText(money(b.amount),420,startY);
-   ctx.fillStyle=statusColor;
-   ctx.fillText(statusText,520,startY);
+   var name = (b.clientName ? b.clientName + " - " : "") + b.label;
+   if(name.length>25) name = name.substring(0,22)+"...";
+   ctx.fillText(name,40,startY);
+   ctx.fillText(money(b.amount),240,startY);
+   ctx.fillText(money(enc),350,startY);
+   ctx.fillText(money(solde),460,startY);
+   ctx.fillStyle=stCol;
+   ctx.fillText(st,530,startY);
    ctx.fillStyle="#222222";
    startY+=lineHeight;
   });
@@ -787,22 +876,30 @@ function drawClientDocument(canvas,bill,isGrouped,groupedData){
   ctx.font="bold 14px system-ui,-apple-system,sans-serif";
   ctx.fillStyle="#B08D35";
   startY+=lineHeight;
-  ctx.fillText("TOTAL:",420,startY);
-  ctx.fillText(money(groupedData.total),520,startY);
+  ctx.fillText("TOTAL CA FACTURÉ:",40,startY);
+  ctx.fillText(money(groupedData.totalFacture),240,startY);
+  startY+=lineHeight;
+  ctx.fillText("TOTAL ENCAISSÉ:",40,startY);
+  ctx.fillText(money(groupedData.totalEncaisse),350,startY);
+  startY+=lineHeight;
+  ctx.fillText("RESTE À ENCAISSER:",40,startY);
+  ctx.fillText(money(groupedData.totalSolde),460,startY);
   ctx.font="12px system-ui,-apple-system,sans-serif";
   ctx.fillStyle="#888888";
   ctx.textAlign="center";
-  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+  ctx.fillText("Exporté le : "+today()+" · Profil : "+db.activeProfile,width/2,height-20);
  }else{
+  var enc = getClientTotalEncaisse(bill);
+  var solde = Math.max(0, bill.amount - enc);
+  var st = solde === 0 ? "Payé" : (enc > 0 ? "Partiellement payé" : "En attente de paiement");
   var lines=[
    {label:"CLIENT:",value:bill.clientName||"-"},
-   {label:"INTITULE:",value:bill.label},
-   {label:"MONTANT:",value:money(bill.amount)},
-   {label:"ENCAISSE:",value:money(paidAmountOf(bill))},
-   {label:"RESTE:",value:money(restOf(bill))},
-   {label:"DATE:",value:bill.date},
-   {label:"STATUT:",value:payStatusOf(bill)},
-   {label:"ID:",value:bill.id}
+   {label:"INTITULÉ:",value:bill.label},
+   {label:"MONTANT FACTURÉ:",value:money(bill.amount)},
+   {label:"TOTAL ENCAISSÉ:",value:money(enc)},
+   {label:"SOLDE RESTANT:",value:money(solde)},
+   {label:"STATUT:",value:st},
+   {label:"DATE FACTURE:",value:bill.date}
   ];
   var startY=contentY;
   lines.forEach(function(line,i){
@@ -812,12 +909,12 @@ function drawClientDocument(canvas,bill,isGrouped,groupedData){
    ctx.fillText(line.label,width/2-20,startY);
    ctx.textAlign="left";
    ctx.fillText(line.value,width/2+20,startY);
-   startY+=28;
+   startY+=26;
   });
   ctx.font="12px system-ui,-apple-system,sans-serif";
   ctx.fillStyle="#888888";
   ctx.textAlign="center";
-  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+  ctx.fillText("Exporté le : "+today(),width/2,height-20);
  }
 }
 
@@ -826,352 +923,483 @@ function exportClientBillAsPNG(bill){
  var filename="AUREOR-Client-"+(bill.clientName||"X").replace(/[^a-zA-Z0-9]/g,"_")+"-"+bill.id+".png";
  drawClientDocument(canvas,bill,false,null);
  downloadPNG(canvas,filename);
- toast("Export PNG lance : choisis Enregistrer dans Photos.");
+ toast("Export PNG lancé.");
 }
 
 function exportAllClientBillsAsPNG(){
+ var p = getActiveData();
  var canvas=$("canvasExport");
+ var totFact = p.clientBills.reduce(function(s,x){return s+x.amount},0);
+ var totEnc = p.clientBills.reduce(function(s,x){return s+getClientTotalEncaisse(x)},0);
  var groupedData={
-  bills:data.clientBills,
-  total:data.clientBills.reduce(function(s,x){return s+x.amount},0)
+  bills:p.clientBills,
+  totalFacture:totFact,
+  totalEncaisse:totEnc,
+  totalSolde:Math.max(0, totFact - totEnc)
  };
  drawClientDocument(canvas,null,true,groupedData);
- downloadPNG(canvas,"AUREOR-Tous-Clients-"+today().replace(/[-:]/g,"")+".png");
- toast("Export PNG lance : choisis Enregistrer dans Photos.");
+ downloadPNG(canvas,"AUREOR-Suivi-Clients-"+today().replace(/[-:]/g,"")+".png");
+ toast("Export PNG lancé.");
 }
 
+function renderProjectOptions(){
+ var p = getActiveData();
+ var opts = '<option value="">-- Aucun projet --</option>';
+ p.projects.forEach(function(pj){
+  opts += '<option value="'+escAttr(pj.id)+'">'+esc(pj.name)+' (Enveloppe: '+money(pj.envelope)+')</option>';
+ });
+ $("eproject").innerHTML = opts;
+ $("cproject").innerHTML = opts;
+ $("actProject").innerHTML = opts;
+}
 
 function render(){
- var es=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month});
+ var p = getActiveData();
+ renderProjectOptions();
+
+ var es=p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month});
  var total=es.reduce(function(s,x){return s+x.amount},0);
- var budget=Number(data.budgets[month]||0);
-var paidBillsMonth=data.bills.filter(function(x){return x.paid&&x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
-var usedWithBills=total+paidBillsMonth;
+ var budget=Number(p.budgets[month]||0);
+ var paidBillsMonth=p.bills.filter(function(x){return x.paid&&x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var usedWithBills=total+paidBillsMonth;
+
  $("month").value=month;
  $("monthLabel").textContent=new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
  $("spent").textContent=money(total);
  var rem=$("remaining");
  rem.textContent=budget?money(budget-usedWithBills):"—";
  rem.style.color=budget&&usedWithBills>budget?"var(--danger)":budget&&budget-usedWithBills<budget*0.2?"var(--amber)":"";
- $("unpaid").textContent=money(data.bills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0));
- $("caHome").textContent=money(data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0)+actTotal(month));
+ $("unpaid").textContent=money(p.bills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0));
 
- var pend=data.tasks.filter(function(x){return !x.done}).length;
+ var caMonthEncaisse = p.clientBills.reduce(function(s,c){
+  return s + getClientEncaisseInMonth(c, month);
+ }, 0);
+ $("caHome").textContent=money(caMonthEncaisse);
+
+ var pend=p.tasks.filter(function(x){return !x.done}).length;
  var pendEl=$("pending");if(pendEl)pendEl.textContent=pend;$("pending2").textContent=pend;
  $("budget").value=budget||"";
  var pct=budget?Math.min(100,usedWithBills/budget*100):0;
  var bar=$("progress");
  bar.style.width=pct+"%";
  bar.style.background=pct>=100?"var(--danger)":pct>=80?"var(--amber)":"var(--accent)";
- $("budgetHint").textContent=budget?(usedWithBills>budget?"Budget depasse de "+money(usedWithBills-budget):"Il reste "+money(budget-usedWithBills)+" ("+Math.round(pct)+"% utilise)")+(paidBillsMonth>0?" · dont "+money(paidBillsMonth)+" de factures payees":""):"Definis ton budget mensuel.";
+ $("budgetHint").textContent=budget?(usedWithBills>budget?"Budget dépassé de "+money(usedWithBills-budget):"Il reste "+money(budget-usedWithBills)+" ("+Math.round(pct)+"% utilisé)")+(paidBillsMonth>0?" · dont "+money(paidBillsMonth)+" de charges payées":""):"Définis ton budget mensuel.";
+
  var m={};
  es.forEach(function(x){m[x.category]=(m[x.category]||0)+x.amount});
  var entries=Object.keys(m).map(function(id){return{label:catOf(id).label,color:catOf(id).color,value:Math.round(m[id]*100)/100}}).sort(function(a,b){return b.value-a.value});
- $("chartCats").innerHTML=entries.length?('<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:8px">'+donutSVG(entries,Math.round(total*100)/100)+'<div style="flex:1;min-width:150px">'+entries.map(function(e){return '<p style="margin:4px 0;font-size:13px"><span class="dot" style="background:'+escAttr(e.color)+'"></span>'+esc(e.label)+' <strong>'+money(e.value)+' · '+Math.round(e.value/total*100)+'%</strong></p>'}).join("")+'</div></div>'):'<div class="empty">Aucune depense ce mois-ci.</div>';
+ $("chartCats").innerHTML=entries.length?('<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:8px">'+donutSVG(entries,Math.round(total*100)/100)+'<div style="flex:1;min-width:150px">'+entries.map(function(e){return '<p style="margin:4px 0;font-size:13px"><span class="dot" style="background:'+escAttr(e.color)+'"></span>'+esc(e.label)+' <strong>'+money(e.value)+' · '+Math.round(e.value/total*100)+'%</strong></p>'}).join("")+'</div></div>'):'<div class="empty">Aucune dépense ce mois-ci.</div>';
  $("chartMonths").innerHTML=monthsSVG();
  var recent=[].concat(es).sort(function(a,b){return b.date.localeCompare(a.date)}).slice(0,4);
- $("recent").innerHTML=recent.map(expenseRow).join("")||'<div class="empty">Aucune depense.</div>';
- var all=[].concat(data.expenses).sort(function(a,b){return b.date.localeCompare(a.date)});
- $("elist").innerHTML=all.map(expenseRow).join("")||'<div class="empty">Aucune depense enregistre.</div>';
- var unpaidB=data.bills.filter(function(x){return !x.paid});
+ $("recent").innerHTML=recent.map(expenseRow).join("")||'<div class="empty">Aucune dépense.</div>';
+ var all=[].concat(p.expenses).sort(function(a,b){return b.date.localeCompare(a.date)});
+ $("elist").innerHTML=all.map(expenseRow).join("")||'<div class="empty">Aucune dépense enregistrée.</div>';
+
+ var unpaidB=p.bills.filter(function(x){return !x.paid});
  $("unpaid2").textContent=money(unpaidB.reduce(function(s,x){return s+x.amount},0));
- var sorted=[].concat(data.bills).sort(function(a,b){return (a.paid-b.paid)||a.due.localeCompare(b.due)});
- $("blist").innerHTML=sorted.map(function(x){
+ var sortedBills=[].concat(p.bills).sort(function(a,b){return (a.paid-b.paid)||a.due.localeCompare(b.due)});
+ $("blist").innerHTML=sortedBills.map(function(x){
   var late=!x.paid&&x.due<today();
-  return '<div class="item"><input class="check" type="checkbox" data-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Charge payee"><div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>Echeance : '+esc(x.due)+' · '+esc(catOf(x.category).label)+(x.paid?" · Payee":late?' · <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" · a payer")+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button><button class="primary" data-export-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button></div>';
- }).join("")||'<div class="empty">Aucune facture enregistre.</div>';
- var tk=[].concat(data.tasks).sort(function(a,b){return a.done-b.done});
- $("tlist").innerHTML=tk.map(function(x){return '<div class="item"><input class="check" type="checkbox" data-task="'+escAttr(x.id)+'" '+(x.done?"checked":"")+' aria-label="Tache terminee"><div class="details '+(x.done?"done":"")+'">'+esc(x.text)+'</div><button class="danger" data-delete-task="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>'}).join("")||'<div class="empty">Aucune tache.</div>';
+  return '<div class="item"><input class="check" type="checkbox" data-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Charge payée"><div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>Échéance : '+esc(x.due)+' · '+esc(catOf(x.category).label)+(x.paid?" · Payée":late?' · <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" · à payer")+'</small></div><strong>'+money(x.amount)+'</strong><button class="primary" data-export-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button><button class="danger" data-delete-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
+ }).join("")||'<div class="empty">Aucune facture enregistrée.</div>';
 
- // ==================== RENDU CLIENTS ====================
- var clientPaidTotal=data.clientBills.reduce(function(s,x){return s+paidAmountOf(x)},0);
- var clientUnpaidTotal=data.clientBills.reduce(function(s,x){return s+restOf(x)},0);
- var clientTotal=data.clientBills.reduce(function(s,x){return s+(Number(x.amount)||0)},0);
- $("caTotal").textContent=money(clientTotal);
- $("clientPaidTotal").textContent=money(clientPaidTotal);
- $("clientUnpaidTotal").textContent=money(clientUnpaidTotal);
- $("clientCount").textContent=data.clientBills.length;
+ var tk=[].concat(p.tasks).sort(function(a,b){return a.done-b.done});
+ $("tlist").innerHTML=tk.map(function(x){return '<div class="item"><input class="check" type="checkbox" data-task="'+escAttr(x.id)+'" '+(x.done?"checked":"")+' aria-label="Tâche terminée"><div class="details '+(x.done?"done":"")+'">'+esc(x.text)+'</div><button class="danger" data-delete-task="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>'}).join("")||'<div class="empty">Aucune tâche.</div>';
 
- var groups={};
- data.clientBills.forEach(function(x){
-  var n=x.clientName||"(sans nom)";
-  if(!groups[n])groups[n]={due:0,paid:0,count:0,paidCount:0};
-  var g=groups[n];
-  g.due+=Number(x.amount)||0;g.paid+=paidAmountOf(x);g.count++;
-  if(restOf(x)<=0.001)g.paidCount++;
+ renderClientsSection();
+ renderProjectsSection();
+ renderActivitiesSection();
+ renderBilanSection();
+ renderProfilesList();
+
+ $("hdrUser").textContent = "Connecté : " + db.activeProfile;
+ $("menuUserLabel").textContent = db.activeProfile + (p.pin ? " (Protegé par PIN 🔒)" : " (Sans PIN)");
+}
+
+function renderClientsSection(){
+ var p = getActiveData();
+ var totalFacture = p.clientBills.reduce(function(s,c){ return s + c.amount; }, 0);
+ var totalEncaisse = p.clientBills.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
+ var totalReste = Math.max(0, totalFacture - totalEncaisse);
+
+ $("caTotal").textContent = money(totalFacture);
+ $("clientPaidTotal").textContent = money(totalEncaisse);
+ $("clientUnpaidTotal").textContent = money(totalReste);
+ $("clientCount").textContent = p.clientBills.length;
+
+ var sortedClients = [].concat(p.clientBills).sort(function(a,b){
+  var encA = getClientTotalEncaisse(a), encB = getClientTotalEncaisse(b);
+  var soldeA = a.amount - encA, soldeB = b.amount - encB;
+  return (soldeB - soldeA) || b.date.localeCompare(a.date);
  });
- var tHtml='<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:420px">';
- tHtml+='<thead><tr style="color:var(--muted);text-align:left">';
- tHtml+='<th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Client</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Dû</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Encaissé</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Reste</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Statut</th>';
- tHtml+='</tr></thead><tbody>';
- Object.keys(groups).sort().forEach(function(n){
-  var g=groups[n],rest=Math.max(0,g.due-g.paid);
-  var st=rest<=0.001?"Paye":(g.paid>0?"Partiellement paye":"En attente");
-  var col=rest<=0.001?"var(--green)":(g.paid>0?"var(--amber)":"var(--danger)");
-  tHtml+='<tr><td style="padding:8px;border-bottom:1px solid var(--line)">'+esc(n)+' <small class="muted">('+g.paidCount+'/'+g.count+')</small></td><td style="padding:8px;border-bottom:1px solid var(--line)">'+money(g.due)+'</td><td style="padding:8px;border-bottom:1px solid var(--line)">'+money(g.paid)+'</td><td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700">'+money(rest)+'</td><td style="padding:8px;border-bottom:1px solid var(--line);color:'+col+';white-space:nowrap">'+st+'</td></tr>';
- });
- if(!Object.keys(groups).length)tHtml+='<tr><td colspan="5" style="padding:12px;color:var(--muted)">Aucun client.</td></tr>';
- tHtml+='</tbody></table>';
- $("ctable").innerHTML=tHtml;
- var sortedClients=[].concat(data.clientBills).sort(function(a,b){return restOf(b)-restOf(a)||b.date.localeCompare(a.date)});
- $("clist").innerHTML=sortedClients.map(function(x){
-  var rest=restOf(x),paidSum=paidAmountOf(x),late=rest>0.001&&x.date<today();
-  var st=payStatusOf(x);
-  var html='<div class="item"><input class="check" type="checkbox" data-client-paid="'+escAttr(x.id)+'" '+(rest<=0.001?"checked":"")+' aria-label="Recapitulatif paye" style="accent-color:#B08D35">'+(x.clientName?'<span class="dot" style="background:#B08D35;flex:none"></span>':'')+'<div class="details"><strong class="'+(rest<=0.001?"done":"")+'">'+esc(x.label)+'</strong><br><small>'+(x.clientName?'Client : '+esc(x.clientName)+' - ':'')+'Date : '+esc(x.date)+' - Dû : '+money(x.amount)+' - Encaissé : '+money(paidSum)+' - Reste : '+money(rest)+' - '+st+(late?' - <span style="color:var(--danger);font-weight:600">EN RETARD</span>':'')+'</small></div><button class="primary" data-pay-toggle="'+escAttr(x.id)+'" aria-label="Ajouter un versement" style="border:0;background:none;padding:4px;font-size:16px">＋</button><button class="primary" data-export-client-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button><button class="danger" data-delete-client-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
-  if(rest>0.001||paidSum>0){
-   html+='<div id="payform-'+escAttr(x.id)+'" style="display:none;padding:4px 0 10px;border-bottom:1px solid var(--line)">';
-   html+='<div class="row" style="margin:6px 0"><input type="number" min="0.01" step=".01" inputmode="decimal" id="payamt-'+escAttr(x.id)+'" placeholder="Montant du versement" style="max-width:170px"><button class="primary" data-pay="'+escAttr(x.id)+'">Encaisser</button></div>';
-   if(Array.isArray(x.payments)&&x.payments.length){
-    html+='<small class="muted">Versements : '+x.payments.map(function(p){return esc(p.date)+' '+money(p.amount)+(p.by?' ('+esc(p.by)+')':'')}).join(' - ')+'</small>';
-   }
-   html+='</div>';
+
+ $("clist").innerHTML = sortedClients.map(function(c){
+  var enc = getClientTotalEncaisse(c);
+  var solde = Math.max(0, c.amount - enc);
+  var badge = solde === 0 ? '<span class="badge badge-paid">Payé</span>' : (enc > 0 ? '<span class="badge badge-partial">Partiellement payé</span>' : '<span class="badge badge-pending">En attente</span>');
+  var proj = c.projectId ? p.projects.find(function(pj){return pj.id===c.projectId}) : null;
+  var projTag = proj ? ' · <span class="chip" style="background:#1e293b;color:#94a3b8">📁 '+esc(proj.name)+'</span>' : '';
+
+  var paymentsHistory = '';
+  if (c.payments && c.payments.length > 0) {
+   paymentsHistory = '<div style="font-size:11px;color:var(--muted);margin-top:4px;padding-left:8px;border-left:2px solid var(--accent)">'+
+    c.payments.map(function(pm){
+     return '• '+esc(pm.date)+' : <strong>'+money(pm.amount)+'</strong>'+(pm.note?' ('+esc(pm.note)+')':'');
+    }).join('<br>') +
+   '</div>';
   }
-  return html;
- }).join("")||'<div class="empty">Aucun recapitulatif client.</div>';
 
- // ==================== RENDU BILAN ====================
- var allExpenses=data.expenses.reduce(function(s,x){return s+x.amount},0);
- var allBills=data.bills.reduce(function(s,x){return s+x.amount},0);
- var totalCharges=allExpenses+allBills;
- var caTotal=data.clientBills.reduce(function(s,x){return s+x.amount},0)+actTotal(null);
- var netProfit=caTotal-totalCharges;
- var marginTarget=Number(data.marginTarget)||1000;
- var targetProgress=marginTarget>0?Math.min(100,Math.max(0,netProfit/marginTarget*100)):0;
+  return '<div class="item" style="flex-direction:column;align-items:stretch;gap:6px">' +
+   '<div style="display:flex;justify-content:space-between;align-items:center">' +
+    '<div><strong>'+esc(c.label)+'</strong> ' + badge + projTag + '</div>' +
+    '<strong>'+money(c.amount)+'</strong>' +
+   '</div>' +
+   '<div style="font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px">' +
+    '<span>Client : <strong>'+(esc(c.clientName)||"Non spécifié")+'</strong> · Date : '+esc(c.date)+'</span>' +
+    '<span>Encaissé : <strong style="color:var(--green)">'+money(enc)+'</strong> · Solde : <strong style="color:var(--amber)">'+money(solde)+'</strong></span>' +
+   '</div>' +
+   paymentsHistory +
+   '<div style="display:flex;gap:8px;margin-top:4px;justify-content:flex-end">' +
+    (solde > 0 ? '<button class="primary" data-pay-client="'+escAttr(c.id)+'" style="font-size:12px;padding:5px 10px">+ Encaisser acompte/solde</button>' : '') +
+    '<button data-export-client-bill="'+escAttr(c.id)+'" aria-label="Exporter PNG" style="font-size:14px;padding:5px 8px">📥 PNG</button>' +
+    '<button class="danger" data-delete-client-bill="'+escAttr(c.id)+'" aria-label="Supprimer" style="font-size:12px;padding:5px 8px">✕</button>' +
+   '</div>' +
+  '</div>';
+ }).join("") || '<div class="empty">Aucun dossier client enregistré.</div>';
+}
 
- $("bilanCA").textContent=money(caTotal);
- $("bilanCharges").textContent=money(totalCharges);
- $("bilanNet").textContent=money(netProfit);
- $("bilanTarget").textContent=money(marginTarget);
- $("bilanProgress").style.width=targetProgress+"%";
+function renderProjectsSection(){
+ var p = getActiveData();
+ var list = p.projects;
+
+ $("projectsList").innerHTML = list.map(function(pj){
+  var projExpenses = p.expenses.filter(function(e){ return e.projectId === pj.id; });
+  var spentTotal = projExpenses.reduce(function(s,e){ return s + e.amount; }, 0);
+
+  var projClients = p.clientBills.filter(function(c){ return c.projectId === pj.id; });
+  var totalFacture = projClients.reduce(function(s,c){ return s + c.amount; }, 0);
+  var totalEncaisse = projClients.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
+  var totalAEncaisser = Math.max(0, totalFacture - totalEncaisse);
+  var netProfit = totalEncaisse - spentTotal;
+
+  var envelope = Number(pj.envelope) || 0;
+  var remEnvelope = envelope - spentTotal;
+  var pctUsed = envelope > 0 ? Math.min(100, Math.round((spentTotal / envelope) * 100)) : 0;
+  var isOver = envelope > 0 && spentTotal > envelope;
+  var isAlert = envelope > 0 && pctUsed >= (pj.alertPercent || 80);
+
+  var alertBox = "";
+  if (isOver) {
+   alertBox = '<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:#241420;border:1px solid var(--danger);color:var(--danger);font-size:12px">⚠️ Enveloppe budgétaire dépassée de '+money(spentTotal - envelope)+' !</div>';
+  } else if (isAlert) {
+   alertBox = '<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:#2a2418;border:1px solid var(--amber);color:var(--amber);font-size:12px">⚠️ Seuil d\'alerte dépense atteint ('+pctUsed+'% de l\'enveloppe).</div>';
+  }
+
+  return '<div class="card" style="margin-bottom:12px;border-color:'+(isOver?'var(--danger)':(isAlert?'var(--amber)':'var(--line)'))+'">' +
+   '<div style="display:flex;justify-content:space-between;align-items:center">' +
+    '<strong style="font-size:18px;color:var(--accent)">📁 '+esc(pj.name)+'</strong>' +
+    '<button class="danger" data-delete-project="'+escAttr(pj.id)+'" style="border:0;background:none;padding:4px">✕ Supprimer</button>' +
+   '</div>' +
+   '<div class="grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">' +
+    '<div><small class="muted">Enveloppe budgétaire</small><br><strong>'+money(envelope)+'</strong></div>' +
+    '<div><small class="muted">Dépenses engagées</small><br><strong style="color:'+(isOver?'var(--danger)':'var(--text)')+'">'+money(spentTotal)+'</strong></div>' +
+    '<div><small class="muted">Budget disponible</small><br><strong style="color:'+(remEnvelope<0?'var(--danger)':'var(--green)')+'">'+money(remEnvelope)+'</strong></div>' +
+    '<div><small class="muted">Consommation</small><br><strong>'+pctUsed+' %</strong></div>' +
+   '</div>' +
+   '<div class="bar" style="margin-top:8px"><span style="width:'+pctUsed+'%;background:'+(isOver?'var(--danger)':(isAlert?'var(--amber)':'var(--accent)'))+'"></span></div>' +
+   alertBox +
+   '<div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px;font-size:12px" class="grid">' +
+    '<div><small class="muted">CA Facturé</small><br><strong>'+money(totalFacture)+'</strong></div>' +
+    '<div><small class="muted">CA Encaissé</small><br><strong style="color:var(--green)">'+money(totalEncaisse)+'</strong></div>' +
+    '<div><small class="muted">Reste à encaisser</small><br><strong style="color:var(--amber)">'+money(totalAEncaisser)+'</strong></div>' +
+    '<div><small class="muted">Bénéfice Réel Provisoire</small><br><strong style="color:'+(netProfit<0?'var(--danger)':'var(--green)')+'">'+money(netProfit)+'</strong></div>' +
+   '</div>' +
+  '</div>';
+ }).join("") || '<div class="empty">Aucun projet créé.</div>';
+}
+
+function renderActivitiesSection(){
+ var p = getActiveData();
+ $("actDate").value = today();
+
+ var monthsList = [];
+ var now = new Date();
+ for (var i = 0; i < 12; i++) {
+  var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+  monthsList.push(d.getFullYear() + "-" + pad(d.getMonth() + 1));
+ }
+
+ var html = "";
+ monthsList.forEach(function(mKey){
+  var mLabel = new Date(mKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  var actsInMonth = p.activities.filter(function(a){ return a.date && a.date.slice(0,7) === mKey; })
+                                .sort(function(a,b){ return b.date.localeCompare(a.date); });
+
+  html += '<div style="margin-bottom:14px"><strong style="font-size:13px;color:var(--accent);display:block;margin-bottom:6px;border-bottom:1px solid var(--line);padding-bottom:2px">'+mLabel+' ('+actsInMonth.length+' activité'+(actsInMonth.length>1?'s':'')+')</strong>';
+  if (actsInMonth.length === 0) {
+   html += '<div class="hint" style="font-style:italic">Aucune activité ce mois-ci.</div>';
+  } else {
+   html += actsInMonth.map(function(a){
+    var proj = a.projectId ? p.projects.find(function(pj){return pj.id===a.projectId}) : null;
+    var projTag = proj ? ' <span class="chip" style="background:#1e293b;color:#94a3b8">📁 '+esc(proj.name)+'</span>' : '';
+    return '<div class="item"><div class="details"><strong>'+esc(a.name)+'</strong>'+projTag+'<br><small>'+esc(a.date)+(a.note?' · '+esc(a.note):'')+'</small></div><button class="danger" data-delete-activity="'+escAttr(a.id)+'" style="border:0;background:none;padding:4px">✕</button></div>';
+   }).join("");
+  }
+  html += '</div>';
+ });
+
+ $("activitiesHistory").innerHTML = html;
+}
+
+function renderBilanSection(){
+ var p = getActiveData();
+ var allExpenses = p.expenses.reduce(function(s,x){return s+x.amount},0);
+ var allBills = p.bills.reduce(function(s,x){return s+x.amount},0);
+ var totalCharges = allExpenses + allBills;
+
+ var caFacture = p.clientBills.reduce(function(s,x){return s+x.amount},0);
+ var caEncaisse = p.clientBills.reduce(function(s,x){return s+getClientTotalEncaisse(x)},0);
+ var caAEncaisser = Math.max(0, caFacture - caEncaisse);
+
+ var netProfit = caEncaisse - totalCharges;
+ var marginTarget = Number(p.marginTarget) || 1000;
+ var targetProgress = marginTarget > 0 ? Math.min(100, Math.max(0, netProfit / marginTarget * 100)) : 0;
+
+ $("bilanCA").textContent = money(caFacture);
+ $("bilanCAEncaisse").textContent = money(caEncaisse);
+ $("bilanCharges").textContent = money(totalCharges);
+ $("bilanNet").textContent = money(netProfit);
+ $("bilanTarget").textContent = money(marginTarget);
+ $("bilanProgress").style.width = targetProgress + "%";
 
  var alertHtml="";
  if(netProfit<0){
-  alertHtml='<div class="card" style="border-color:var(--danger);background:#241420">⚠ Benefice negatif: '+money(netProfit)+' €</div>';
+  alertHtml='<div class="card" style="border-color:var(--danger);background:#241420">⚠️ Bénéfice net négatif : '+money(netProfit)+'</div>';
  }else if(netProfit<marginTarget){
-  alertHtml='<div class="card" style="border-color:var(--amber);background:#2a2418">▶ Objectif non atteint: '+money(marginTarget-netProfit)+' € restant</div>';
+  alertHtml='<div class="card" style="border-color:var(--amber);background:#2a2418">▶ Objectif de marge non atteint : '+money(marginTarget-netProfit)+' restant</div>';
  }else if(netProfit>=marginTarget*2){
-  alertHtml='<div class="card" style="border-color:#34d399;background:#0f2418">✅ Excellent! Objectif depasse de '+money(netProfit-marginTarget)+' €</div>';
+  alertHtml='<div class="card" style="border-color:#34d399;background:#0f2418">✅ Excellent ! Objectif dépassé de '+money(netProfit-marginTarget)+'</div>';
  }
  $("bilanAlert").innerHTML=alertHtml;
- $("bilanHint").textContent="Objectif: "+money(marginTarget)+" ("+Math.round(targetProgress)+"% atteint)";
- var mExp=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mBills=data.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mCA=data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0)+actTotal(month);
- $("bilanMCA").textContent=money(mCA);
- $("bilanMCharges").textContent=money(mExp+mBills);
- $("bilanMNet").textContent=money(mCA-(mExp+mBills));
- $("bilanMHint").textContent="Mois affiché : "+new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
- $("chartBilan").innerHTML=bilanSVG();
+ $("bilanHint").textContent="Objectif de marge : "+money(marginTarget)+" ("+Math.round(targetProgress)+"% atteint)";
+
+ var mExp = p.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mBills = p.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mCAEncaisse = p.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, month); }, 0);
+
+ $("bilanMCA").textContent = money(mCAEncaisse);
+ $("bilanMCharges").textContent = money(mExp + mBills);
+ $("bilanMNet").textContent = money(mCAEncaisse - (mExp + mBills));
+ $("bilanMHint").textContent = "Mois affiché : " + new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+ $("chartBilan").innerHTML = bilanSVG();
 
  var chargeDetails=[
-  {label:"Depenses internes",value:money(allExpenses)},
-  {label:"Charges a payer",value:money(allBills)},
-  {label:"Total charges",value:money(totalCharges)}
+  {label:"Dépenses internes",value:money(allExpenses)},
+  {label:"Charges / Factures à payer",value:money(allBills)},
+  {label:"Total des charges",value:money(totalCharges)}
  ];
  $("bilanDetails").innerHTML=chargeDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucune charge.</div>';
 
- var caPaid=data.clientBills.reduce(function(s,x){return s+paidAmountOf(x)},0)+actTotal(null);
- var caUnpaid=caTotal-caPaid;
  var caDetails=[
-  {label:"CA encaisse",value:money(caPaid)},
-  {label:"CA a encaisser",value:money(caUnpaid)},
-  {label:"CA total",value:money(caTotal)}
+  {label:"Chiffre d'Affaires Total Facturé",value:money(caFacture)},
+  {label:"Total réellement Encaissé",value:money(caEncaisse)},
+  {label:"Créances Clients Restantes (À encaisser)",value:money(caAEncaisser)}
  ];
  $("caDetails").innerHTML=caDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucun CA.</div>';
 
  renderChips();
- renderProjectSelects();
- renderActivities();
- renderProjects();
 }
 
-function renderProjectSelects(){
- ["eproj","bproj","cproj","aproj"].forEach(function(id){
-  var sel=$(id);if(!sel)return;
-  var cur=sel.value;
-  sel.innerHTML='<option value="">— Aucun projet —</option>'+data.projects.map(function(p){return '<option value="'+escAttr(p.id)+'">'+esc(p.name)+'</option>'}).join("");
-  if(cur)sel.value=cur;
- });
+function renderProfilesList(){
+ var keys = Object.keys(db.profiles);
+ $("profilesList").innerHTML = keys.map(function(k){
+  var isCurrent = k === db.activeProfile;
+  var hasPin = !!db.profiles[k].pin;
+  return '<div class="item"><div class="details"><strong>'+esc(k)+'</strong> '+(isCurrent?'<span class="badge badge-paid">Actif</span>':'')+(hasPin?' 🔒':'')+'</div>' +
+   (keys.length > 1 && !isCurrent ? '<button class="danger" data-delete-profile="'+escAttr(k)+'" style="font-size:12px;padding:4px 8px">✕ Supprimer</button>' : '') +
+  '</div>';
+ }).join("");
 }
-function renderActivities(){
- if(!$("alist"))return;
- var acts=[].concat(data.activities).sort(function(a,b){return b.date.localeCompare(a.date)||String(b.at||"").localeCompare(String(a.at||""))});
- $("alist").innerHTML=acts.slice(0,10).map(function(x){
-  return '<div class="item"><span class="dot" style="background:#34d399;flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong><br><small>'+esc(x.date)+' - '+money(x.amount)+(x.note?' - '+esc(x.note):'')+(x.by?' - '+esc(x.by):'')+'</small></div><button class="danger" data-delete-activity="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
- }).join("")||'<div class="empty">Aucune activite enregistree.</div>';
- var m=new Date(),rows=[];
- for(var i=0;i<12;i++){
-  var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
-  var list=data.activities.filter(function(x){return x.date&&x.date.slice(0,7)===key});
-  rows.unshift({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),n:list.length,total:list.reduce(function(s,x){return s+(Number(x.amount)||0)},0)});
-  m.setMonth(m.getMonth()-1);
- }
- var h='<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="color:var(--muted);text-align:left"><th style="padding:4px">Mois</th><th style="padding:4px">Activites</th><th style="padding:4px">Total</th></tr></thead><tbody>';
- rows.forEach(function(r){h+='<tr><td style="padding:4px;border-bottom:1px solid var(--line)">'+esc(r.label)+'</td><td style="padding:4px;border-bottom:1px solid var(--line)">'+r.n+'</td><td style="padding:4px;border-bottom:1px solid var(--line)">'+money(r.total)+'</td></tr>'});
- h+='</tbody></table>';
- $("acthist").innerHTML=h;
-}
-function renderProjects(){
- if(!$("pjlist"))return;
- var html=data.projects.map(function(p){
-  var st=projectStats(p);
-  var col=st.benef<0?"var(--danger)":"var(--green)";
-  var alertHtml=st.alert?'<div class="card" style="border-color:var(--danger);background:#241420;margin-top:8px;padding:10px">⚠ Enveloppe : '+st.pct+'% consommé (alerte à '+st.alertAt+'%)</div>':"";
-  return '<div class="card" style="margin-bottom:10px"><div class="row"><strong style="flex:1">'+esc(p.name)+'</strong><button class="danger" data-pj-del="'+escAttr(p.id)+'" aria-label="Supprimer le projet" style="border:0;background:none;padding:4px">✕</button></div>'
-  +'<div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:10px">'
-  +'<div class="stat"><small>Enveloppe (budget disponible)</small><strong>'+money(st.envelope)+'</strong></div>'
-  +'<div class="stat"><small>Dépenses liées</small><strong>'+money(st.spent)+'</strong></div>'
-  +'<div class="stat"><small>Encaissé</small><strong>'+money(st.encaisse)+'</strong></div>'
-  +'<div class="stat"><small>Reste à encaisser</small><strong>'+money(st.reste)+'</strong></div>'
-  +'</div>'
-  +'<div class="row" style="margin-top:8px"><div class="stat" style="flex:1"><small>Bénéfice net</small><strong style="color:'+col+'">'+money(st.benef)+'</strong></div>'
-  +'<div class="stat" style="flex:1"><small>Reste enveloppe</small><strong style="color:'+(st.restEnv<0?"var(--danger)":"")+'">'+money(st.restEnv)+'</strong></div>'
-  +'<div class="stat" style="flex:1"><small>% consommé</small><strong style="color:'+(st.alert?"var(--danger)":"")+'">'+st.pct+'%</strong></div></div>'
-  +'<div class="bar" style="margin-top:8px"><span style="width:'+Math.min(100,Math.max(0,st.pct))+'%;background:'+(st.alert?"var(--danger)":"var(--accent)")+'"></span></div>'
-  +alertHtml
-  +'<label style="margin-top:10px">Modifier l\'enveloppe (€)</label><div class="row"><input type="number" min="0" step=".01" inputmode="decimal" data-pj-env="'+escAttr(p.id)+'" value="'+(Number(p.envelope)||0)+'" style="max-width:150px"><span class="muted" style="font-size:12px">L\'enveloppe est un budget disponible, pas un bénéfice attendu.</span></div>'
-  +'</div>';
- }).join("")||'<div class="empty">Aucun projet. Crée par exemple « Courchevel » avec une enveloppe de 15 000 €.</div>';
- $("pjlist").innerHTML=html;
- var th='<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:420px"><thead><tr style="color:var(--muted);text-align:left"><th style="padding:6px">Projet</th><th style="padding:6px">Enveloppe</th><th style="padding:6px">Dépenses</th><th style="padding:6px">Encaissé</th><th style="padding:6px">Bénéfice</th><th style="padding:6px">% utilisé</th></tr></thead><tbody>';
- data.projects.forEach(function(p){
-  var st=projectStats(p);
-  th+='<tr><td style="padding:6px;border-bottom:1px solid var(--line)">'+esc(p.name)+'</td><td style="padding:6px;border-bottom:1px solid var(--line)">'+money(st.envelope)+'</td><td style="padding:6px;border-bottom:1px solid var(--line)">'+money(st.spent)+'</td><td style="padding:6px;border-bottom:1px solid var(--line)">'+money(st.encaisse)+'</td><td style="padding:6px;border-bottom:1px solid var(--line);color:'+(st.benef<0?"var(--danger)":"var(--green)")+'">'+money(st.benef)+'</td><td style="padding:6px;border-bottom:1px solid var(--line)">'+st.pct+'%</td></tr>';
- });
- if(!data.projects.length)th+='<tr><td colspan="6" style="padding:12px;color:var(--muted)">Aucun projet.</td></tr>';
- th+='</tbody></table>';
- $("pjtable").innerHTML=th;
-}
-var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients",projects:"Projets",bilan:"Bilan",menu:"Menu",bills:"Charges & factures"};
+
+var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients & CA",projects:"Projets",activities:"Activités",bilan:"Bilan",menu:"Menu",bills:"Charges & factures"};
 function showPage(name){
  var btns=document.querySelectorAll("nav button");
  for(var i=0;i<btns.length;i++)btns[i].classList.toggle("active",btns[i].dataset.page===name);
  var pages=document.querySelectorAll(".page");
  for(var j=0;j<pages.length;j++)pages[j].classList.toggle("active",pages[j].id==="p-"+name);
- $("hdrTitle").textContent=TITLES[name];
+ $("hdrTitle").textContent=TITLES[name]||"Budget AŪREOR";
  window.scrollTo(0,0);
 }
 $("openBills").addEventListener("click",function(){showPage("bills")});
 $("closeBills").addEventListener("click",function(){showPage("expenses")});
 document.querySelector("nav").addEventListener("click",function(e){
  var b=e.target.closest("[data-page]");if(!b)return;
- var btns=document.querySelectorAll("nav button");
- for(var i=0;i<btns.length;i++)btns[i].classList.toggle("active",btns[i]===b);
- var pages=document.querySelectorAll(".page");
- for(var j=0;j<pages.length;j++)pages[j].classList.toggle("active",pages[j].id==="p-"+b.dataset.page);
- $("hdrTitle").textContent=TITLES[b.dataset.page];
- window.scrollTo(0,0);
+ showPage(b.dataset.page);
 });
+
 $("month").addEventListener("change",function(e){if(e.target.value){month=e.target.value;render()}});
 
 $("saveBudget").addEventListener("click",function(){
+ var p = getActiveData();
  var v=$("budget").value;
  if(v===""||!Number.isFinite(Number(v))||Number(v)<0){toast("Saisis un budget valide.");return}
- data.budgets[month]=Math.round(Number(v)*100)/100;
- save();render();toast("Budget enregistre.");
+ p.budgets[month]=Math.round(Number(v)*100)/100;
+ saveDB();render();toast("Budget enregistré.");
 });
 
-$("marginTarget").value=data.marginTarget;
 $("saveTarget").addEventListener("click",function(){
+ var p = getActiveData();
  var v=$("marginTarget").value;
  if(v===""||!Number.isFinite(Number(v))||Number(v)<=0){toast("Saisis un objectif valide (supérieur à 0).");return}
- data.marginTarget=Math.round(Number(v)*100)/100;
- save();render();toast("Objectif enregistre.");
+ p.marginTarget=Math.round(Number(v)*100)/100;
+ saveDB();render();toast("Objectif enregistré.");
 });
 
-$("adate").value=today();
-$("activityForm").addEventListener("submit",function(e){
- e.preventDefault();
- setErr("err-aname");setErr("err-aamount");setErr("err-adate");
- var label=$("aname").value.trim(),amount=$("aamount").value,date=$("adate").value;
- var ok=true;
- if(!label){setErr("err-aname","Nom requis.",true);ok=false}
- var amt=Number(amount);
- if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-aamount","Prix invalide (supérieur à 0).",true);ok=false}
- if(!date){setErr("err-adate","Date requise.",true);ok=false}
- if(!ok)return;
- data.activities.push({id:uid(),label:label,amount:Math.round(amt*100)/100,date:date,projectId:($("aproj")&&$("aproj").value)||undefined,note:$("anote").value.trim()||undefined,by:userName()||undefined,at:new Date().toISOString()});
- save();
- $("aname").value="";$("aamount").value="";$("anote").value="";
- render();
- $("aname").focus();
- toast("Activite enregistree. Saisis la suivante !");
-});
-$("projectForm").addEventListener("submit",function(e){
- e.preventDefault();
- setErr("err-pjname");setErr("err-pjenvelope");
- var name=$("pjname").value.trim(),env=$("pjenvelope").value,alertPct=$("pjalert").value;
- var ok=true;
- if(!name||name.length<2){setErr("err-pjname","Nom requis (2 caracteres min).",true);ok=false}
- var envN=Number(env);
- if(env===""||!Number.isFinite(envN)||envN<0){setErr("err-pjenvelope","Enveloppe invalide (>= 0).",true);ok=false}
- if(!ok)return;
- var ap=Number(alertPct);
- if(!Number.isFinite(ap)||ap<1)ap=100;
- data.projects.push({id:uid(),name:name,envelope:Math.round(envN*100)/100,alertPct:Math.round(ap),created:new Date().toISOString()});
- save();e.target.reset();$("pjalert").value=100;render();
- toast("Projet cree.");
-});
-$("cdate").value=today();
-$("clientBillForm").addEventListener("submit",function(e){
- e.preventDefault();
- setErr("err-cname");setErr("err-camount");setErr("err-cdate");
- var label=$("cname").value.trim(),clientName=$("cclient").value.trim(),amount=$("camount").value,date=$("cdate").value,isPaid=$("cpaid").checked;
- var ok=true;
- if(!label){setErr("err-cname","Intitule requis.",true);ok=false}
- var amt=Number(amount);
- if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-camount","Montant invalide (superieur a 0).",true);ok=false}
- if(!date){setErr("err-cdate","Date requise.",true);ok=false}
- if(!ok)return;
- data.clientBills.push({id:uid(),label:label,clientName:clientName,amount:Math.round(amt*100)/100,date:date,paid:isPaid,payments:[],projectId:($("cproj")&&$("cproj").value)||undefined,by:userName()||undefined,at:new Date().toISOString()});
- save();e.target.reset();$("cdate").value=today();render();
- toast("Recapitulatif client ajoute.");
-});
-
-$("edate").value=today();
 $("expenseForm").addEventListener("submit",function(e){
  e.preventDefault();
  setErr("err-ename");setErr("err-amount");setErr("err-date");
- var label=$("ename").value.trim(),amount=$("eamount").value,date=$("edate").value;
+ var label=$("ename").value.trim(),amount=$("eamount").value,date=$("edate").value,projId=$("eproject").value;
  var ok=true;
- if(!label){setErr("err-ename","Intitule requis.",true);ok=false}
+ if(!label){setErr("err-ename","Intitulé requis.",true);ok=false}
  var amt=Number(amount);
- if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-amount","Montant invalide (superieur a 0).",true);ok=false}
+ if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-amount","Montant invalide (supérieur à 0).",true);ok=false}
  if(!date){setErr("err-date","Date requise.",true);ok=false}
  if(!ok)return;
- data.expenses.push({id:uid(),label:label,amount:Math.round(amt*100)/100,category:ecat,date:date,projectId:($("eproj")&&$("eproj").value)||undefined,by:userName()||undefined,at:new Date().toISOString()});
- var actMsg="";
- if(ecat==="loisirs"&&$("eactCheck").checked){
-  setErr("err-eactamount");
-  var an=$("eactname").value.trim()||label;
-  var av=$("eactamount").value,ap2=Number(av);
-  if(av!==""&&Number.isFinite(ap2)&&ap2>0){
-   data.activities.push({id:uid(),label:an,amount:Math.round(ap2*100)/100,date:date,projectId:($("eproj")&&$("eproj").value)||undefined,note:"Liée à la dépense : "+label,by:userName()||undefined,at:new Date().toISOString()});
-   actMsg=" Activite ajoutee ("+money(ap2)+").";
-  }else{
-   setErr("err-eactamount","Prix invalide : activité non enregistrée (la dépense est bien enregistrée).",true);
-  }
- }
- save();e.target.reset();$("edate").value=today();
- $("eactname").removeAttribute("data-touched");$("eactamount").removeAttribute("data-touched");
- render();
- toast("Depense enregistree."+actMsg);
+ var p = getActiveData();
+ p.expenses.push({id:uid(),label:label,amount:Math.round(amt*100)/100,category:ecat,date:date,projectId:projId||null});
+ saveDB();e.target.reset();$("edate").value=today();render();
+ toast("Dépense enregistrée.");
 });
 
-$("bdue").value=today();
 $("billForm").addEventListener("submit",function(e){
  e.preventDefault();
  setErr("err-bname");setErr("err-bamount");setErr("err-bdue");
  var label=$("bname").value.trim(),amount=$("bamount").value,due=$("bdue").value;
  var ok=true;
- if(!label){setErr("err-bname","Intitule requis.",true);ok=false}
+ if(!label){setErr("err-bname","Intitulé requis.",true);ok=false}
  var amt=Number(amount);
- if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-bamount","Montant invalide (superieur a 0).",true);ok=false}
- if(!due){setErr("err-bdue","Echeance requise.",true);ok=false}
+ if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-bamount","Montant invalide (supérieur à 0).",true);ok=false}
+ if(!due){setErr("err-bdue","Échéance requise.",true);ok=false}
  if(!ok)return;
- data.bills.push({id:uid(),label:label,amount:Math.round(amt*100)/100,due:due,category:$("bcat").value,paid:false,projectId:($("bproj")&&$("bproj").value)||undefined,by:userName()||undefined,at:new Date().toISOString()});
- save();e.target.reset();$("bdue").value=today();render();
- toast("Charge ajoutee.");
+ var p = getActiveData();
+ p.bills.push({id:uid(),label:label,amount:Math.round(amt*100)/100,due:due,category:$("bcat").value,paid:false});
+ saveDB();e.target.reset();$("bdue").value=today();render();
+ toast("Charge ajoutée.");
+});
+
+$("clientBillForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ setErr("err-cname");setErr("err-camount");setErr("err-cdate");
+ var label=$("cname").value.trim(),clientName=$("cclient").value.trim(),amount=$("camount").value,date=$("cdate").value,projId=$("cproject").value;
+ var ok=true;
+ if(!label){setErr("err-cname","Intitulé requis.",true);ok=false}
+ var amt=Number(amount);
+ if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-camount","Montant invalide (supérieur à 0).",true);ok=false}
+ if(!date){setErr("err-cdate","Date requise.",true);ok=false}
+ if(!ok)return;
+ var p = getActiveData();
+ p.clientBills.push({
+  id: uid(),
+  label: label,
+  clientName: clientName,
+  amount: Math.round(amt*100)/100,
+  date: date,
+  projectId: projId||null,
+  paid: false,
+  payments: []
+ });
+ saveDB();e.target.reset();$("cdate").value=today();render();
+ toast("Dossier client créé.");
+});
+
+$("paymentForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ setErr("err-payAmount");setErr("err-payDate");
+ var cId = $("payClientId").value;
+ var amount = $("payAmount").value;
+ var date = $("payDate").value;
+ var note = $("payNote").value.trim();
+ var amt = Number(amount);
+ var ok = true;
+ if (!amount || !Number.isFinite(amt) || amt <= 0) { setErr("err-payAmount","Montant invalide.",true); ok = false; }
+ if (!date) { setErr("err-payDate","Date requise.",true); ok = false; }
+ if (!ok) return;
+
+ var p = getActiveData();
+ var client = p.clientBills.find(function(c){ return c.id === cId; });
+ if (client) {
+  if (!Array.isArray(client.payments)) client.payments = [];
+  client.payments.push({
+   id: uid(),
+   amount: Math.round(amt * 100) / 100,
+   date: date,
+   note: note
+  });
+  var totalEnc = getClientTotalEncaisse(client);
+  if (totalEnc >= client.amount) {
+   client.paid = true;
+  }
+  saveDB();
+  render();
+  $("paymentModal").style.display = "none";
+  toast("Encaissement enregistré !");
+ }
+});
+$("closePayModal").addEventListener("click",function(){ $("paymentModal").style.display = "none"; });
+
+$("projectForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ setErr("err-pname");setErr("err-penvelope");
+ var name = $("pname").value.trim();
+ var env = $("penvelope").value;
+ var alertPct = $("palert").value || 80;
+ var ok = true;
+ if (!name) { setErr("err-pname", "Nom requis.", true); ok = false; }
+ var envAmt = Number(env);
+ if (env === "" || !Number.isFinite(envAmt) || envAmt < 0) { setErr("err-penvelope", "Enveloppe invalide.", true); ok = false; }
+ if (!ok) return;
+
+ var p = getActiveData();
+ var existing = p.projects.find(function(pj){ return pj.name.toLowerCase() === name.toLowerCase(); });
+ if (existing) {
+  existing.envelope = Math.round(envAmt * 100) / 100;
+  existing.alertPercent = Number(alertPct);
+  toast("Projet mis à jour.");
+ } else {
+  p.projects.push({
+   id: uid(),
+   name: name,
+   envelope: Math.round(envAmt * 100) / 100,
+   alertPercent: Number(alertPct)
+  });
+  toast("Projet créé.");
+ }
+ saveDB();e.target.reset();render();
+});
+
+$("activityForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ setErr("err-actName");
+ var name = $("actName").value.trim();
+ var date = $("actDate").value;
+ var projId = $("actProject").value;
+ var note = $("actNote").value.trim();
+ if (!name) { setErr("err-actName", "Intitulé requis.", true); return; }
+
+ var p = getActiveData();
+ p.activities.push({
+  id: uid(),
+  name: name,
+  date: date || today(),
+  projectId: projId || null,
+  note: note
+ });
+ saveDB();
+ $("actName").value = "";
+ $("actNote").value = "";
+ $("actName").focus();
+ render();
+ toast("⚡ Activité enregistrée !");
 });
 
 $("taskForm").addEventListener("submit",function(e){
@@ -1179,162 +1407,165 @@ $("taskForm").addEventListener("submit",function(e){
  setErr("err-tname");
  var text=$("tname").value.trim();
  if(!text){setErr("err-tname","Description requise.",true);return}
- data.tasks.push({id:uid(),text:text,done:false});
- save();e.target.reset();render();
+ var p = getActiveData();
+ p.tasks.push({id:uid(),text:text,done:false});
+ saveDB();e.target.reset();render();
 });
 
 document.addEventListener("click",function(e){
  var b=e.target.closest("button");if(!b)return;
- if(b.dataset.deleteExpense||b.dataset.deleteBill||b.dataset.deleteTask||b.dataset.deleteClientBill||b.dataset.deleteActivity||b.dataset.pjDel){
-  if(!confirm("Supprimer cet element ?"))return;
-  if(b.dataset.deleteExpense)data.expenses=data.expenses.filter(function(x){return x.id!==b.dataset.deleteExpense});
-  if(b.dataset.deleteBill)data.bills=data.bills.filter(function(x){return x.id!==b.dataset.deleteBill});
-  if(b.dataset.deleteTask)data.tasks=data.tasks.filter(function(x){return x.id!==b.dataset.deleteTask});
-  if(b.dataset.deleteClientBill)data.clientBills=data.clientBills.filter(function(x){return x.id!==b.dataset.deleteClientBill});
-  if(b.dataset.deleteActivity)data.activities=data.activities.filter(function(x){return x.id!==b.dataset.deleteActivity});
-  if(b.dataset.pjDel)data.projects=data.projects.filter(function(x){return x.id!==b.dataset.pjDel});
-  save();render();
+ var p = getActiveData();
+
+ if(b.dataset.deleteExpense||b.dataset.deleteBill||b.dataset.deleteTask||b.dataset.deleteClientBill||b.dataset.deleteProject||b.dataset.deleteActivity){
+  if(!confirm("Supprimer cet élément ?"))return;
+  if(b.dataset.deleteExpense) p.expenses=p.expenses.filter(function(x){return x.id!==b.dataset.deleteExpense});
+  if(b.dataset.deleteBill) p.bills=p.bills.filter(function(x){return x.id!==b.dataset.deleteBill});
+  if(b.dataset.deleteTask) p.tasks=p.tasks.filter(function(x){return x.id!==b.dataset.deleteTask});
+  if(b.dataset.deleteClientBill) p.clientBills=p.clientBills.filter(function(x){return x.id!==b.dataset.deleteClientBill});
+  if(b.dataset.deleteProject) p.projects=p.projects.filter(function(x){return x.id!==b.dataset.deleteProject});
+  if(b.dataset.deleteActivity) p.activities=p.activities.filter(function(x){return x.id!==b.dataset.deleteActivity});
+  saveDB();render();
+ }
+
+ if (b.dataset.payClient) {
+  var cId = b.dataset.payClient;
+  var client = p.clientBills.find(function(c){ return c.id === cId; });
+  if (client) {
+   var enc = getClientTotalEncaisse(client);
+   var solde = Math.max(0, client.amount - enc);
+   $("payClientId").value = client.id;
+   $("payClientLabel").textContent = "Facture : " + client.label + " (Facturé: " + money(client.amount) + " · Reste: " + money(solde) + ")";
+   $("payAmount").value = solde > 0 ? solde : "";
+   $("payDate").value = today();
+   $("payNote").value = "";
+   setErr("err-payAmount"); setErr("err-payDate");
+   $("paymentModal").style.display = "flex";
+  }
+ }
+
+ if (b.dataset.deleteProfile) {
+  var pName = b.dataset.deleteProfile;
+  if (confirm("Supprimer définitivement le profil "+pName+" et TOUTES ses données ?")) {
+   delete db.profiles[pName];
+   saveDB();
+   render();
+   toast("Profil supprimé.");
+  }
  }
 });
 
 document.addEventListener("change",function(e){
  var t=e.target;
- if(t.dataset&&t.dataset.paid){for(var i=0;i<data.bills.length;i++){if(data.bills[i].id===t.dataset.paid){data.bills[i].paid=t.checked;save();render();break}}}
- if(t.dataset&&t.dataset.task){for(var j=0;j<data.tasks.length;j++){if(data.tasks[j].id===t.dataset.task){data.tasks[j].done=t.checked;save();render();break}}}
- if(t.dataset&&t.dataset.clientPaid){for(var k=0;k<data.clientBills.length;k++){if(data.clientBills[k].id===t.dataset.clientPaid){var cb=data.clientBills[k];if(Array.isArray(cb.payments)&&cb.payments.length){toast("Utilise le bouton + pour gerer les versements.");render()}else{cb.paid=t.checked;save();render()}break}}}
- if(t.dataset&&t.dataset.pjEnv){for(var l=0;l<data.projects.length;l++){if(data.projects[l].id===t.dataset.pjEnv){var ev=Number(t.value);if(Number.isFinite(ev)&&ev>=0){data.projects[l].envelope=Math.round(ev*100)/100;save();render();toast("Enveloppe mise a jour.")}break}}}
+ var p = getActiveData();
+ if(t.dataset&&t.dataset.paid){
+  for(var i=0;i<p.bills.length;i++){
+   if(p.bills[i].id===t.dataset.paid){
+    p.bills[i].paid=t.checked;saveDB();render();break;
+   }
+  }
+ }
+ if(t.dataset&&t.dataset.task){
+  for(var j=0;j<p.tasks.length;j++){
+   if(p.tasks[j].id===t.dataset.task){
+    p.tasks[j].done=t.checked;saveDB();render();break;
+   }
+  }
+ }
 });
 
-$("export").addEventListener("click",function(){
- var payload=JSON.parse(JSON.stringify(data));
- payload.format="aureor-budget";
- payload.version=2;
- payload.profile=currentProfileName||"inconnu";
- payload.exportedBy=userName()||"inconnu";
- payload.exportedAt=new Date().toISOString();
- payload.exportedOn=new Date().toLocaleString("fr-FR");
+// EXPORT & RESTAURATION JSON VERSIONNÉ
+$("exportCurrentProfile").addEventListener("click",function(){
+ var p = getActiveData();
+ var payload = {
+  version: 2,
+  type: "single_profile",
+  profileName: db.activeProfile,
+  exportedAt: new Date().toISOString(),
+  data: p
+ };
  var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  var url=URL.createObjectURL(blob),a=document.createElement("a");
- a.href=url;a.download="mon-quotidien-sauvegarde-"+today()+".json";
+ a.href=url;a.download="AUREOR-Profil-"+db.activeProfile+"-"+today()+".json";
  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
- $("msg").textContent="Verifie dans Fichiers/Telechargements que la sauvegarde est bien la.";
- toast("Sauvegarde exporte.");
-});
-$("exportAllP").addEventListener("click",function(){
- var ps=getProfiles(),out={format:"aureor-budget",version:2,kind:"all-profiles",exportedBy:userName()||"inconnu",exportedAt:new Date().toISOString(),exportedOn:new Date().toLocaleString("fr-FR"),profiles:{}};
- Object.keys(ps).forEach(function(n){var d=loadProfileData(n);if(d)out.profiles[n]=d});
- if(!Object.keys(out.profiles).length){toast("Aucun profil a exporter.");return}
- var blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
- var url=URL.createObjectURL(blob),a=document.createElement("a");
- a.href=url;a.download="aureor-tous-profils-"+today()+".json";
- document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
- toast("Export de tous les profils lance.");
+ $("msg").textContent="Sauvegarde du profil "+db.activeProfile+" exportée.";
+ toast("Export JSON profil terminé.");
 });
 
-function validateImport(s,errCb){
- if(!s||typeof s!=="object"){if(errCb)errCb("Donnees invalides: racine manquante ou non objet");return false;}
- if(!Array.isArray(s.expenses)){if(errCb)errCb("Donnees invalides: expenses doit etre un tableau");return false;}
- if(!s.budgets||typeof s.budgets!=="object"){if(errCb)errCb("Donnees invalides: budgets doit etre un objet");return false;}
- if(!Array.isArray(s.bills)){if(errCb)errCb("Donnees invalides: bills doit etre un tableau");return false;}
- if(!Array.isArray(s.clientBills)){if(errCb)errCb("Donnees invalides: clientBills doit etre un tableau");return false;}
- if(!Array.isArray(s.tasks)){if(errCb)errCb("Donnees invalides: tasks doit etre un tableau");return false;}
- for(var i=0;i<s.expenses.length;i++){
-  var e=s.expenses[i];
-  if(!e||typeof e!=="object"){if(errCb)errCb("Depense #"+(i+1)+": objet manquant ou invalide");return false;}
-  if(typeof e.label!=="string"){if(errCb)errCb("Depense #"+(i+1)+": label doit etre une chaine");return false;}
-  if(e.label.length>500){if(errCb)errCb("Depense #"+(i+1)+": label trop long (max 500)");return false;}
-  if(hasInvisibleChars(e.label)){if(errCb)errCb("Depense #"+(i+1)+": label contient des caracteres invisibles");return false;}
-  if(typeof e.amount!=="number"){if(errCb)errCb("Depense #"+(i+1)+": amount doit etre un nombre");return false;}
-  if(e.amount<=0||!Number.isFinite(e.amount)){if(errCb)errCb("Depense #"+(i+1)+": amount doit etre > 0");return false;}
-  if(typeof e.date!=="string"){if(errCb)errCb("Depense #"+(i+1)+": date doit etre une chaine");return false;}
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(e.date)){if(errCb)errCb("Depense #"+(i+1)+": date invalide (format: AAAA-MM-JJ)");return false;}
-  if(typeof e.category!=="string"){if(errCb)errCb("Depense #"+(i+1)+": category doit etre une chaine");return false;}
-  if(typeof e.id!=="string"){if(errCb)errCb("Depense #"+(i+1)+": id doit etre une chaine");return false;}
-  if(e.id.length>100){if(errCb)errCb("Depense #"+(i+1)+": id trop long (max 100)");return false;}
- }
- for(var j=0;j<s.bills.length;j++){
-  var b=s.bills[j];
-  if(!b||typeof b!=="object"){if(errCb)errCb("Facture #"+(j+1)+": objet manquant ou invalide");return false;}
-  if(typeof b.label!=="string"){if(errCb)errCb("Facture #"+(j+1)+": label doit etre une chaine");return false;}
-  if(b.label.length>500){if(errCb)errCb("Facture #"+(j+1)+": label trop long (max 500)");return false;}
-  if(hasInvisibleChars(b.label)){if(errCb)errCb("Facture #"+(j+1)+": label contient des caracteres invisibles");return false;}
-  if(typeof b.amount!=="number"){if(errCb)errCb("Facture #"+(j+1)+": amount doit etre un nombre");return false;}
-  if(b.amount<=0||!Number.isFinite(b.amount)){if(errCb)errCb("Facture #"+(j+1)+": amount doit etre > 0");return false;}
-  if(typeof b.due!=="string"){if(errCb)errCb("Facture #"+(j+1)+": due doit etre une chaine");return false;}
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(b.due)){if(errCb)errCb("Facture #"+(j+1)+": due invalide (format: AAAA-MM-JJ)");return false;}
-  if(typeof b.category!=="string"){if(errCb)errCb("Facture #"+(j+1)+": category doit etre une chaine");return false;}
-  if(typeof b.paid!=="boolean"){if(errCb)errCb("Facture #"+(j+1)+": paid doit etre un booleen");return false;}
-  if(typeof b.id!=="string"){if(errCb)errCb("Facture #"+(j+1)+": id doit etre une chaine");return false;}
-  if(b.id.length>100){if(errCb)errCb("Facture #"+(j+1)+": id trop long (max 100)");return false;}
- }
- for(var k=0;k<s.clientBills.length;k++){
-  var c=s.clientBills[k];
-  if(!c||typeof c!=="object"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": objet manquant ou invalide");return false;}
-  if(typeof c.label!=="string"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": label doit etre une chaine");return false;}
-  if(c.label.length>500){if(errCb)errCb("Recapitulatif client #"+(k+1)+": label trop long (max 500)");return false;}
-  if(hasInvisibleChars(c.label)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": label contient des caracteres invisibles");return false;}
-  if(c.clientName&&typeof c.clientName!=="string"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": clientName doit etre une chaine");return false;}
-  if(c.clientName&&c.clientName.length>500){if(errCb)errCb("Recapitulatif client #"+(k+1)+": clientName trop long (max 500)");return false;}
-  if(c.clientName&&hasInvisibleChars(c.clientName)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": clientName contient des caracteres invisibles");return false;}
-  if(typeof c.amount!=="number"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": amount doit etre un nombre");return false;}
-  if(c.amount<=0||!Number.isFinite(c.amount)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": amount doit etre > 0");return false;}
-  if(typeof c.date!=="string"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": date doit etre une chaine");return false;}
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(c.date)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": date invalide (format: AAAA-MM-JJ)");return false;}
-  if(typeof c.paid!=="boolean"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": paid doit etre un booleen");return false;}
-  if(c.payments===undefined)c.payments=[];
-  if(!Array.isArray(c.payments)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": payments doit etre un tableau");return false;}
-  for(var pq=0;pq<c.payments.length;pq++){
-   var pay=c.payments[pq];
-   if(!pay||typeof pay!=="object"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": versement invalide");return false;}
-   if(typeof pay.amount!=="number"||!(pay.amount>0)||!Number.isFinite(pay.amount)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": versement avec amount invalide");return false;}
-  }
-  if(typeof c.id!=="string"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": id doit etre une chaine");return false;}
-  if(c.id.length>100){if(errCb)errCb("Recapitulatif client #"+(k+1)+": id trop long (max 100)");return false;}
- }
- for(var k=0;k<s.tasks.length;k++){
-  var t=s.tasks[k];
-  if(!t||typeof t!=="object"){if(errCb)errCb("Tache #"+(k+1)+": objet manquant ou invalide");return false;}
-  if(typeof t.text!=="string"){if(errCb)errCb("Tache #"+(k+1)+": text doit etre une chaine");return false;}
-  if(t.text.length>500){if(errCb)errCb("Tache #"+(k+1)+": text trop long (max 500)");return false;}
-  if(hasInvisibleChars(t.text)){if(errCb)errCb("Tache #"+(k+1)+": text contient des caractere invisibles");return false;}
-  if(typeof t.done!=="boolean"){if(errCb)errCb("Tache #"+(k+1)+": done doit etre un booleen");return false;}
-  if(typeof t.id!=="string"){if(errCb)errCb("Tache #"+(k+1)+": id doit etre une chaine");return false;}
-  if(t.id.length>100){if(errCb)errCb("Tache #"+(k+1)+": id trop long (max 100)");return false;}
- }
- for(var key in s.budgets){
-  if(typeof s.budgets[key]!=="number"){if(errCb)errCb("Budget pour "+key+": doit etre un nombre");return false;}
-  if(s.budgets[key]<0||!Number.isFinite(s.budgets[key])){if(errCb)errCb("Budget pour "+key+": doit etre >= 0");return false;}
-  if(key.length>10){if(errCb)errCb("Budget: cle "+key+" trop longue (max 10)");return false;}
- }
- if(typeof s.marginTarget!=="undefined"&&typeof s.marginTarget!=="number"){if(errCb)errCb("marginTarget doit etre un nombre");return false;}
- if(typeof s.marginTarget!=="undefined"&&(s.marginTarget<=0||!Number.isFinite(s.marginTarget))){if(errCb)errCb("marginTarget doit etre > 0");return false;}
- if(s.activities===undefined)s.activities=[];
- if(!Array.isArray(s.activities)){if(errCb)errCb("activities doit etre un tableau");return false;}
- for(var ai=0;ai<s.activities.length;ai++){
-  var ac=s.activities[ai];
-  if(!ac||typeof ac!=="object"||typeof ac.label!=="string"||!ac.label){if(errCb)errCb("Activite #"+(ai+1)+" invalide");return false;}
-  if(typeof ac.amount!=="number"||!(ac.amount>0)||!Number.isFinite(ac.amount)){if(errCb)errCb("Activite #"+(ai+1)+" : amount doit etre > 0");return false;}
- }
- if(s.projects===undefined)s.projects=[];
- if(!Array.isArray(s.projects)){if(errCb)errCb("projects doit etre un tableau");return false;}
- for(var pi=0;pi<s.projects.length;pi++){
-  var pj=s.projects[pi];
-  if(!pj||typeof pj!=="object"||typeof pj.name!=="string"||!pj.name){if(errCb)errCb("Projet #"+(pi+1)+" invalide");return false;}
-  if(typeof pj.envelope!=="number"||pj.envelope<0||!Number.isFinite(pj.envelope)){if(errCb)errCb("Projet #"+(pi+1)+" : enveloppe invalide");return false;}
- }
+$("exportAllProfiles").addEventListener("click",function(){
+ var payload = {
+  version: 2,
+  type: "all_profiles",
+  activeProfile: db.activeProfile,
+  exportedAt: new Date().toISOString(),
+  profiles: db.profiles
+ };
+ var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+ var url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="AUREOR-Sauvegarde-Complet-"+today()+".json";
+ document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ $("msg").textContent="Sauvegarde complète de tous les profils exportée.";
+ toast("Export JSON complet terminé.");
+});
+
+function validateV1OrV2(s, errCb) {
+ if (!s || typeof s !== "object") { if(errCb) errCb("Fichier invalide : racine non-objet."); return false; }
  return true;
 }
 
-// Export PNG Clients
+$("restore").addEventListener("click",function(){
+ var f=$("file").files[0];
+ if(!f){$("msg").textContent="Choisis d'abord un fichier JSON.";return}
+ if(f.size>5242880){$("msg").textContent="Fichier trop volumineux (max 5 Mo).";return}
+ f.text().then(function(txt){
+  var s;
+  try{s=JSON.parse(txt)}catch(e){$("msg").textContent="Fichier JSON invalide.";return}
+  if(!validateV1OrV2(s, function(err){$("msg").textContent=err})) return;
+
+  if(!confirm("Remplacer/restaurer les données depuis ce fichier ? Une sauvegarde automatique sera créée.")) return;
+
+  // Sauvegarde de sécurité
+  try { localStorage.setItem("aureor_backup_before_restore", JSON.stringify(db)); } catch(e){}
+
+  if (s.version === 2 && s.type === "all_profiles" && s.profiles) {
+   db.profiles = s.profiles;
+   if (s.activeProfile && db.profiles[s.activeProfile]) db.activeProfile = s.activeProfile;
+  } else if (s.version === 2 && s.type === "single_profile" && s.data) {
+   var name = s.profileName || db.activeProfile;
+   db.profiles[name] = s.data;
+   db.activeProfile = name;
+  } else if (Array.isArray(s.expenses) || Array.isArray(s.bills)) {
+   // Format V1 hérité
+   var p = getActiveData();
+   p.expenses = s.expenses || [];
+   p.budgets = s.budgets || {};
+   p.bills = s.bills || [];
+   p.clientBills = s.clientBills || [];
+   p.tasks = s.tasks || [];
+   p.marginTarget = s.marginTarget || 1000;
+  }
+  saveDB();
+  render();
+  $("msg").textContent="Données restaurées avec succès.";
+  toast("Restauration réussie !");
+ });
+});
+
+$("clear").addEventListener("click",function(){
+ if(!confirm("Effacer toutes les données du profil "+db.activeProfile+" ?"))return;
+ db.profiles[db.activeProfile] = emptyProfileData();
+ saveDB();render();toast("Données effacées.");
+});
+
+$("exportAllBills").addEventListener("click",exportAllBillsAsPNG);
 $("exportAllClientBills").addEventListener("click",exportAllClientBillsAsPNG);
 
 document.addEventListener("click",function(e){
  var b=e.target.closest("[data-export-client-bill]");
  if(b&&b.dataset.exportClientBill){
   var billId=b.dataset.exportClientBill;
-  for(var i=0;i<data.clientBills.length;i++){
-   if(data.clientBills[i].id===billId){exportClientBillAsPNG(data.clientBills[i]);break}
-  }
+  var p = getActiveData();
+  var c = p.clientBills.find(function(x){return x.id===billId});
+  if(c) exportClientBillAsPNG(c);
  }
 });
 
@@ -1342,187 +1573,134 @@ document.addEventListener("click",function(e){
  var b=e.target.closest("[data-export-bill]");
  if(b&&b.dataset.exportBill){
   var billId=b.dataset.exportBill;
-  for(var i=0;i<data.bills.length;i++){
-   if(data.bills[i].id===billId){exportBillAsPNG(data.bills[i]);break}
-  }
+  var p = getActiveData();
+  var bill = p.bills.find(function(x){return x.id===billId});
+  if(bill) exportBillAsPNG(bill);
  }
 });
 
-document.addEventListener("click",function(e){
- var t=e.target.closest("[data-pay-toggle]");
- if(t){var f=$("payform-"+t.dataset.payToggle);if(f){f.style.display=(f.style.display==="none"||!f.style.display)?"block":"none"}return}
- var p=e.target.closest("[data-pay]");
- if(p&&p.dataset.pay){
-  var id=p.dataset.pay,bill=null;
-  for(var i=0;i<data.clientBills.length;i++){if(data.clientBills[i].id===id){bill=data.clientBills[i];break}}
-  if(!bill)return;
-  var amt=Number(($("payamt-"+id)||{}).value);
-  if(!Number.isFinite(amt)||amt<=0){toast("Saisis un montant de versement valide.");return}
-  if(!Array.isArray(bill.payments))bill.payments=[];
-  bill.payments.push({id:uid(),amount:Math.round(amt*100)/100,date:today(),by:userName()||undefined,at:new Date().toISOString()});
-  var sum=paidAmountOf(bill);
-  bill.paid=sum>=(Number(bill.amount)||0)-0.001;
-  save();render();
-  toast("Versement de "+money(amt)+" enregistre.");
+// GESTION PROFILS & GATE AUTHENTIFICATION
+var pendingProfileSwitch = null;
+
+function renderGateChoices(){
+ var choices = $("gateProfilesChoices");
+ var keys = Object.keys(db.profiles);
+ choices.innerHTML = keys.map(function(k){
+  var hasPin = !!db.profiles[k].pin;
+  return '<button type="button" data-user-select="'+escAttr(k)+'"><span>'+esc(k.toUpperCase())+'</span><span>'+(hasPin?'🔒 PIN':'▶')+'</span></button>';
+ }).join("");
+}
+
+function showUserGate(){
+ renderGateChoices();
+ $("gateTitle").textContent = "Qui pilote l'application aujourd'hui ?";
+ $("gateProfilesChoices").style.display = "flex";
+ $("gatePinForm").style.display = "none";
+ $("userGate").classList.add("show");
+}
+
+$("gateProfilesChoices").addEventListener("click", function(e){
+ var b = e.target.closest("[data-user-select]"); if(!b) return;
+ var targetName = b.dataset.userSelect;
+ var targetProfile = db.profiles[targetName];
+
+ if (targetProfile && targetProfile.pin) {
+  pendingProfileSwitch = targetName;
+  $("gateProfilesChoices").style.display = "none";
+  $("gatePinPrompt").textContent = "Code PIN pour " + targetName;
+  $("gatePinInput").value = "";
+  setErr("gatePinErr");
+  $("gatePinForm").style.display = "block";
+  $("gatePinInput").focus();
+ } else {
+  // Pas de PIN, connexion directe
+  db.activeProfile = targetName;
+  saveDB();
+  $("userGate").classList.remove("show");
+  render();
+  toast("Bonjour " + targetName + " !");
  }
-});
-$("restore").addEventListener("click",function(){
- var f=$("file").files[0];
- if(!f){$("msg").textContent="Choisis d'abord un fichier JSON.";return}
- if(f.size>2097152){$("msg").textContent="Fichier trop volumineux (max 2 Mo).";return}
- f.text().then(function(txt){
-  var s;
-  try{s=JSON.parse(txt)}catch(e){$("msg").textContent="Fichier invalide. Aucune donnee restauree.";return}
-  if(s&&s.kind==="all-profiles"&&s.profiles&&typeof s.profiles==="object"){
-   var names=Object.keys(s.profiles);
-   if(!names.length){$("msg").textContent="Aucun profil dans ce fichier.";return}
-   if(!confirm("Restaurer "+names.length+" profil(s) ? Les espaces existants du meme nom seront remplaces (une copie de securite de chaque espace remplace sera conservee)."))return;
-   var ps=getProfiles(),okCount=0;
-   names.forEach(function(n){
-    var d=normalizeData(s.profiles[n]);
-    if(!ps[n]){
-     var pin=null;
-     while(!(pin&&/^\d{4,6}$/.test(pin))){
-      pin=prompt("Code PIN pour le profil restaure : "+n+" (4 a 6 chiffres) :");
-      if(pin===null)return;
-     }
-     ps[n]={pin:hashPin(pin),created:new Date().toISOString()};
-    }
-    var old=loadProfileData(n);
-    if(old){try{localStorage.setItem("aureor_backup_"+n,JSON.stringify(old))}catch(e2){}}
-    try{localStorage.setItem(profileDataKey(n),JSON.stringify(d));okCount++}catch(e3){}
-   });
-   setProfiles(ps);
-   if(currentProfileName&&s.profiles[currentProfileName])openProfile(currentProfileName);
-   $("msg").textContent=okCount+" profil(s) restaure(s).";
-   toast("Profils restaures.");
-   return;
-  }
-  if(s&&typeof s==="object"&&!Array.isArray(s.clientBills))s.clientBills=[];
-  if(s&&typeof s==="object"&&!Array.isArray(s.activities))s.activities=[];
-  if(s&&typeof s==="object"&&!Array.isArray(s.projects))s.projects=[];
-  if(!validateImport(s,function(err){$("msg").textContent=err}))return
-  if(!currentProfileName){$("msg").textContent="Ouvre d'abord un profil pour restaurer des donnees.";return}
-  if(!confirm("Remplacer les donnees de "+currentProfileName+" par cette sauvegarde ? (Une copie de securite de l'espace actuel sera conservee.)"))return;
-  try{localStorage.setItem("aureor_backup_"+currentProfileName,JSON.stringify(data))}catch(e2){}
-  data=normalizeData(s);
-  save();render();$("msg").textContent="Sauvegarde restauree.";
-  toast("Donnees restaurees.");
- });
-});
-$("clear").addEventListener("click",function(){
- if(!confirm("Effacer toutes les donnees ? Exporte d'abord une sauvegarde si necessaire."))return;
- data={expenses:[],budgets:{},bills:[],clientBills:[],tasks:[],marginTarget:1000};
- save();render();toast("Donnees effacees.");
 });
 
-$("exportAllBills").addEventListener("click",exportAllBillsAsPNG);
+$("gatePinCancel").addEventListener("click", function(){
+ $("gatePinForm").style.display = "none";
+ $("gateProfilesChoices").style.display = "flex";
+ pendingProfileSwitch = null;
+});
 
-function hashPin(pin){var h=5381,s="aureor~"+pin;for(var i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))|0}return "h"+(h>>>0).toString(36)}
-function getProfiles(){try{var p=JSON.parse(localStorage.getItem(profilesKey));if(p&&typeof p==="object"&&!Array.isArray(p))return p}catch(e){}return {}}
-function setProfiles(p){try{localStorage.setItem(profilesKey,JSON.stringify(p))}catch(e){toast("Impossible d'enregistrer le profil.")}}
-function loadProfileData(name){try{var r=localStorage.getItem(profileDataKey(name));return r?JSON.parse(r):null}catch(e){return null}}
-function blankData(){return{expenses:[],budgets:{},bills:[],clientBills:[],tasks:[],activities:[],projects:[],marginTarget:1000}}
-function normalizeData(d){
- d=d&&typeof d==="object"?d:{};
- return{expenses:Array.isArray(d.expenses)?d.expenses:[],budgets:d.budgets&&typeof d.budgets==="object"&&!Array.isArray(d.budgets)?d.budgets:{},bills:Array.isArray(d.bills)?d.bills:[],clientBills:Array.isArray(d.clientBills)?d.clientBills:[],tasks:Array.isArray(d.tasks)?d.tasks:[],activities:Array.isArray(d.activities)?d.activities:[],projects:Array.isArray(d.projects)?d.projects:[],marginTarget:Number(d.marginTarget)||1000}
-}
-function userName(){return currentProfileName||""}
-function applyUser(){
- $("hdrUser").textContent=currentProfileName?("Bienvenue "+currentProfileName):"";
- $("userGate").classList.toggle("show",!currentProfileName);
- if(!currentProfileName)renderGate();
-}
-function renderGate(){
- var ps=getProfiles(),names=Object.keys(ps).sort();
- $("gateSelect").style.display=names.length?"block":"none";
- $("gateLogin").style.display="none";
- $("gateCreate").style.display=names.length?"none":"block";
- $("createBack").style.display=names.length?"inline-block":"none";
- if(names.length){
-  $("gateUsers").innerHTML=names.map(function(n){return '<div class="row" style="width:100%;margin-bottom:10px"><button type="button" data-guser="'+escAttr(n)+'" style="flex:1;padding:20px 10px;font-size:19px;font-weight:bold;background:#142033;border:1px solid #B08D35;color:#B08D35;border-radius:14px">'+esc(n)+'</button></div>'}).join("");
+function submitGatePin(){
+ if (!pendingProfileSwitch) return;
+ var pinInput = $("gatePinInput").value;
+ var targetProfile = db.profiles[pendingProfileSwitch];
+ if (targetProfile && targetProfile.pin === pinInput) {
+  db.activeProfile = pendingProfileSwitch;
+  saveDB();
+  $("userGate").classList.remove("show");
+  pendingProfileSwitch = null;
+  render();
+  toast("Connexion réussie !");
+ } else {
+  setErr("gatePinErr", "Code PIN incorrect.", true);
+  $("gatePinInput").value = "";
+  $("gatePinInput").focus();
  }
 }
-$("gateUsers").addEventListener("click",function(e){
- var b=e.target.closest("[data-guser]");if(!b)return;
- var n=b.dataset.guser;
- $("gateSelect").style.display="none";$("gateCreate").style.display="none";$("gateLogin").style.display="block";
- $("gateLoginName").textContent="Espace de "+n;
- $("loginGo").dataset.user=n;$("loginDel").dataset.user=n;
- $("loginPin").value="";setErr("err-loginpin");
- $("loginPin").focus();
+
+$("gatePinSubmit").addEventListener("click", submitGatePin);
+$("gatePinInput").addEventListener("keypress", function(e){
+ if (e.key === "Enter") submitGatePin();
 });
-$("gateNew").addEventListener("click",function(){
- $("gateSelect").style.display="none";$("gateLogin").style.display="none";$("gateCreate").style.display="block";
- $("createBack").style.display="inline-block";
+
+$("switchUser").addEventListener("click", function(){
+ saveDB();
+ showUserGate();
 });
-$("createBack").addEventListener("click",function(){renderGate()});
-$("loginBack").addEventListener("click",function(){$("loginPin").value="";renderGate()});
-$("loginPin").addEventListener("keydown",function(e){if(e.key==="Enter")$("loginGo").click()});
-$("loginGo").addEventListener("click",function(){
- var ps=getProfiles(),n=$("loginGo").dataset.user,pin=$("loginPin").value;
- if(!ps[n]){setErr("err-loginpin","Profil introuvable.",true);return}
- if(hashPin(pin)!==ps[n].pin){setErr("err-loginpin","Code PIN incorrect.",true);return}
- openProfile(n);
+
+$("addProfileBtn").addEventListener("click", function(){
+ var name = $("newProfileName").value.trim();
+ if (!name) { toast("Saisis un nom de profil."); return; }
+ if (db.profiles[name]) { toast("Ce profil existe déjà."); return; }
+ db.profiles[name] = emptyProfileData();
+ saveDB();
+ $("newProfileName").value = "";
+ render();
+ toast("Profil " + name + " créé !");
 });
-$("loginDel").addEventListener("click",function(){
- var n=$("loginDel").dataset.user;
- if(!n)return;
- if(!confirm("Supprimer le profil "+n+" et TOUTES ses donnees ? Exporte-le d'abord si besoin."))return;
- var ps=getProfiles();delete ps[n];setProfiles(ps);
- try{localStorage.removeItem(profileDataKey(n))}catch(e){}
- renderGate();toast("Profil supprime.");
+
+// GESTION PIN
+$("changePinBtn").addEventListener("click", function(){
+ var p = getActiveData();
+ $("newPin").value = p.pin || "";
+ setErr("err-newPin");
+ $("pinModal").style.display = "flex";
+ $("newPin").focus();
 });
-$("createGo").addEventListener("click",function(){
- setErr("err-uname");setErr("err-upin");setErr("err-upin2");
- var name=$("uname").value.trim(),pin=$("upin").value,pin2=$("upin2").value,ok=true;
- if(!name||name.length<2){setErr("err-uname","Indique un nom (2 caracteres min).",true);ok=false}
- var ps=getProfiles();
- if(name&&ps[name]){setErr("err-uname","Ce profil existe deja. Choisis-le dans la liste.",true);ok=false}
- if(!/^\d{4,6}$/.test(pin)){setErr("err-upin","PIN : 4 a 6 chiffres.",true);ok=false}
- if(pin!==pin2){setErr("err-upin2","Les codes ne correspondent pas.",true);ok=false}
- if(!ok)return;
- var firstProfile=Object.keys(ps).length===0;
- ps[name]={pin:hashPin(pin),created:new Date().toISOString()};
- setProfiles(ps);
- var nd=blankData();
- if(firstProfile&&legacyDataPending){
-  if(confirm("D'anciennes donnees (version precedente) ont ete trouvees sur cet appareil.\nLes importer dans le profil "+name+" ?\n(L'original reste conserve ; reponds Annuler pour partir d'un espace vide.)")){
-   try{localStorage.setItem("aureor_backup_preprofils",JSON.stringify(data))}catch(e2){}
-   nd=normalizeData(data);legacyDataPending=false;
-  }
+
+$("closePinModal").addEventListener("click", function(){ $("pinModal").style.display = "none"; });
+
+$("changePinForm").addEventListener("submit", function(e){
+ e.preventDefault();
+ var pinVal = $("newPin").value.trim();
+ var p = getActiveData();
+ p.pin = pinVal;
+ saveDB();
+ $("pinModal").style.display = "none";
+ render();
+ toast(pinVal ? "Code PIN enregistré !" : "Code PIN désactivé.");
+});
+
+// DÉMARRAGE
+if (!db.activeProfile || !db.profiles[db.activeProfile]) {
+ showUserGate();
+} else {
+ var curP = db.profiles[db.activeProfile];
+ if (curP && curP.pin) {
+  showUserGate();
+ } else {
+  render();
  }
- try{localStorage.setItem(profileDataKey(name),JSON.stringify(nd))}catch(e3){toast("Impossible de creer l'espace de stockage du profil.");return}
- $("uname").value="";$("upin").value="";$("upin2").value="";
- openProfile(name);
- toast("Profil "+name+" cree. Bienvenue !");
-});
-function openProfile(name){
- var d=loadProfileData(name);
- data=normalizeData(d||blankData());
- currentProfileName=name;
- try{localStorage.setItem(activeKey,name)}catch(e){}
- applyUser();render();
 }
-$("switchUser").addEventListener("click",function(){
- save();
- currentProfileName=null;
- try{localStorage.removeItem(activeKey)}catch(e){}
- applyUser();
- toast("Espace sauvegarde. Choisis l'utilisateur suivant.");
-});
-(function initProfiles(){
- try{
-  var legacy=JSON.parse(localStorage.getItem(legacyKey));
-  if(legacy&&(legacy.expenses||legacy.bills||legacy.clientBills||legacy.tasks))legacyDataPending=true;
- }catch(e){}
- var ps=getProfiles(),active=null;
- try{active=localStorage.getItem(activeKey)}catch(e){}
- if(ps[active]){openProfile(active);return}
- currentProfileName=null;
- data=normalizeData(data);
- applyUser();render();
-})();
+
 })();
 </script>
 </body>
