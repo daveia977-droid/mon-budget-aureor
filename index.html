@@ -105,8 +105,8 @@ table.data-table tr:last-child td{border-bottom:0}
 <!-- EN-TÊTE FIXE ET BOUTON PROFIL -->
 <header>
 <div class="brand-wrap">
-<h1 class="brand-font">Mon Budget AŪREOR</h1>
-<small id="hdrTitle">Votre espace financier</small>
+<small style="color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:11px">BUDGET AŪREOR</small>
+<h1 id="hdrTitle" style="margin:2px 0 0;font-size:22px;color:var(--text);font-family:system-ui,-apple-system,sans-serif">Tableau de bord</h1>
 </div>
 <button id="profileHeaderBtn" type="button" aria-label="Menu profil">
 <span class="ico">👤</span><span id="headerUserName">Chargement...</span>
@@ -203,18 +203,38 @@ table.data-table tr:last-child td{border-bottom:0}
 
 <!-- 3. CLIENTS -->
 <section id="p-clients" class="page">
-<div class="card hint" style="border-color:var(--accent)">
-<strong style="color:var(--accent)">💡 Tableau de suivi des Clients & CA</strong>
-<p style="margin:4px 0 0;font-size:12px">Suit les prestations facturées, le total encaissé (acomptes), le solde restant et le statut calculé automatiquement.</p>
-</div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
 <div class="card stat"><small>CA Total Facturé</small><strong id="caTotal">0 €</strong></div>
 <div class="card stat"><small>Total Encaissé</small><strong id="clientPaidTotal" style="color:var(--green)">0 €</strong></div>
 <div class="card stat"><small>Solde / Créances</small><strong id="clientUnpaidTotal" style="color:var(--amber)">0 €</strong></div>
 <div class="card stat"><small>Dossiers Clients</small><strong id="clientCount">0</strong></div>
 </div>
+
 <div class="card">
-<button id="exportAllClientBills" class="block primary" style="margin-bottom:12px">📥 Exporter le tableau clients (PNG)</button>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<strong>Tableau des Clients & Encaissements</strong>
+<button id="exportAllClientBills" class="primary" style="padding:6px 12px;font-size:12px">📥 Exporter PNG</button>
+</div>
+<div class="table-responsive">
+<table class="data-table" id="clientTable">
+<thead>
+<tr>
+<th>Client</th>
+<th>Prestation</th>
+<th>Facturé</th>
+<th>Encaissé</th>
+<th>Solde</th>
+<th>Statut</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="clientTableBody"></tbody>
+</table>
+</div>
+<div id="clientTableEmpty" class="empty" style="display:none">Aucun dossier client enregistré.</div>
+</div>
+
+<div class="card">
 <strong>Ajouter une prestation client</strong>
 <form id="clientBillForm" novalidate>
 <label for="cname">Intitulé de la prestation</label><input id="cname" maxlength="100" placeholder="Ex. Prestation Séjour Courchevel">
@@ -231,25 +251,6 @@ table.data-table tr:last-child td{border-bottom:0}
 <select id="cproject"><option value="">-- Aucun projet --</option></select>
 <button class="primary block">Créer la prestation client</button>
 </form>
-</div>
-<div class="card">
-<strong>Tableau des Clients & Encaissements</strong>
-<div class="table-responsive">
-<table class="data-table" id="clientTable">
-<thead>
-<tr>
-<th>Client / Prestation</th>
-<th>Facturé</th>
-<th>Encaissé</th>
-<th>Solde</th>
-<th>Statut</th>
-<th>Actions</th>
-</tr>
-</thead>
-<tbody id="clientTableBody"></tbody>
-</table>
-</div>
-<div id="clientTableEmpty" class="empty" style="display:none">Aucun dossier client enregistré.</div>
 </div>
 </section>
 
@@ -299,31 +300,43 @@ table.data-table tr:last-child td{border-bottom:0}
 <!-- 5. BILAN -->
 <section id="p-bilan" class="page">
 <div class="card">
-<strong>Bilan du mois</strong>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+<strong>Choix de la période d'analyse</strong>
+<div style="display:flex;gap:4px" id="bilanPeriodWrap">
+<button type="button" class="chip sel" data-period="month">Mois</button>
+<button type="button" class="chip" data-period="6months">6 Mois</button>
+<button type="button" class="chip" data-period="1year">1 An</button>
+</div>
+</div>
+</div>
+
+<div class="card">
+<strong id="bilanPeriodTitle">Bilan du mois</strong>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
-<div class="stat"><small>CA Encaissé Mois</small><strong id="bilanMCA">0 €</strong></div>
-<div class="stat"><small>Charges du mois</small><strong id="bilanMCharges">0 €</strong></div>
-<div class="stat"><small>Bénéfice du mois</small><strong id="bilanMNet">0 €</strong></div>
+<div class="stat"><small>CA Encaissé</small><strong id="bilanMCA">0 €</strong></div>
+<div class="stat"><small>Charges de la période</small><strong id="bilanMCharges">0 €</strong></div>
+<div class="stat"><small>Bénéfice de la période</small><strong id="bilanMNet">0 €</strong></div>
+<div class="stat"><small>CA Total Facturé</small><strong id="bilanCA">0 €</strong></div>
 </div>
 <small id="bilanMHint" class="muted" style="margin-top:8px;display:block"></small>
-<button id="exportMonth" class="block" style="margin-top:12px">📥 Exporter le rapport du mois (PNG)</button>
+<button id="exportMonth" class="block" style="margin-top:12px">📥 Exporter le rapport de la période (PNG)</button>
 </div>
+
 <div class="card">
-<strong>Bilan global (tout l’historique)</strong>
+<strong>Objectif de Marge & Progression</strong>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
-<div class="stat"><small>CA Total Facturé</small><strong id="bilanCA">0 €</strong></div>
-<div class="stat"><small>Total Encaissé</small><strong id="bilanCAEncaisse" style="color:var(--green)">0 €</strong></div>
-<div class="stat"><small>Charges Globales</small><strong id="bilanCharges">0 €</strong></div>
 <div class="stat"><small>Bénéfice Net Réel</small><strong id="bilanNet">0 €</strong></div>
+<div class="stat"><small>Objectif Marge</small><strong id="bilanTarget">1 000 €</strong></div>
 </div>
 <div id="bilanAlert" style="margin-top:16px"></div>
 <div class="bar" style="margin-top:16px"><span id="bilanProgress" style="width:0;background:#B08D35"></span></div>
 <small id="bilanHint" class="muted" style="margin-top:8px;display:block">Objectif de marge actuel</small>
-<label for="marginTarget" style="margin-top:16px">Objectif de marge (€)</label>
+<label for="marginTarget" style="margin-top:16px">Définir l'objectif de marge (€)</label>
 <div class="row"><input id="marginTarget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 1000" value="1000"><button id="saveTarget" class="primary">OK</button></div>
 </div>
+
 <div class="card">
-<strong>Bénéfice sur 6 mois</strong>
+<strong id="chartBilanTitle">Bénéfice par mois</strong>
 <div id="chartBilan"></div>
 </div>
 <div class="card">
@@ -646,31 +659,45 @@ function getClientTotalEncaisse(c){
  return c.payments.reduce(function(s,p){ return s + Number(p.amount||0); }, 0);
 }
 
-function bilanSVG(){
+var currentBilanPeriod = "month"; // "month", "6months", "1year"
+
+function getMonthsForPeriod(period){
  var months=[],m=new Date();
- for(var i=0;i<6;i++){
+ var count = period === "1year" ? 12 : (period === "6months" ? 6 : 1);
+ if (period === "month") {
+  months.push({label: new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}), key: month});
+  return months;
+ }
+ for(var i=0;i<count;i++){
   var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
   months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),key:key});
   m.setMonth(m.getMonth()-1);
  }
  months.reverse();
+ return months;
+}
+
+function bilanSVG(period){
+ var months = getMonthsForPeriod(period || currentBilanPeriod);
  months.forEach(function(v){
   var ca=appData.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, v.key); }, 0);
   var ch=appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+appData.bills.filter(function(x){return x.due&&x.due.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0);
   v.net=Math.round((ca-ch)*100)/100;
  });
  var maxAbs=Math.max.apply(null,months.map(function(x){return Math.abs(x.net)}))||1;
- var H=140,W=320,bw=28,gap=(W-6*bw)/7;
+ var H=140,W=320, count = months.length;
+ var bw = count > 6 ? 16 : 28;
+ var gap = (W - count * bw) / (count + 1);
  var bars="";
  months.forEach(function(v,i){
   var h=Math.max(Math.abs(v.net)/maxAbs*H,1);
-  var x=34+i*(bw+gap),y=H-h+10;
-  var fill=v.net<0?"#f87171":(i===5?"#B08D35":"#34d399");
-  bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="5" fill="'+fill+'"/>';
-  bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="10" fill="#a7b4c7">'+esc(v.label)+'</text>';
-  if(v.net!==0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="9" fill="#f4f7fb">'+Math.round(v.net)+'</text>';
+  var x=gap + i*(bw+gap),y=H-h+10;
+  var fill=v.net<0?"#f87171":(i===count-1?"#B08D35":"#34d399");
+  bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3" fill="'+fill+'"/>';
+  bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="'+(count>6?"8":"10")+'" fill="#a7b4c7">'+esc(v.label)+'</text>';
+  if(v.net!==0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="'+(count>6?"7":"9")+'" fill="#f4f7fb">'+Math.round(v.net)+'</text>';
  });
- return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Bénéfice sur 6 mois">'+bars+'</svg>';
+ return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Bénéfice par mois">'+bars+'</svg>';
 }
 
 function expenseRow(x){
@@ -910,62 +937,95 @@ function renderActivitiesSection(){
 }
 
 function renderBilanSection(){
- var allExpenses = appData.expenses.reduce(function(s,x){return s+x.amount},0);
- var allBills = appData.bills.reduce(function(s,x){return s+x.amount},0);
- var totalCharges = allExpenses + allBills;
+ // Render Period selector buttons state
+ var periodBtns = document.querySelectorAll("#bilanPeriodWrap button");
+ for (var pIdx = 0; pIdx < periodBtns.length; pIdx++) {
+  var pBtn = periodBtns[pIdx];
+  var isSel = pBtn.dataset.period === currentBilanPeriod;
+  pBtn.classList.toggle("sel", isSel);
+  pBtn.style.background = isSel ? "var(--accent)" : "";
+  pBtn.style.color = isSel ? "#0b1220" : "";
+ }
 
- var caFacture = appData.clientBills.reduce(function(s,x){return s+x.amount},0);
- var caEncaisse = appData.clientBills.reduce(function(s,x){return s+getClientTotalEncaisse(x)},0);
- var caAEncaisser = Math.max(0, caFacture - caEncaisse);
+ var targetMonths = getMonthsForPeriod(currentBilanPeriod);
+ var targetKeys = targetMonths.map(function(m){ return m.key; });
 
- var netProfit = caEncaisse - totalCharges;
+ // Period Title
+ var periodTitles = {
+  month: "Bilan du mois (" + new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"}) + ")",
+  "6months": "Bilan cumulé sur 6 mois",
+  "1year": "Bilan cumulé sur 1 an"
+ };
+ $("bilanPeriodTitle").textContent = periodTitles[currentBilanPeriod] || "Bilan de la période";
+ $("chartBilanTitle").textContent = currentBilanPeriod === "month" ? "Bénéfice du mois" : "Bénéfice par mois (" + targetMonths.length + " mois)";
+
+ var pExp = appData.expenses.filter(function(x){ return x.date && targetKeys.indexOf(x.date.slice(0,7)) !== -1; }).reduce(function(s,x){ return s + x.amount; }, 0);
+ var pBills = appData.bills.filter(function(x){ return x.due && targetKeys.indexOf(x.due.slice(0,7)) !== -1; }).reduce(function(s,x){ return s + x.amount; }, 0);
+ var pCharges = pExp + pBills;
+
+ var pCAEncaisse = appData.clientBills.reduce(function(s, c){
+  return s + (c.payments || []).filter(function(pm){
+   return pm.date && targetKeys.indexOf(pm.date.slice(0,7)) !== -1;
+  }).reduce(function(ps, pm){ return ps + Number(pm.amount || 0); }, 0);
+ }, 0);
+
+ var pNetProfit = pCAEncaisse - pCharges;
+
+ var caFacture = appData.clientBills.reduce(function(s,x){ return s + x.amount; }, 0);
+ var caEncaisseTotal = appData.clientBills.reduce(function(s,x){ return s + getClientTotalEncaisse(x); }, 0);
+ var caAEncaisser = Math.max(0, caFacture - caEncaisseTotal);
+
  var marginTarget = Number(appData.marginTarget) || 1000;
- var targetProgress = marginTarget > 0 ? Math.min(100, Math.max(0, netProfit / marginTarget * 100)) : 0;
+ var targetProgress = marginTarget > 0 ? Math.min(100, Math.max(0, pNetProfit / marginTarget * 100)) : 0;
 
+ $("bilanMCA").textContent = money(pCAEncaisse);
+ $("bilanMCharges").textContent = money(pCharges);
+ $("bilanMNet").textContent = money(pNetProfit);
  $("bilanCA").textContent = money(caFacture);
- $("bilanCAEncaisse").textContent = money(caEncaisse);
- $("bilanCharges").textContent = money(totalCharges);
- $("bilanNet").textContent = money(netProfit);
+
+ $("bilanNet").textContent = money(pNetProfit);
  $("bilanTarget").textContent = money(marginTarget);
  $("bilanProgress").style.width = targetProgress + "%";
+ $("marginTarget").value = marginTarget;
 
  var alertHtml="";
- if(netProfit<0){
-  alertHtml='<div class="card" style="border-color:var(--danger);background:#241420">⚠️ Bénéfice net négatif : '+money(netProfit)+'</div>';
- }else if(netProfit<marginTarget){
-  alertHtml='<div class="card" style="border-color:var(--amber);background:#2a2418">▶ Objectif de marge non atteint : '+money(marginTarget-netProfit)+' restant</div>';
- }else if(netProfit>=marginTarget*2){
-  alertHtml='<div class="card" style="border-color:#34d399;background:#0f2418">✅ Excellent ! Objectif dépassé de '+money(netProfit-marginTarget)+'</div>';
+ if(pNetProfit < 0){
+  alertHtml='<div class="card" style="border-color:var(--danger);background:#241420">⚠️ Bénéfice de la période négatif : '+money(pNetProfit)+'</div>';
+ }else if(pNetProfit < marginTarget){
+  alertHtml='<div class="card" style="border-color:var(--amber);background:#2a2418">▶ Objectif non atteint pour la période : '+money(marginTarget - pNetProfit)+' restant</div>';
+ }else if(pNetProfit >= marginTarget * 2){
+  alertHtml='<div class="card" style="border-color:#34d399;background:#0f2418">✅ Excellent ! Objectif dépassé de '+money(pNetProfit - marginTarget)+'</div>';
  }
- $("bilanAlert").innerHTML=alertHtml;
- $("bilanHint").textContent="Objectif de marge : "+money(marginTarget)+" ("+Math.round(targetProgress)+"% atteint)";
+ $("bilanAlert").innerHTML = alertHtml;
+ $("bilanHint").textContent = "Objectif de marge : " + money(marginTarget) + " (" + Math.round(targetProgress) + "% atteint)";
+ $("bilanMHint").textContent = "Période analysée : " + (targetKeys.length === 1 ? targetKeys[0] : "Du " + targetKeys[0] + " au " + targetKeys[targetKeys.length - 1]);
 
- var mExp = appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mBills = appData.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var mCAEncaisse = appData.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, month); }, 0);
-
- $("bilanMCA").textContent = money(mCAEncaisse);
- $("bilanMCharges").textContent = money(mExp + mBills);
- $("bilanMNet").textContent = money(mCAEncaisse - (mExp + mBills));
- $("bilanMHint").textContent = "Mois affiché : " + new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
- $("chartBilan").innerHTML = bilanSVG();
+ $("chartBilan").innerHTML = bilanSVG(currentBilanPeriod);
 
  var chargeDetails=[
-  {label:"Dépenses internes",value:money(allExpenses)},
-  {label:"Charges / Factures à payer",value:money(allBills)},
-  {label:"Total des charges",value:money(totalCharges)}
+  {label:"Dépenses internes (Période)",value:money(pExp)},
+  {label:"Charges / Factures (Période)",value:money(pBills)},
+  {label:"Total Charges (Période)",value:money(pCharges)}
  ];
- $("bilanDetails").innerHTML=chargeDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucune charge.</div>';
+ $("bilanDetails").innerHTML=chargeDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("");
 
  var caDetails=[
-  {label:"Chiffre d'Affaires Total Facturé",value:money(caFacture)},
-  {label:"Total réellement Encaissé",value:money(caEncaisse)},
-  {label:"Créances Clients Restantes (À encaisser)",value:money(caAEncaisser)}
+  {label:"CA Encaissé (Période)",value:money(pCAEncaisse)},
+  {label:"Total Encaissé Historique",value:money(caEncaisseTotal)},
+  {label:"Créances Clients Restantes",value:money(caAEncaisser)}
  ];
- $("caDetails").innerHTML=caDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucun CA.</div>';
+ $("caDetails").innerHTML=caDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("");
 
  renderChips();
 }
+
+// Bilan Period selector listener
+$("bilanPeriodWrap").addEventListener("click", function(e){
+ var b = e.target.closest("[data-period]");
+ if (!b) return;
+ currentBilanPeriod = b.dataset.period;
+ renderBilanSection();
+});
 
 // EXACTEMENT 5 ONGLETS PRINCIPAUX
 var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients & CA",projects:"Projets & Activités",bilan:"Bilan"};
