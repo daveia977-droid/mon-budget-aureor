@@ -488,9 +488,27 @@ function monthsSVG(){
  return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Tendance sur 12 mois">'+bars+'</svg>';
 }
 
-function bilanSVG(){
- var months=[],m=new Date(),N=12;
- for(var i=0;i<N;i++){
+function getClientEncaisseInMonth(c, monthKey){
+ if (!Array.isArray(c.payments)) return 0;
+ return c.payments.filter(function(p){ return p.date && p.date.slice(0,7)===monthKey; }).reduce(function(s,p){ return s + Number(p.amount||0); }, 0);
+}
+
+function getClientTotalEncaisse(c){
+ if (!Array.isArray(c.payments)) return 0;
+ return c.payments.reduce(function(s,p){ return s + Number(p.amount||0); }, 0);
+}
+
+var currentBilanPeriod = "month"; // "month", "6months", "1year"
+
+function getMonthsForPeriod(period){
+ var months=[],m=new Date();
+ m.setDate(1);
+ var count = period === "1year" ? 12 : (period === "6months" ? 6 : 1);
+ if (period === "month") {
+  months.push({label: new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}), key: month});
+  return months;
+ }
+ for(var i=0;i<count;i++){
   var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
   months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),key:key});
   m.setMonth(m.getMonth()-1);
