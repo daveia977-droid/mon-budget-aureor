@@ -663,6 +663,7 @@ var currentBilanPeriod = "month"; // "month", "6months", "1year"
 
 function getMonthsForPeriod(period){
  var months=[],m=new Date();
+ m.setDate(1);
  var count = period === "1year" ? 12 : (period === "6months" ? 6 : 1);
  if (period === "month") {
   months.push({label: new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}), key: month});
@@ -1301,15 +1302,42 @@ document.addEventListener("change",function(e){
 // EXPORT & RESTAURATION JSON / PNG COMPLETS
 function renderProfileSubContent(section){
  var box = $("profileSubContent");
+ var btns = ["btnSectionProfile", "btnSectionExport", "btnSectionAudit", "btnSectionSettings"];
+ btns.forEach(function(bId){
+  var btn = $(bId);
+  if (btn) btn.style.borderColor = "var(--line)";
+ });
+
+ if (!section) {
+  box.style.display = "none";
+  box.innerHTML = "";
+  return;
+ }
+
+ box.style.display = "block";
+ var activeBtnMap = {
+  profile: "btnSectionProfile",
+  export: "btnSectionExport",
+  audit: "btnSectionAudit",
+  settings: "btnSectionSettings"
+ };
+ if (activeBtnMap[section] && $(activeBtnMap[section])) {
+  $(activeBtnMap[section]).style.borderColor = "var(--accent)";
+ }
+
  if (section === "profile") {
-  box.innerHTML = '<strong style="color:var(--accent)">👤 Modification du Profil & PIN</strong>' +
+  box.innerHTML = '<strong style="color:var(--accent)">👤 Modification du Profil & Sécurité PIN</strong>' +
    '<form id="updateProfileForm" novalidate style="margin-top:10px">' +
-    '<label style="margin-top:0">Nom d\'utilisateur / Enseigne</label>' +
+    '<label style="margin-top:0">Nom d\'utilisateur / Enseigne (Émojis autorisés)</label>' +
     '<input id="upUsername" value="'+escAttr(appData.username)+'" maxlength="40">' +
-    '<label>Code PIN (laisser vide pour désactiver)</label>' +
-    '<input id="upPin" type="password" maxlength="8" inputmode="numeric" value="'+escAttr(appData.pin)+'" style="text-align:center;font-size:18px">' +
+    '<label>Nouveau Code PIN (4 à 8 chiffres)</label>' +
+    '<input id="upPin" type="password" maxlength="8" inputmode="numeric" placeholder="Ex. 1234" style="text-align:center;font-size:18px">' +
     '<label>Confirmer le Code PIN</label>' +
-    '<input id="upConfirmPin" type="password" maxlength="8" inputmode="numeric" value="'+escAttr(appData.pin)+'" style="text-align:center;font-size:18px">' +
+    '<input id="upConfirmPin" type="password" maxlength="8" inputmode="numeric" placeholder="Confirmer PIN" style="text-align:center;font-size:18px">' +
+    '<div style="margin-top:8px;display:flex;align-items:center;gap:6px">' +
+     '<input type="checkbox" id="disablePinCheck" style="width:auto;min-width:18px;height:18px">' +
+     '<label for="disablePinCheck" style="margin:0;font-size:12px;color:var(--danger)">Désactiver la protection par PIN (déverrouillage automatique)</label>' +
+    '</div>' +
     '<div class="err" id="err-upProfile"></div>' +
     '<button type="submit" class="primary block" style="margin-top:12px">Enregistrer les modifications</button>' +
    '</form>';
@@ -1320,12 +1348,23 @@ function renderProfileSubContent(section){
    var name = $("upUsername").value.trim();
    var pin = $("upPin").value.trim();
    var cPin = $("upConfirmPin").value.trim();
+   var disablePin = $("disablePinCheck").checked;
+
    if (!name) { setErr("err-upProfile", "Le nom ne peut pas être vide.", true); return; }
-   if (pin !== cPin) { setErr("err-upProfile", "Les deux codes PIN ne correspondent pas.", true); return; }
+
+   if (disablePin) {
+    if (!confirm("Êtes-vous sûr de vouloir DÉSACTIVER le code PIN ? L'application ne demandera plus de code au démarrage.")) {
+     return;
+    }
+    appData.pin = "";
+   } else if (pin || cPin) {
+    if (pin.length < 4) { setErr("err-upProfile", "Le PIN doit contenir au moins 4 chiffres.", true); return; }
+    if (pin !== cPin) { setErr("err-upProfile", "Les deux codes PIN ne correspondent pas.", true); return; }
+    appData.pin = pin;
+   }
 
    appData.username = name;
-   appData.pin = pin;
-   logAudit("PROFILE_UPDATE", "Mise à jour du nom / PIN");
+   logAudit("PROFILE_UPDATE", "Mise à jour profil (" + name + ")");
    saveSpace();
    render();
    toast("Profil mis à jour avec succès !");
@@ -1694,7 +1733,7 @@ $("loginPinForm").addEventListener("submit", function(e){
 // BOUTON PROFIL HEADER & MODAL PROFIL SLIDE
 $("profileHeaderBtn").addEventListener("click", function(){
  $("profileModal").classList.add("show");
- renderProfileSubContent("profile");
+ renderProfileSubContent(null);
 });
 
 $("closeProfileModal").addEventListener("click", function(){
