@@ -44,7 +44,7 @@ button.danger{color:var(--danger);border-color:#5b2a33;background:#241420}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
 .chip{display:inline-block;font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);margin:2px}
 .chip.sel{color:#092219;border-color:transparent;font-weight:600}
-nav{position:fixed;bottom:0;left:0;right:0;background:#0D0D0D;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
+nav{position:fixed;bottom:0;left:0;right:0;background:#0D0D0D;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
 nav button{background:none;border:0;color:var(--muted);font-size:10px;padding:8px 2px;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden;white-space:nowrap}
 nav button .ico{font-size:19px;line-height:1}
 nav button.active{color:var(--accent);font-weight:600}
@@ -68,9 +68,14 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 </head>
 <body>
 <header>
+<div class="row" style="justify-content:space-between;align-items:flex-start">
+<div style="min-width:0">
 <small>BUDGET AŪREOR</small>
 <h1 id="hdrTitle">Tableau de bord</h1>
 <div id="hdrUser" style="color:#B08D35;font-size:12px;margin-top:3px"></div>
+</div>
+<button id="espaceBtn" type="button" aria-label="Espace AŪREOR : profil, sécurité, sauvegardes et verrouillage" style="flex:none;margin-top:14px;padding:8px 14px;font-size:12px;font-weight:bold;letter-spacing:0.08em;background:#142033;border:1px solid #B08D35;color:#B08D35;border-radius:99px">ESPACE AŪREOR</button>
+</div>
 </header>
 
 <main>
@@ -339,7 +344,6 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <button data-page="clients"><span class="ico">👥</span>Clients</button>
 <button data-page="projects"><span class="ico">🎿</span>Projets</button>
 <button data-page="bilan"><span class="ico">📊</span>Bilan</button>
-<button data-page="menu"><span class="ico">⚙️</span>Menu</button>
 </nav>
 
 <script>
@@ -498,17 +502,9 @@ function getClientTotalEncaisse(c){
  return c.payments.reduce(function(s,p){ return s + Number(p.amount||0); }, 0);
 }
 
-var currentBilanPeriod = "month"; // "month", "6months", "1year"
-
-function getMonthsForPeriod(period){
- var months=[],m=new Date();
- m.setDate(1);
- var count = period === "1year" ? 12 : (period === "6months" ? 6 : 1);
- if (period === "month") {
-  months.push({label: new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}), key: month});
-  return months;
- }
- for(var i=0;i<count;i++){
+function bilanSVG(){
+ var months=[],m=new Date(),N=12;
+ for(var i=0;i<N;i++){
   var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
   months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),key:key});
   m.setMonth(m.getMonth()-1);
@@ -1071,6 +1067,7 @@ function showPage(name){
 }
 $("openBills").addEventListener("click",function(){showPage("bills")});
 $("closeBills").addEventListener("click",function(){showPage("expenses")});
+$("espaceBtn").addEventListener("click",function(){showPage("menu")});
 document.querySelector("nav").addEventListener("click",function(e){
  var b=e.target.closest("[data-page]");if(!b)return;
  var btns=document.querySelectorAll("nav button");
