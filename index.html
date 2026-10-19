@@ -4,30 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0D0D">
-<title>Mon Budget AŪREOR</title>
+<title>Budget AŪREOR</title>
 <link rel="icon" type="image/png" href="./apple-touch-icon.PNG">
 <link rel="apple-touch-icon" href="./apple-touch-icon.PNG">
-<!-- Police Lobster pour la marque AŪREOR -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
-
 <style>
 :root{color-scheme:dark;--bg:#0b1220;--panel:#142033;--line:#2a3b53;--text:#f4f7fb;--muted:#a7b4c7;--accent:#B08D35;--danger:#ff9aa5;--amber:#fbbf24;--green:#34d399}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,-apple-system,sans-serif;padding-bottom:74px}
-
-/* Headers & Brand Font Lobster */
-.brand-font{font-family:'Lobster',cursive,system-ui,sans-serif;font-weight:normal}
-header{padding:12px 16px;background:#0D0D0D;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:10px}
-header .brand-wrap{flex:1;min-width:0}
-header h1{margin:0;font-size:22px;color:var(--accent);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-header small{color:var(--muted);font-size:11px;display:block;margin-top:2px}
-
-/* Button Profile Header */
-#profileHeaderBtn{background:#142033;border:1px solid #B08D35;color:#B08D35;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
-#profileHeaderBtn:active{background:#B08D35;color:#0D0D0D}
-
+header{padding:16px;background:#0D0D0D;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+header small{color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:11px}
+header h1{margin:4px 0 0;font-size:22px}
 main{max-width:640px;margin:auto;padding:12px 12px 25px}
 .page{display:none}.page.active{display:block}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px}
@@ -58,25 +44,18 @@ button.danger{color:var(--danger);border-color:#5b2a33;background:#241420}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
 .chip{display:inline-block;font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);margin:2px}
 .chip.sel{color:#092219;border-color:transparent;font-weight:600}
-
-/* EXACTEMENT 5 ONGLETS PRINCIPAUX */
-nav{position:fixed;bottom:0;left:0;right:0;background:#0D0D0D;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom);z-index:20}
+nav{position:fixed;bottom:0;left:0;right:0;background:#0D0D0D;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
 nav button{background:none;border:0;color:var(--muted);font-size:10px;padding:8px 2px;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden;white-space:nowrap}
 nav button .ico{font-size:19px;line-height:1}
 nav button.active{color:var(--accent);font-weight:600}
-
-/* User Gate Modal Screen */
-#userGate{position:fixed;inset:0;background:#0D0D0D;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto}
+#userGate{position:fixed;inset:0;background:#0D0D0D;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
 #userGate.show{display:flex}
-#userGate h2{color:#B08D35;font-size:32px;margin:0 0 4px}
-#userGate p{color:#f4f7fb;font-size:15px;margin:0 0 20px}
-
-/* Profile Slide Modal Menu */
-#profileModal{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:80;display:none;align-items:flex-end;justify-content:center}
-#profileModal.show{display:flex}
-#profileModal .modal-body{background:#142033;border-top:1px solid #B08D35;border-radius:20px 20px 0 0;width:100%;max-width:540px;padding:20px;max-height:85vh;overflow-y:auto}
-
-.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#0d1526;border:1px solid var(--line);color:var(--text);font-size:13px;padding:9px 16px;border-radius:99px;z-index:120;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
+#userGate h2{color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:15px;margin:0 0 10px}
+#userGate p{color:#f4f7fb;font-size:19px;margin:0 0 30px}
+#userGate .choices{display:flex;gap:14px;width:100%;max-width:420px}
+#userGate .choices button{flex:1;padding:24px 10px;font-size:19px;font-weight:bold;letter-spacing:0.08em;background:#142033;border:1px solid #B08D35;color:#B08D35;border-radius:14px}
+#userGate .choices button:active{background:#B08D35;color:#0D0D0D}
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#0d1526;border:1px solid var(--line);color:var(--text);font-size:13px;padding:9px 16px;border-radius:99px;z-index:20;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
 .toast.show{opacity:1}
 .done{text-decoration:line-through;color:var(--muted)}
 footer{font-size:11px;color:var(--muted);text-align:center;padding:6px 0 14px}
@@ -85,74 +64,53 @@ input[type=date],input[type=month]{-webkit-appearance:none;appearance:none;backg
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4px;cursor:pointer}
 input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4px;cursor:pointer}
 @media(max-width:520px){.row input[type=date],.row input[type=month]{min-width:0}}
-
-/* Badges de Statut */
-.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:bold}
-.badge-pending{background:#2a2418;color:var(--amber);border:1px solid var(--amber)}
-.badge-partial{background:#172554;color:#60a5fa;border:1px solid #3b82f6}
-.badge-paid{background:#0f2418;color:var(--green);border:1px solid var(--green)}
-
-/* Table Responsive Clients */
-.table-responsive{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
-table.data-table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
-table.data-table th{background:#0b1423;color:var(--accent);padding:10px 8px;border-bottom:1px solid var(--line);font-weight:600}
-table.data-table td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
-table.data-table tr:last-child td{border-bottom:0}
 </style>
 </head>
 <body>
-
-<!-- EN-TÊTE FIXE ET BOUTON PROFIL -->
 <header>
-<div class="brand-wrap">
-<small style="color:#B08D35;letter-spacing:0.35em;font-weight:bold;font-size:11px">BUDGET AŪREOR</small>
-<h1 id="hdrTitle" style="margin:2px 0 0;font-size:22px;color:var(--text);font-family:system-ui,-apple-system,sans-serif">Tableau de bord</h1>
-</div>
-<button id="profileHeaderBtn" type="button" aria-label="Menu profil">
-<span class="ico">👤</span><span id="headerUserName">Chargement...</span>
-</button>
+<small>BUDGET AŪREOR</small>
+<h1 id="hdrTitle">Tableau de bord</h1>
+<div id="hdrUser" style="color:#B08D35;font-size:12px;margin-top:3px"></div>
 </header>
 
 <main>
-<!-- 1. ACCUEIL -->
 <section id="p-home" class="page active">
 <div class="card row">
-<div style="flex:1"><small class="muted">Mois affiché</small><div id="monthLabel"></div></div>
+<div style="flex:1"><small class="muted">Mois affiche</small><div id="monthLabel"></div></div>
 <input type="month" id="month" aria-label="Choisir le mois" style="max-width:160px">
 </div>
 <div class="grid">
-<div class="card stat"><small>Dépenses internes</small><strong id="spent">0 €</strong></div>
+<div class="card stat"><small>Depenses internes</small><strong id="spent">0 €</strong></div>
 <div class="card stat"><small>Budget restant</small><strong id="remaining">—</strong></div>
-<div class="card stat"><small>Charges à payer</small><strong id="unpaid">0 €</strong></div>
-<div class="card stat"><small>CA Encaissé (Mois)</small><strong id="caHome">0 €</strong></div>
+<div class="card stat"><small>Charges a payer</small><strong id="unpaid">0 €</strong></div>
+<div class="card stat"><small>CA clients</small><strong id="caHome">0 €</strong></div>
 </div>
 <div class="card">
 <strong>Budget mensuel</strong>
 <label for="budget">Budget du mois (€)</label>
 <div class="row"><input id="budget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 800"><button id="saveBudget">OK</button></div>
 <div class="bar"><span id="progress" style="width:0;background:var(--accent)"></span></div>
-<small id="budgetHint" class="muted">Définis ton budget mensuel.</small>
+<small id="budgetHint" class="muted">Definis ton budget mensuel.</small>
 </div>
 <div class="card">
-<strong>Répartition par catégorie</strong>
-<div id="chartCats" class="empty">Aucune dépense ce mois-ci.</div>
+<strong>Repartition par categorie</strong>
+<div id="chartCats" class="empty">Aucune depense ce mois-ci.</div>
 </div>
 <div class="card">
-<strong>Tendance 6 mois</strong>
+<strong>Tendance 12 mois</strong>
 <div id="chartMonths"></div>
 </div>
 <div class="card">
-<strong>Dernières dépenses</strong>
-<div id="recent" class="empty">Aucune dépense.</div>
+<strong>Dernieres depenses</strong>
+<div id="recent" class="empty">Aucune depense.</div>
 </div>
 </section>
 
-<!-- 2. DÉPENSES -->
 <section id="p-expenses" class="page">
 <div class="card">
-<strong>Ajouter une dépense</strong>
+<strong>Ajouter une depense</strong>
 <form id="expenseForm" novalidate>
-<label for="ename">Intitulé</label><input id="ename" maxlength="100" placeholder="Ex. Courses">
+<label for="ename">Intitule</label><input id="ename" maxlength="100" placeholder="Ex. Courses">
 <div class="err" id="err-ename"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
 <div><label for="eamount">Montant (€)</label><input id="eamount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="12,50"></div>
@@ -160,183 +118,143 @@ table.data-table tr:last-child td{border-bottom:0}
 </div>
 <div class="err" id="err-amount"></div>
 <div class="err" id="err-date"></div>
-<label for="eproject">Projet associé (facultatif)</label>
-<select id="eproject"><option value="">-- Aucun projet --</option></select>
-<label>Catégorie</label><div id="ecatWrap"></div>
-
-<!-- Formulaire optionnel activité si Loisirs -->
-<div id="loisirsActivityWrap" style="display:none;margin-top:10px;padding:10px;background:#0b1423;border:1px dashed var(--accent);border-radius:9px">
-<label for="eactName" style="margin-top:0;color:var(--accent)">💡 Saisie rapide de l'activité (Loisirs)</label>
-<input id="eactName" maxlength="150" placeholder="Ex. Concert / Restaurant Courchevel">
+<label>Categorie</label><div id="ecatWrap"></div>
+<label for="eproj">Projet (facultatif)</label><select id="eproj"></select>
+<div id="eactBox" style="display:none;margin-top:4px;border:1px solid var(--line);border-radius:12px;padding:12px;background:#101b2c">
+<div class="row"><input type="checkbox" id="eactCheck" class="check"><label for="eactCheck" style="margin:0;color:var(--text);font-size:14px">C'est aussi une activité (revenu)</label></div>
+<label for="eactname">Nom de l'activité</label><input id="eactname" maxlength="100" placeholder="Pré-rempli depuis l'intitulé">
+<label for="eactamount">Prix encaissé (€)</label><input id="eactamount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="Pré-rempli depuis le montant">
+<div class="err" id="err-eactamount"></div>
+<small class="muted">Ajuste le prix si l'argent encaissé diffère du montant de la dépense.</small>
 </div>
-
-<button class="primary block">Ajouter la dépense</button>
+<button class="primary block">Ajouter la depense</button>
 </form>
 </div>
-<div class="card"><strong>Historique des dépenses</strong><div id="elist"></div></div>
+<div class="card"><strong>Historique</strong><div id="elist"></div></div>
 <div class="card"><button id="openBills" class="block">🧾 Voir mes charges et factures</button></div>
 </section>
 
-<!-- PAGE SECONDAIRE CHARGES -->
 <section id="p-bills" class="page">
 <div class="card"><button id="closeBills" class="block">← Retour aux dépenses</button></div>
 <div class="card stat"><small>Charges à payer</small><strong id="unpaid2" style="font-size:22px;color:var(--amber)">0 €</strong></div>
 <div class="card">
-<button id="exportAllBills" class="block" style="margin-bottom:12px">📥 Exporter toutes les charges (PNG)</button>
-<strong>Ajouter une charge / facture</strong>
+<button id="exportAllBills" class="block" style="margin-bottom:12px">📥 Exporter toutes les factures (PNG)</button>
+<strong>Ajouter une charge</strong>
 <form id="billForm" novalidate>
-<label for="bname">Intitulé</label><input id="bname" maxlength="100" placeholder="Ex. Électricité">
+<label for="bname">Intitule</label><input id="bname" maxlength="100" placeholder="Ex. Electricite">
 <div class="err" id="err-bname"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
 <div><label for="bamount">Montant (€)</label><input id="bamount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
-<div><label for="bdue">Échéance</label><input id="bdue" type="date"></div>
+<div><label for="bdue">Echeance</label><input id="bdue" type="date"></div>
 </div>
 <div class="err" id="err-bamount"></div>
 <div class="err" id="err-bdue"></div>
-<label for="bcat">Catégorie</label>
+<label for="bcat">Categorie</label>
 <select id="bcat"></select>
+<label for="bproj">Projet (facultatif)</label><select id="bproj"></select>
 <button class="primary block">Ajouter la facture</button>
 </form>
 </div>
-<div class="card"><strong>Mes charges à payer</strong><div id="blist"></div></div>
+<div class="card"><strong>Mes charges</strong><div id="blist"></div></div>
 </section>
 
-<!-- 3. CLIENTS -->
 <section id="p-clients" class="page">
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-<div class="card stat"><small>CA Total Facturé</small><strong id="caTotal">0 €</strong></div>
-<div class="card stat"><small>Total Encaissé</small><strong id="clientPaidTotal" style="color:var(--green)">0 €</strong></div>
-<div class="card stat"><small>Solde / Créances</small><strong id="clientUnpaidTotal" style="color:var(--amber)">0 €</strong></div>
-<div class="card stat"><small>Dossiers Clients</small><strong id="clientCount">0</strong></div>
+<div class="card stat"><small>CA total</small><strong id="caTotal">0 €</strong></div>
+<div class="card stat"><small>Encaissements</small><strong id="clientPaidTotal">0 €</strong></div>
+<div class="card stat"><small>Reste à encaisser</small><strong id="clientUnpaidTotal">0 €</strong></div>
+<div class="card stat"><small>Récapitulatifs</small><strong id="clientCount">0</strong></div>
 </div>
-
 <div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-<strong>Tableau des Clients & Encaissements</strong>
-<button id="exportAllClientBills" class="primary" style="padding:6px 12px;font-size:12px">📥 Exporter PNG</button>
+<strong>Tableau clients</strong>
+<div id="ctable" style="overflow-x:auto;margin-top:10px"></div>
 </div>
-<div class="table-responsive">
-<table class="data-table" id="clientTable">
-<thead>
-<tr>
-<th>Client</th>
-<th>Prestation</th>
-<th>Facturé</th>
-<th>Encaissé</th>
-<th>Solde</th>
-<th>Statut</th>
-<th>Actions</th>
-</tr>
-</thead>
-<tbody id="clientTableBody"></tbody>
-</table>
-</div>
-<div id="clientTableEmpty" class="empty" style="display:none">Aucun dossier client enregistré.</div>
-</div>
-
 <div class="card">
-<strong>Ajouter une prestation client</strong>
+<button id="exportAllClientBills" class="block primary" style="margin-bottom:12px">📥 Exporter tous les récapitulatifs (PNG)</button>
+<strong>Ajouter un récapitulatif client</strong>
 <form id="clientBillForm" novalidate>
-<label for="cname">Intitulé de la prestation</label><input id="cname" maxlength="100" placeholder="Ex. Prestation Séjour Courchevel">
+<label for="cname">Intitulé</label><input id="cname" maxlength="100" placeholder="Ex. Séjour Courchevel">
 <div class="err" id="err-cname"></div>
-<label for="cclient">Nom du client / payeur</label><input id="cclient" maxlength="100" placeholder="Ex. Jean Dupont">
+<label for="cclient">Nom du client / payeur (facultatif)</label><input id="cclient" maxlength="100" placeholder="Ex. Jean Dupont">
 <div class="err" id="err-cclient"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="camount">Montant Facturé (€)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
-<div><label for="cdate">Date de facturation</label><input id="cdate" type="date"></div>
+<div><label for="camount">Montant (€)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
+<div><label for="cdate">Date</label><input id="cdate" type="date"></div>
 </div>
 <div class="err" id="err-camount"></div>
 <div class="err" id="err-cdate"></div>
-<label for="cproject">Projet associé (facultatif)</label>
-<select id="cproject"><option value="">-- Aucun projet --</option></select>
-<button class="primary block">Créer la prestation client</button>
+<label for="cproj">Projet (facultatif)</label><select id="cproj"></select>
+<div class="row" style="margin-top:8px"><label for="cpaid" style="margin:0">Payé</label><input id="cpaid" type="checkbox" style="margin-left:8px"></div>
+<button class="primary block">Ajouter le récapitulatif</button>
 </form>
+</div>
+<div class="card"><strong>Récapitulatifs clients</strong><div id="clist"></div></div>
+<div class="card">
+<strong>Saisie rapide d'activité</strong>
+<form id="activityForm" novalidate>
+<label for="aname">Nom de l'activité</label><input id="aname" maxlength="100" placeholder="Ex. Forfait ski">
+<div class="err" id="err-aname"></div>
+<div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
+<div><label for="aamount">Prix (€)</label><input id="aamount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
+<div><label for="adate">Date</label><input id="adate" type="date"></div>
+</div>
+<label for="aproj">Projet (facultatif)</label><select id="aproj"></select>
+<label for="anote">Note (facultatif)</label><input id="anote" maxlength="200">
+<div class="err" id="err-aamount"></div>
+<div class="err" id="err-adate"></div>
+<button class="primary block">Enregistrer et continuer</button>
+</form>
+<div id="alist" style="margin-top:8px"></div>
+<strong style="display:block;margin-top:14px">Historique activités — 12 derniers mois</strong>
+<div id="acthist" style="overflow-x:auto"></div>
 </div>
 </section>
 
-<!-- 4. PROJETS & ACTIVITÉS -->
 <section id="p-projects" class="page">
 <div class="card">
-<strong>Créer / Modifier un projet</strong>
+<strong>Nouveau projet</strong>
 <form id="projectForm" novalidate>
-<label for="pname">Nom du projet</label><input id="pname" maxlength="100" placeholder="Ex. Courchevel">
-<div class="err" id="err-pname"></div>
+<label for="pjname">Nom du projet</label><input id="pjname" maxlength="60" placeholder="Ex. Courchevel">
+<div class="err" id="err-pjname"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="penvelope">Enveloppe budgétaire (€)</label><input id="penvelope" type="number" min="0" step=".01" inputmode="decimal" placeholder="15000"></div>
-<div><label for="palert">Seuil alerte dépense (%)</label><input id="palert" type="number" min="1" max="100" placeholder="80" value="80"></div>
+<div><label for="pjenvelope">Enveloppe budget (€)</label><input id="pjenvelope" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 15000"></div>
+<div><label for="pjalert">Alerte si % consommé atteint</label><input id="pjalert" type="number" min="1" max="200" step="1" inputmode="numeric" value="100"></div>
 </div>
-<div class="err" id="err-penvelope"></div>
-<button class="primary block">Enregistrer le projet</button>
+<div class="err" id="err-pjenvelope"></div>
+<button class="primary block">Créer le projet</button>
 </form>
 </div>
-
-<div class="card">
-<strong>Synthèse des Projets</strong>
-<div id="projectsList"></div>
-</div>
-
-<!-- RUBRIQUE SECONDAIRE ACTIVITÉS DANS PROJETS -->
-<div class="card" style="margin-top:16px">
-<strong>⚡ Saisie rapide d'activité</strong>
-<form id="activityForm" novalidate>
-<label for="actName">Intitulé de l'activité</label><input id="actName" maxlength="180" placeholder="Ex. Réunion préparation événement">
-<div class="err" id="err-actName"></div>
-<div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="actDate">Date</label><input id="actDate" type="date"></div>
-<div><label for="actProject">Projet (facultatif)</label><select id="actProject"><option value="">-- Aucun --</option></select></div>
-</div>
-<label for="actNote">Note / Détails (facultatif)</label>
-<textarea id="actNote" rows="2" maxlength="300" placeholder="Ex. Validation du devis avec l'équipe"></textarea>
-<button class="primary block">Enregistrer l'activité</button>
-</form>
-</div>
-
-<div class="card">
-<strong>Historique des activités (12 derniers mois)</strong>
-<div id="activitiesHistory"></div>
-</div>
+<div class="card"><strong>Mes projets</strong><div id="pjlist"></div></div>
+<div class="card"><strong>Comparaison des projets</strong><div id="pjtable" style="overflow-x:auto;margin-top:10px"></div></div>
 </section>
 
-<!-- 5. BILAN -->
 <section id="p-bilan" class="page">
 <div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-<strong>Choix de la période d'analyse</strong>
-<div style="display:flex;gap:4px" id="bilanPeriodWrap">
-<button type="button" class="chip sel" data-period="month">Mois</button>
-<button type="button" class="chip" data-period="6months">6 Mois</button>
-<button type="button" class="chip" data-period="1year">1 An</button>
-</div>
-</div>
-</div>
-
-<div class="card">
-<strong id="bilanPeriodTitle">Bilan du mois</strong>
+<strong>Bilan du mois</strong>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
-<div class="stat"><small>CA Encaissé</small><strong id="bilanMCA">0 €</strong></div>
-<div class="stat"><small>Charges de la période</small><strong id="bilanMCharges">0 €</strong></div>
-<div class="stat"><small>Bénéfice de la période</small><strong id="bilanMNet">0 €</strong></div>
-<div class="stat"><small>CA Total Facturé</small><strong id="bilanCA">0 €</strong></div>
+<div class="stat"><small>CA du mois</small><strong id="bilanMCA">0 €</strong></div>
+<div class="stat"><small>Charges du mois</small><strong id="bilanMCharges">0 €</strong></div>
+<div class="stat"><small>Bénéfice du mois</small><strong id="bilanMNet">0 €</strong></div>
 </div>
 <small id="bilanMHint" class="muted" style="margin-top:8px;display:block"></small>
-<button id="exportMonth" class="block" style="margin-top:12px">📥 Exporter le rapport de la période (PNG)</button>
+<button id="exportMonth" class="block" style="margin-top:12px">📥 Exporter le rapport du mois (PNG)</button>
 </div>
-
 <div class="card">
-<strong>Objectif de Marge & Progression</strong>
+<strong>Bilan global (tout l’historique)</strong>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
-<div class="stat"><small>Bénéfice Net Réel</small><strong id="bilanNet">0 €</strong></div>
-<div class="stat"><small>Objectif Marge</small><strong id="bilanTarget">1 000 €</strong></div>
+<div class="stat"><small>Chiffre d'affaires</small><strong id="bilanCA">0 €</strong></div>
+<div class="stat"><small>Charges internes</small><strong id="bilanCharges">0 €</strong></div>
+<div class="stat"><small>Bénéfice net</small><strong id="bilanNet">0 €</strong></div>
+<div class="stat"><small>Objectif marge</small><strong id="bilanTarget">1 000 €</strong></div>
 </div>
 <div id="bilanAlert" style="margin-top:16px"></div>
 <div class="bar" style="margin-top:16px"><span id="bilanProgress" style="width:0;background:#B08D35"></span></div>
 <small id="bilanHint" class="muted" style="margin-top:8px;display:block">Objectif de marge actuel</small>
-<label for="marginTarget" style="margin-top:16px">Définir l'objectif de marge (€)</label>
+<label for="marginTarget" style="margin-top:16px">Objectif de marge (€)</label>
 <div class="row"><input id="marginTarget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 1000" value="1000"><button id="saveTarget" class="primary">OK</button></div>
 </div>
-
 <div class="card">
-<strong id="chartBilanTitle">Bénéfice par mois</strong>
+<strong>Bénéfice sur 12 mois</strong>
 <div id="chartBilan"></div>
 </div>
 <div class="card">
@@ -348,217 +266,157 @@ table.data-table tr:last-child td{border-bottom:0}
 <div id="caDetails"></div>
 </div>
 </section>
+
+<section id="p-menu" class="page">
+<div class="card">
+<strong>Tâches</strong>
+<div class="card" style="margin-top:0">
+<strong>Ajouter une tâche</strong>
+<form id="taskForm" novalidate>
+<div class="row" style="margin-top:8px"><input id="tname" maxlength="180" placeholder="Ex. Vérifier mon compte"><button class="primary">Ajouter</button></div>
+<div class="err" id="err-tname"></div>
+</form>
+</div>
+<div class="card"><strong>Ma liste — <span id="pending2">0</span> à faire</strong><div id="tlist"></div></div>
+</div>
+<div class="card">
+<strong>Sauvegarde de mes données</strong>
+<p class="hint">Les données sont enregistrées dans le navigateur de cet appareil (elles ne se synchronisent pas entre appareils). Exporte régulièrement une copie JSON.</p>
+<p class="hint" style="margin-top:8px">Note sécurité : le code PIN identifie les profils mais ne chiffre pas les données. Toute personne ayant accès à cet appareil peut lire le stockage local. Ne stocke pas d'informations bancaires sensibles.</p>
+<button id="export" class="primary block">Exporter une sauvegarde (fichier JSON)</button>
+<button id="exportAllP" class="block">Exporter tous les profils (JSON)</button>
+<label for="file" style="margin-top:16px">Restaurer depuis un fichier</label>
+<input id="file" type="file" accept=".json,application/json">
+<button id="restore" class="block">Restaurer la sauvegarde</button>
+<p id="msg" class="hint" role="status"></p>
+</div>
+<div class="card">
+<strong>Réinitialisation</strong>
+<button id="clear" class="danger block">Effacer toutes les données</button>
+</div>
+<div class="card">
+<strong>Profil</strong>
+<button id="switchUser" class="block">Changer d’utilisateur</button>
+</div>
+</section>
+
 </main>
 
-<!-- USER GATE / ÉCRAN DE CRÉATION ET DE CONNEXION LOCAL -->
 <div id="userGate">
-<h2 class="brand-font">Mon Budget AŪREOR</h2>
-<p id="gateTitle">Bienvenue dans votre espace financier</p>
-
-<!-- Formulaire première ouverture : Créer mon espace -->
-<form id="createSpaceForm" style="display:none;width:100%;max-width:340px" novalidate>
-<p style="font-size:14px;color:var(--accent);margin-top:0">Création de votre espace local</p>
-<label for="createUsername" style="text-align:left">Votre Nom / Pseudo (Émojis acceptés)</label>
-<input id="createUsername" maxlength="40" placeholder="Ex. Jason 🚀 ou AŪREOR ✨">
-<div class="err" id="err-createUsername"></div>
-
-<label for="createPin" style="text-align:left">Code PIN (4 à 8 chiffres)</label>
-<input id="createPin" type="password" maxlength="8" inputmode="numeric" placeholder="Ex. 1234" style="text-align:center;font-size:20px">
-<div class="err" id="err-createPin"></div>
-
-<label for="confirmPin" style="text-align:left">Confirmer le Code PIN</label>
-<input id="confirmPin" type="password" maxlength="8" inputmode="numeric" placeholder="Confirmer le PIN" style="text-align:center;font-size:20px">
-<div class="err" id="err-confirmPin"></div>
-
-<button type="submit" class="primary block" style="margin-top:18px">🚀 Créer Mon Espace</button>
-</form>
-
-<!-- Formulaire ouvertures suivantes : Connexion PIN -->
-<form id="loginPinForm" style="display:none;width:100%;max-width:320px" novalidate>
-<p id="loginUserName" style="font-size:20px;font-weight:bold;color:var(--accent);margin:0 0 10px"></p>
-<label for="loginPinInput">Entrez votre code PIN</label>
-<input id="loginPinInput" type="password" maxlength="8" inputmode="numeric" placeholder="PIN" style="text-align:center;font-size:24px;letter-spacing:0.3em;padding:12px">
-<div class="err" id="err-loginPin"></div>
-<button type="submit" class="primary block" style="margin-top:16px">Déverrouiller</button>
-</form>
+<h2>AŪREOR</h2>
+<div id="gateSelect" style="width:100%;max-width:420px">
+<p>Qui pilote l’application aujourd’hui ?</p>
+<div class="choices" id="gateUsers" style="flex-direction:column"></div>
+<div class="row" style="margin-top:16px"><button type="button" id="gateNew" class="primary" style="flex:1">＋ Créer un profil</button></div>
 </div>
-
-<!-- MODAL PANNEAU PROFIL SLIDE -->
-<div id="profileModal">
-<div class="modal-body">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:10px">
-<strong style="font-size:18px;color:var(--accent)">👤 Espace Profil</strong>
-<button id="closeProfileModal" type="button" style="border:0;background:none;font-size:20px;color:var(--muted)">✕</button>
+<div id="gateLogin" style="display:none;width:100%;max-width:340px">
+<p id="gateLoginName" style="font-size:17px"></p>
+<label for="loginPin">Code PIN</label><input id="loginPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
+<div class="err" id="err-loginpin"></div>
+<button type="button" id="loginGo" class="primary block">Ouvrir mon espace</button>
+<button type="button" id="loginBack" class="block">← Retour</button>
+<button type="button" id="loginDel" class="danger block" style="margin-top:24px">Supprimer ce profil</button>
 </div>
-
-<p class="hint" style="margin-top:0">Connecté sous : <strong id="profileModalUserName" style="color:var(--accent)">-</strong></p>
-
-<!-- Raccourcis Menu Profil -->
-<div style="display:flex;flex-direction:column;gap:10px">
-<button id="btnSectionProfile" class="block" style="text-align:left">👤 Mon Profil & Sécurité PIN</button>
-<button id="btnSectionExport" class="block" style="text-align:left">📥 Exporter et Sauvegarder (JSON & PNG)</button>
-<button id="btnSectionAudit" class="block" style="text-align:left">📜 Historique des Modifications</button>
-<button id="btnSectionSettings" class="block" style="text-align:left">⚙️ Paramètres de l'Espace</button>
-<button id="btnLockLogout" class="danger block" style="text-align:left">🔒 Verrouiller / Se Déconnecter</button>
-</div>
-
-<!-- Section Contenu Dynamique Profil -->
-<div id="profileSubContent" style="margin-top:16px;padding-top:12px;border-top:1px dashed var(--line)"></div>
+<div id="gateCreate" style="display:none;width:100%;max-width:340px">
+<p style="font-size:17px">Créer mon profil</p>
+<label for="uname">Prénom / nom</label><input id="uname" maxlength="30" autocomplete="off">
+<div class="err" id="err-uname"></div>
+<label for="upin">Code PIN (4 à 6 chiffres)</label><input id="upin" type="password" inputmode="numeric" maxlength="6">
+<div class="err" id="err-upin"></div>
+<label for="upin2">Confirmer le PIN</label><input id="upin2" type="password" inputmode="numeric" maxlength="6">
+<div class="err" id="err-upin2"></div>
+<button type="button" id="createGo" class="primary block">Créer mon profil</button>
+<button type="button" id="createBack" class="block" style="display:none">← Retour</button>
 </div>
 </div>
-
-<!-- MODAL DE PAIEMENT PARTIEL CLIENT -->
-<div id="paymentModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:90;display:none;align-items:center;justify-content:center;padding:16px">
-<div class="card" style="width:100%;max-width:400px;background:var(--panel)">
-<strong style="font-size:18px;color:var(--accent)">💰 Enregistrer un paiement client</strong>
-<p id="payClientLabel" style="font-size:14px;margin:8px 0;color:var(--muted)"></p>
-<form id="paymentForm" novalidate>
-<input type="hidden" id="payClientId">
-<label for="payAmount">Montant encaissé (€)</label>
-<input id="payAmount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="100.00">
-<div class="err" id="err-payAmount"></div>
-<label for="payDate">Date d'encaissement</label>
-<input id="payDate" type="date">
-<div class="err" id="err-payDate"></div>
-<label for="payNote">Note / Référence (facultatif)</label>
-<input id="payNote" maxlength="100" placeholder="Ex. Virement Acompte 1">
-<div class="row" style="margin-top:16px">
-<button id="closePayModal" type="button" style="flex:1">Annuler</button>
-<button type="submit" class="primary" style="flex:1">Enregistrer</button>
-</div>
-</form>
-</div>
-</div>
-
 <div class="toast" id="toast"></div>
-<footer>Mon Budget AŪREOR · Identity AŪREOR. Evite d'y stocker des informations bancaires sensibles.</footer>
+<footer>Mon Budget AŪREOR · version professionnelle. Identity AŪREOR. Evite d'y stocker des informations bancaires sensibles.</footer>
 
 <canvas id="canvasExport" style="position:fixed;left:-9999px;top:-9999px"></canvas>
-
-<!-- NAVIGATION 5 ONGLETS STRICTS -->
 <nav>
 <button class="active" data-page="home"><span class="ico">🏠</span>Accueil</button>
-<button data-page="expenses"><span class="ico">💰</span>Dépenses</button>
+<button data-page="expenses"><span class="ico">💰</span>Depenses</button>
 <button data-page="clients"><span class="ico">👥</span>Clients</button>
-<button data-page="projects"><span class="ico">📁</span>Projets</button>
+<button data-page="projects"><span class="ico">🎿</span>Projets</button>
 <button data-page="bilan"><span class="ico">📊</span>Bilan</button>
+<button data-page="menu"><span class="ico">⚙️</span>Menu</button>
 </nav>
 
 <script>
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id)};
-
 var CATS=[
  {id:"alimentation",label:"Alimentation",color:"#f97316"},
  {id:"logement",label:"Logement",color:"#38bdf8"},
  {id:"transport",label:"Transport",color:"#34d399"},
  {id:"loisirs",label:"Loisirs",color:"#a855f7"},
- {id:"sante",label:"Santé",color:"#f87171"},
+ {id:"sante",label:"Sante",color:"#f87171"},
  {id:"abonnements",label:"Abonnements",color:"#818cf8"},
  {id:"autres",label:"Autres",color:"#94a3b8"}
 ];
 var catOf=function(id){for(var i=0;i<CATS.length;i++){if(CATS[i].id===id)return CATS[i]}return CATS[CATS.length-1]};
 function pad(n){return String(n).length<2?"0"+n:String(n)}
 function today(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
-function nowISO(){return new Date().toISOString()}
 function money(n){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0)}
 function esc(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]})}
 function escAttr(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>"'\s]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"," ":"&#32;","\t":"&#9;","\n":"&#10;","\r":"&#13;"}[c]||c})}
 function isValidHexColor(c){return typeof c==="string"&&/^#([0-9A-Fa-f]{3}){1,2}$/.test(c)}
+function hasInvisibleChars(s){return typeof s==="string"&&/[​-⁯﻿]/.test(s)}
 var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)};
-function setErr(id,msg,show){var el=$(id);if(!el)return;el.textContent=msg||"";el.classList.toggle("show",!!show)}
-
-var STORAGE_KEY_SPACE = "aureor_local_space_v3";
-var STORAGE_KEY_V1 = "mon-quotidien-v1";
-var BACKUP_PRE_MIGRATION_KEY = "aureor_backup_v1_premigration";
-
-var month = today().slice(0,7);
-
-var appData = null; // Données de l'espace local
-var isUnlocked = false;
-
-function emptySpaceData(username, pin){
- return {
-  version: 3,
-  username: username || "Mon Espace",
-  pin: pin || "",
-  createdAt: nowISO(),
-  lastModifiedAt: nowISO(),
-  expenses: [],
-  budgets: {},
-  bills: [],
-  clientBills: [],
-  tasks: [],
-  activities: [],
-  projects: [
-   { id: "proj_courchevel", name: "Courchevel", envelope: 15000, alertPercent: 80 }
-  ],
-  auditLog: [],
-  marginTarget: 1000
- };
+function paidAmountOf(b){
+ if(b&&Array.isArray(b.payments)&&b.payments.length){return b.payments.reduce(function(s,p){return s+(Number(p.amount)||0)},0)}
+ return b&&b.paid?(Number(b.amount)||0):0
+}
+function restOf(b){return Math.max(0,(Number(b.amount)||0)-paidAmountOf(b))}
+function payStatusOf(b){var r=restOf(b),p=paidAmountOf(b);return r<=0.001?"Paye":(p>0?"Partiellement paye":"En attente")}
+function actTotal(key){return data.activities.filter(function(x){return key?(x.date&&x.date.slice(0,7)===key):true}).reduce(function(s,x){return s+(Number(x.amount)||0)},0)}
+function projectStats(p){
+ var id=p.id;
+ var spent=data.expenses.filter(function(x){return x.projectId===id}).reduce(function(s,x){return s+x.amount},0)+data.bills.filter(function(x){return x.projectId===id}).reduce(function(s,x){return s+x.amount},0);
+ var billsArr=data.clientBills.filter(function(x){return x.projectId===id});
+ var due=billsArr.reduce(function(s,x){return s+(Number(x.amount)||0)},0);
+ var enc=billsArr.reduce(function(s,x){return s+paidAmountOf(x)},0);
+ var acts=data.activities.filter(function(x){return x.projectId===id});
+ var actDue=acts.reduce(function(s,x){return s+(Number(x.amount)||0)},0);
+ var revenue=due+actDue;
+ var encaisse=enc+actDue;
+ var benef=encaisse-spent;
+ var envelope=Number(p.envelope)||0;
+ var pct=envelope>0?Math.round(spent/envelope*100):0;
+ var alertAt=Number(p.alertPct)||100;
+ return{spent:spent,due:due,enc:enc,revenue:revenue,encaisse:encaisse,reste:revenue-encaisse,benef:benef,envelope:envelope,restEnv:envelope-spent,pct:pct,alert:pct>=alertAt,alertAt:alertAt};
 }
 
-function logAudit(actionType, details){
- if (!appData) return;
- if (!Array.isArray(appData.auditLog)) appData.auditLog = [];
- appData.auditLog.unshift({
-  id: uid(),
-  timestamp: nowISO(),
-  user: appData.username,
-  action: actionType,
-  details: details || ""
- });
- if (appData.auditLog.length > 200) appData.auditLog = appData.auditLog.slice(0, 200);
- appData.lastModifiedAt = nowISO();
-}
+function setErr(id,msg,show){var el=$(id);el.textContent=msg||"";el.classList.toggle("show",!!show)}
 
-function initStorage(){
- try {
-  var raw = localStorage.getItem(STORAGE_KEY_SPACE);
-  if (raw) {
-   appData = JSON.parse(raw);
-  } else {
-   var rawV1 = localStorage.getItem(STORAGE_KEY_V1);
-   if (rawV1) {
-    try { localStorage.setItem(BACKUP_PRE_MIGRATION_KEY, rawV1); } catch(eBackup){}
-    var parsedV1 = JSON.parse(rawV1);
-    if (parsedV1 && typeof parsedV1 === "object") {
-     appData = emptySpaceData("Espace AŪREOR", "");
-     appData.expenses = parsedV1.expenses || [];
-     appData.budgets = parsedV1.budgets || {};
-     appData.bills = parsedV1.bills || [];
-     appData.clientBills = (parsedV1.clientBills || []).map(function(c){
-      if (!Array.isArray(c.payments)) {
-       c.payments = c.paid ? [{ id: uid(), amount: c.amount, date: c.date || today(), note: "Migré (Payé)" }] : [];
-      }
-      return c;
-     });
-     appData.tasks = parsedV1.tasks || [];
-     appData.marginTarget = parsedV1.marginTarget || 1000;
-     logAudit("MIGRATION_V1", "Migration réussie des données locales existantes");
-     saveSpace();
-    }
-   }
-  }
- } catch(e) {
-  console.error("Storage init error", e);
+var month=today().slice(0,7);
+var data={expenses:[],budgets:{},bills:[],clientBills:[],tasks:[],activities:[],projects:[],marginTarget:1000};
+try{
+ var saved=JSON.parse(localStorage.getItem("mon-quotidien-v1"));
+ if(saved){
+  data.expenses=saved.expenses||[];
+  data.budgets=saved.budgets||{};
+  data.bills=saved.bills||[];
+  data.clientBills=saved.clientBills||[];
+  data.tasks=saved.tasks||[];
+  data.marginTarget=saved.marginTarget||1000;
  }
-}
+}catch(e){}
 
-function saveSpace(){
- if (!appData) return false;
- try {
-  appData.lastModifiedAt = nowISO();
-  localStorage.setItem(STORAGE_KEY_SPACE, JSON.stringify(appData));
-  return true;
- } catch(e) {
-  toast("Enregistrement impossible. Mémoire saturée.");
-  return false;
- }
+var currentProfileName=null;
+var legacyKey="mon-quotidien-v1";
+var profilesKey="aureor_profiles_v2";
+var activeKey="aureor_active_v2";
+var legacyDataPending=false;
+function profileDataKey(name){return "aureor_data_"+name}
+function save(){
+ try{
+  if(currentProfileName){localStorage.setItem(profileDataKey(currentProfileName),JSON.stringify(data))}
+  else{localStorage.setItem(legacyKey,JSON.stringify(data))}
+  return true
+ }catch(e){toast("Enregistrement impossible. Exporte une sauvegarde.");return false}
 }
-
-initStorage();
 
 var toastTimer=null;
 function toast(msg){
@@ -566,37 +424,12 @@ function toast(msg){
  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove("show")},2400);
 }
 
-// Inactivité auto-lock (15 minutes)
-var inactivityTimer = null;
-function resetInactivityTimer(){
- clearTimeout(inactivityTimer);
- if (isUnlocked && appData && appData.pin) {
-  inactivityTimer = setTimeout(function(){
-   lockSession();
-   toast("Session verrouillée pour inactivité.");
-  }, 15 * 60 * 1000);
- }
-}
-["click", "mousemove", "keydown", "touchstart"].forEach(function(evt){
- window.addEventListener(evt, resetInactivityTimer, { passive: true });
-});
-
-function lockSession(){
- isUnlocked = false;
- $("profileModal").classList.remove("show");
- showUserGate();
-}
-
 var ecat="alimentation";
 CATS.forEach(function(c){
  var b=document.createElement("button");
  b.type="button";b.className="chip";b.dataset.cat=c.id;
  b.textContent=c.label;
- b.addEventListener("click",function(){
-  ecat=c.id;
-  renderChips();
-  $("loisirsActivityWrap").style.display = (ecat === "loisirs") ? "block" : "none";
- });
+ b.addEventListener("click",function(){ecat=c.id;renderChips()});
  $("ecatWrap").appendChild(b);
 });
 function renderChips(){
@@ -606,13 +439,19 @@ function renderChips(){
   b.classList.toggle("sel",sel);
   b.style.background=sel&&isValidHexColor(c.color)?escAttr(c.color):"";b.style.color=sel?"#0b1220":"";
  }
+ var box=$("eactBox");
+ if(box){box.style.display=(ecat==="loisirs")?"block":"none";if(ecat!=="loisirs"){$("eactCheck").checked=false;setErr("err-eactamount")}}
 }
+$("ename").addEventListener("input",function(){if(!$("eactname").dataset.touched)$("eactname").value=this.value});
+$("eamount").addEventListener("input",function(){if(!$("eactamount").dataset.touched)$("eactamount").value=this.value});
+$("eactname").addEventListener("input",function(){this.dataset.touched="1"});
+$("eactamount").addEventListener("input",function(){this.dataset.touched="1"});
 CATS.forEach(function(c){var o=document.createElement("option");o.value=c.id;o.textContent=c.label;$("bcat").appendChild(o)});
 
 function donutSVG(entries,total){
  var R=60,W=160,H=160,stroke=12;
  var cx=W/2,cy=H/2,r=R-stroke/2;
- var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="160" role="img" aria-label="Répartition par catégorie">';
+ var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="160" role="img" aria-label="Repartition par categorie">';
  var angle=0;
  for(var i=0;i<entries.length;i++){
   var e=entries[i],pct=e.value/total*360,rad=pct*Math.PI/180;
@@ -629,24 +468,24 @@ function donutSVG(entries,total){
 }
 
 function monthsSVG(){
- var months=[],m=new Date();
- for(var i=0;i<6;i++){
-  m.setMonth(m.getMonth()-1);
+ var months=[],m=new Date(),N=12;
+ for(var i=0;i<N;i++){
   var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
-  months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),total:appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===key}).reduce(function(s,x){return s+x.amount},0)});
+  months.push({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),total:data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===key}).reduce(function(s,x){return s+x.amount},0)});
+  m.setMonth(m.getMonth()-1);
  }
  months.reverse();
  var max=Math.max.apply(null,months.map(function(x){return x.total}))||1;
- var H=140,W=320,bw=28,gap=(W-6*bw)/7;
+ var H=140,W=320,bw=16,gap=(W-N*bw)/(N+1);
  var bars="";
  months.forEach(function(v,i){
   var h=max?v.total/max*H:0;
-  var x=34+i*(bw+gap),y=H-h+10;
-  bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+Math.max(h,1)+'" rx="5" fill="'+(i===5?"#B08D35":"#33507a")+'"/>';
-  bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="10" fill="#a7b4c7">'+esc(v.label)+'</text>';
-  if(v.total>0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="9" fill="#f4f7fb">'+Math.round(v.total)+'</text>';
+  var x=10+gap+i*(bw+gap),y=H-h+10;
+  bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+Math.max(h,1)+'" rx="3" fill="'+(i===N-1?"#B08D35":"#33507a")+'"/>';
+  if(i%2===0)bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="9" fill="#a7b4c7">'+esc(v.label)+'</text>';
+  if(v.total>0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="8" fill="#f4f7fb">'+Math.round(v.total)+'</text>';
  });
- return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Tendance sur 6 mois">'+bars+'</svg>';
+ return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Tendance sur 12 mois">'+bars+'</svg>';
 }
 
 function getClientEncaisseInMonth(c, monthKey){
@@ -675,50 +514,135 @@ function getMonthsForPeriod(period){
   m.setMonth(m.getMonth()-1);
  }
  months.reverse();
- return months;
-}
-
-function bilanSVG(period){
- var months = getMonthsForPeriod(period || currentBilanPeriod);
  months.forEach(function(v){
-  var ca=appData.clientBills.reduce(function(s,x){ return s + getClientEncaisseInMonth(x, v.key); }, 0);
-  var ch=appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+appData.bills.filter(function(x){return x.due&&x.due.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0);
+  var ca=data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+actTotal(v.key);
+  var ch=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0)+data.bills.filter(function(x){return x.due&&x.due.slice(0,7)===v.key}).reduce(function(s,x){return s+x.amount},0);
   v.net=Math.round((ca-ch)*100)/100;
  });
  var maxAbs=Math.max.apply(null,months.map(function(x){return Math.abs(x.net)}))||1;
- var H=140,W=320, count = months.length;
- var bw = count > 6 ? 16 : 28;
- var gap = (W - count * bw) / (count + 1);
+ var H=140,W=320,bw=16,gap=(W-N*bw)/(N+1);
  var bars="";
  months.forEach(function(v,i){
   var h=Math.max(Math.abs(v.net)/maxAbs*H,1);
-  var x=gap + i*(bw+gap),y=H-h+10;
-  var fill=v.net<0?"#f87171":(i===count-1?"#B08D35":"#34d399");
+  var x=10+gap+i*(bw+gap),y=H-h+10;
+  var fill=v.net<0?"#f87171":(i===N-1?"#B08D35":"#34d399");
   bars+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3" fill="'+fill+'"/>';
-  bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="'+(count>6?"8":"10")+'" fill="#a7b4c7">'+esc(v.label)+'</text>';
-  if(v.net!==0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="'+(count>6?"7":"9")+'" fill="#f4f7fb">'+Math.round(v.net)+'</text>';
+  if(i%2===0)bars+='<text x="'+(x+bw/2)+'" y="'+(H+26)+'" text-anchor="middle" font-size="9" fill="#a7b4c7">'+esc(v.label)+'</text>';
+  if(v.net!==0)bars+='<text x="'+(x+bw/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="8" fill="#f4f7fb">'+Math.round(v.net)+'</text>';
  });
- return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Bénéfice par mois">'+bars+'</svg>';
+ return '<svg viewBox="0 0 '+W+' '+(H+34)+'" width="100%" height="175" role="img" aria-label="Bénéfice sur 12 mois">'+bars+'</svg>';
 }
 
 function expenseRow(x){
  var c=catOf(x.category);
- var proj = x.projectId ? appData.projects.find(function(pj){return pj.id===x.projectId}) : null;
- var projBadge = proj ? ' <span class="chip" style="background:#1e293b;color:#94a3b8">📁 '+esc(proj.name)+'</span>' : '';
- return '<div class="item"><span class="dot" style="background:'+escAttr(c.color)+';flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong>'+projBadge+'<br><small>'+esc(x.date)+' · '+esc(c.label)+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-expense="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
+ return '<div class="item"><span class="dot" style="background:'+escAttr(c.color)+';flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong><br><small>'+esc(x.date)+' · '+esc(c.label)+(x.by?' - '+esc(x.by):'')+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-expense="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
 }
 
-function drawAureorHeader(ctx, width, headerHeight, subtitle){
+// ==================== FONCTIONS EXPORT PNG AUREOR ====================
+
+function drawBillDocument(canvas,bill,isGrouped,groupedData){
+ var ctx=canvas.getContext("2d");
+ var dpr=window.devicePixelRatio||2;
+ var width=600,height=isGrouped?800:500;
+ canvas.width=width*dpr;canvas.height=height*dpr;
+ ctx.scale(dpr,dpr);
+ ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
+
+ // En-tete AUREOR (fond sombre #0D0D0D)
+ var headerHeight=120;
  ctx.fillStyle="#0D0D0D";
  ctx.fillRect(0,0,width,headerHeight);
- ctx.font="28px 'Lobster', cursive, sans-serif";
+
+ // Texte AUREOR (dore #B08D35, espacement 0.35em, centre)
+ ctx.font="bold 28px system-ui,-apple-system,sans-serif";
  ctx.fillStyle="#B08D35";
  ctx.textAlign="center";
  ctx.textBaseline="middle";
- ctx.fillText("Mon Budget AŪREOR", width/2, headerHeight/2 - 8);
- ctx.font="13px system-ui, -apple-system, sans-serif";
+ ctx.fillText("A Ū R E O R",width/2,headerHeight/2);
+
+ // Sous-titre
+ ctx.font="14px system-ui,-apple-system,sans-serif";
  ctx.fillStyle="#B08D35";
- ctx.fillText(subtitle + " · " + (appData ? appData.username : ""), width/2, headerHeight/2 + 22);
+ ctx.fillText(isGrouped?"RECAPITULATIF DES FACTURES":"RECAPITULATIF INTERNE",width/2,headerHeight/2+28);
+
+ // Contenu (fond blanc)
+ var contentY=headerHeight+20;
+
+ ctx.fillStyle="#222222";
+ ctx.font="14px system-ui,-apple-system,sans-serif";
+ ctx.textAlign="left";
+
+ if(isGrouped){
+  var lineHeight=22,startY=contentY;
+  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
+  ctx.fillText("DATE",40,startY);
+  ctx.fillText("INTITULE",180,startY);
+  ctx.fillText("CATEGORIE",320,startY);
+  ctx.fillText("MONTANT",450,startY);
+  ctx.fillText("STATUT",530,startY);
+  ctx.font="14px system-ui,-apple-system,sans-serif";
+  startY+=lineHeight+8;
+  ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(40,startY-4);ctx.lineTo(560,startY-4);ctx.stroke();
+  startY+=4;
+
+  groupedData.bills.forEach(function(b){
+   var cat=catOf(b.category);
+   var statusText=b.paid?"Payee":"A payer";
+   var statusColor=b.paid?"#34d399":"#f87171";
+   ctx.fillStyle="#222222";
+   ctx.fillText(b.due,40,startY);
+   var label=b.label;
+   if(label.length>25)label=label.substring(0,22)+"...";
+   ctx.fillText(label,180,startY);
+   ctx.fillText(cat.label,320,startY);
+   ctx.fillText(money(b.amount),450,startY);
+   ctx.fillStyle=statusColor;
+   ctx.fillText(statusText,530,startY);
+   ctx.fillStyle="#222222";
+   startY+=lineHeight;
+  });
+
+  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle="#B08D35";
+  startY+=lineHeight;
+  ctx.fillText("TOTAL PAYE:",40,startY);
+  ctx.fillText(money(groupedData.paidTotal),450,startY);
+  startY+=lineHeight;
+  ctx.fillText("TOTAL IMPAYE:",40,startY);
+  ctx.fillText(money(groupedData.unpaidTotal),450,startY);
+  startY+=lineHeight;
+  ctx.fillText("TOTAL GENERAL:",40,startY);
+  ctx.fillText(money(groupedData.total),450,startY);
+  ctx.font="12px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle="#888888";
+  ctx.textAlign="center";
+  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+ }else{
+  var cat=catOf(bill.category);
+  var lines=[
+   {label:"INTITULE:",value:bill.label},
+   {label:"MONTANT:",value:money(bill.amount)},
+   {label:"CATEGORIE:",value:cat.label},
+   {label:"ECHEANCE:",value:bill.due},
+   {label:"STATUT:",value:bill.paid?"Payee":"A payer"},
+   {label:"ID:",value:bill.id}
+  ];
+  var startY=contentY;
+  lines.forEach(function(line,i){
+   ctx.font=i===0?"bold 16px system-ui,-apple-system,sans-serif":"14px system-ui,-apple-system,sans-serif";
+   ctx.fillStyle=i===0?"#B08D35":"#222222";
+   ctx.textAlign="right";
+   ctx.fillText(line.label,width/2-20,startY);
+   ctx.textAlign="left";
+   ctx.fillText(line.value,width/2+20,startY);
+   startY+=28;
+  });
+  ctx.font="12px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle="#888888";
+  ctx.textAlign="center";
+  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+ }
 }
 
 function downloadPNG(canvas,filename){
@@ -727,7 +651,7 @@ function downloadPNG(canvas,filename){
   var file=null;
   try{file=new File([blob],filename,{type:"image/png"})}catch(e){}
   if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
-   navigator.share({files:[file],title:"Mon Budget AŪREOR"}).catch(function(){});
+   navigator.share({files:[file],title:"AUREOR"}).catch(function(){});
    return;
   }
   var url=URL.createObjectURL(blob);
@@ -738,1022 +662,885 @@ function downloadPNG(canvas,filename){
  },"image/png");
 }
 
-function renderProjectOptions(){
- var opts = '<option value="">-- Aucun projet --</option>';
- if (appData && Array.isArray(appData.projects)) {
-  appData.projects.forEach(function(pj){
-   opts += '<option value="'+escAttr(pj.id)+'">'+esc(pj.name)+' (Enveloppe: '+money(pj.envelope)+')</option>';
-  });
- }
- $("eproject").innerHTML = opts;
- $("cproject").innerHTML = opts;
- $("actProject").innerHTML = opts;
+function exportBillAsPNG(bill){
+ var canvas=$("canvasExport");
+ var filename="AUREOR-Recap-Facture-"+bill.id+"-"+bill.due.replace(/[-:]/g,"")+".png";
+ drawBillDocument(canvas,bill,false,null);
+ downloadPNG(canvas,filename);
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
 }
 
+function drawMonthReport(canvas){
+ var ctx=canvas.getContext("2d");
+ var dpr=window.devicePixelRatio||2;
+ var width=600,height=540;
+ canvas.width=width*dpr;canvas.height=height*dpr;
+ ctx.scale(dpr,dpr);
+ ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
+ var headerHeight=120;
+ ctx.fillStyle="#0D0D0D";ctx.fillRect(0,0,width,headerHeight);
+ ctx.font="bold 28px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#B08D35";ctx.textAlign="center";ctx.textBaseline="middle";
+ ctx.fillText("A Ū R E O R",width/2,headerHeight/2);
+ ctx.font="14px system-ui,-apple-system,sans-serif";
+ ctx.fillText("RAPPORT MENSUEL",width/2,headerHeight/2+28);
+ var mExp=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mBills=data.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mCA=data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0)+actTotal(month);
+ var mNet=mCA-(mExp+mBills);
+ var labelMonth=new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+ ctx.fillStyle="#222222";ctx.textAlign="left";ctx.textBaseline="alphabetic";
+ ctx.font="bold 16px system-ui,-apple-system,sans-serif";
+ ctx.fillText(labelMonth,40,headerHeight+40);
+ var rows=[
+  {label:"CA clients du mois",value:money(mCA)},
+  {label:"Depenses internes du mois",value:money(mExp)},
+  {label:"Factures du mois",value:money(mBills)},
+  {label:"Benefice du mois",value:money(mNet)},
+  {label:"Objectif de marge",value:money(Number(data.marginTarget)||1000)}
+ ];
+ var y=headerHeight+80;
+ rows.forEach(function(r,idx){
+  ctx.font=idx===3?"bold 15px system-ui,-apple-system,sans-serif":"14px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle=idx===3?(mNet<0?"#f87171":"#B08D35"):"#222222";
+  ctx.fillText(r.label,40,y);
+  ctx.textAlign="right";
+  ctx.fillText(r.value,width-40,y);
+  ctx.textAlign="left";
+  y+=30;
+ });
+ ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
+ ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(width-40,y);ctx.stroke();
+ ctx.font="12px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#888888";ctx.textAlign="center";
+ ctx.fillText("Exporte le: "+today(),width/2,height-20);
+}
+$("exportMonth").addEventListener("click",function(){
+ var canvas=$("canvasExport");
+ drawMonthReport(canvas);
+ downloadPNG(canvas,"AUREOR-Rapport-"+month+".png");
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
+});
+
+function exportAllBillsAsPNG(){
+ var canvas=$("canvasExport");
+ var unpaidBills=data.bills.filter(function(x){return !x.paid});
+ var paidBills=data.bills.filter(function(x){return x.paid});
+ var groupedData={
+  bills:data.bills,
+  paidTotal:paidBills.reduce(function(s,x){return s+x.amount},0),
+  unpaidTotal:unpaidBills.reduce(function(s,x){return s+x.amount},0),
+  total:data.bills.reduce(function(s,x){return s+x.amount},0)
+ };
+ drawBillDocument(canvas,null,true,groupedData);
+ downloadPNG(canvas,"AUREOR-Recap-Toutes-Factures-"+today().replace(/[-:]/g,"")+".png");
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
+}
+
+
+// ==================== FONCTIONS EXPORT PNG CLIENTS AUREOR ====================
+
+function drawClientDocument(canvas,bill,isGrouped,groupedData){
+ var ctx=canvas.getContext("2d");
+ var dpr=window.devicePixelRatio||2;
+ var width=600,height=isGrouped?900:500;
+ canvas.width=width*dpr;canvas.height=height*dpr;
+ ctx.scale(dpr,dpr);
+ ctx.fillStyle="#ffffff";ctx.fillRect(0,0,width,height);
+
+ // En-tete AUREOR
+ var headerHeight=120;
+ ctx.fillStyle="#0D0D0D";
+ ctx.fillRect(0,0,width,headerHeight);
+
+ // Texte AUREOR
+ ctx.font="bold 28px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#B08D35";
+ ctx.textAlign="center";
+ ctx.textBaseline="middle";
+ ctx.fillText("A Ū R E O R",width/2,headerHeight/2);
+
+ // Sous-titre
+ ctx.font="14px system-ui,-apple-system,sans-serif";
+ ctx.fillStyle="#B08D35";
+ ctx.fillText(isGrouped?"RECAPITULATIF CLIENTS":"RECAPITULATIF CLIENT",width/2,headerHeight/2+28);
+
+ var contentY=headerHeight+20;
+ ctx.fillStyle="#222222";
+ ctx.font="14px system-ui,-apple-system,sans-serif";
+ ctx.textAlign="left";
+
+ if(isGrouped){
+  var lineHeight=22,startY=contentY;
+  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
+  ctx.fillText("DATE",40,startY);
+  ctx.fillText("CLIENT",120,startY);
+  ctx.fillText("INTITULE",240,startY);
+  ctx.fillText("MONTANT",420,startY);
+  ctx.fillText("STATUT",520,startY);
+  ctx.font="14px system-ui,-apple-system,sans-serif";
+  startY+=lineHeight+8;
+  ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(40,startY-4);ctx.lineTo(560,startY-4);ctx.stroke();
+  startY+=4;
+
+  groupedData.bills.forEach(function(b){
+   var statusText=payStatusOf(b);
+   var statusColor=restOf(b)<=0.001?"#34d399":(paidAmountOf(b)>0?"#fbbf24":"#f87171");
+   ctx.fillStyle="#222222";
+   ctx.fillText(b.date,40,startY);
+   var clientName=b.clientName||"-";
+   if(clientName.length>15)clientName=clientName.substring(0,12)+"...";
+   ctx.fillText(clientName,120,startY);
+   var label=b.label;
+   if(label.length>20)label=label.substring(0,17)+"...";
+   ctx.fillText(label,240,startY);
+   ctx.fillText(money(b.amount),420,startY);
+   ctx.fillStyle=statusColor;
+   ctx.fillText(statusText,520,startY);
+   ctx.fillStyle="#222222";
+   startY+=lineHeight;
+  });
+
+  ctx.font="bold 14px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle="#B08D35";
+  startY+=lineHeight;
+  ctx.fillText("TOTAL:",420,startY);
+  ctx.fillText(money(groupedData.total),520,startY);
+  ctx.font="12px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle="#888888";
+  ctx.textAlign="center";
+  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+ }else{
+  var lines=[
+   {label:"CLIENT:",value:bill.clientName||"-"},
+   {label:"INTITULE:",value:bill.label},
+   {label:"MONTANT:",value:money(bill.amount)},
+   {label:"ENCAISSE:",value:money(paidAmountOf(bill))},
+   {label:"RESTE:",value:money(restOf(bill))},
+   {label:"DATE:",value:bill.date},
+   {label:"STATUT:",value:payStatusOf(bill)},
+   {label:"ID:",value:bill.id}
+  ];
+  var startY=contentY;
+  lines.forEach(function(line,i){
+   ctx.font=i===0?"bold 16px system-ui,-apple-system,sans-serif":"14px system-ui,-apple-system,sans-serif";
+   ctx.fillStyle=i===0?"#B08D35":"#222222";
+   ctx.textAlign="right";
+   ctx.fillText(line.label,width/2-20,startY);
+   ctx.textAlign="left";
+   ctx.fillText(line.value,width/2+20,startY);
+   startY+=28;
+  });
+  ctx.font="12px system-ui,-apple-system,sans-serif";
+  ctx.fillStyle="#888888";
+  ctx.textAlign="center";
+  ctx.fillText("Exporte le: "+today(),width/2,height-20);
+ }
+}
+
+function exportClientBillAsPNG(bill){
+ var canvas=$("canvasExport");
+ var filename="AUREOR-Client-"+(bill.clientName||"X").replace(/[^a-zA-Z0-9]/g,"_")+"-"+bill.id+".png";
+ drawClientDocument(canvas,bill,false,null);
+ downloadPNG(canvas,filename);
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
+}
+
+function exportAllClientBillsAsPNG(){
+ var canvas=$("canvasExport");
+ var groupedData={
+  bills:data.clientBills,
+  total:data.clientBills.reduce(function(s,x){return s+x.amount},0)
+ };
+ drawClientDocument(canvas,null,true,groupedData);
+ downloadPNG(canvas,"AUREOR-Tous-Clients-"+today().replace(/[-:]/g,"")+".png");
+ toast("Export PNG lance : choisis Enregistrer dans Photos.");
+}
+
+
 function render(){
- if (!appData) return;
- renderProjectOptions();
-
- $("headerUserName").textContent = appData.username;
- $("profileModalUserName").textContent = appData.username;
-
- var es=appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month});
+ var es=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month});
  var total=es.reduce(function(s,x){return s+x.amount},0);
- var budget=Number(appData.budgets[month]||0);
- var paidBillsMonth=appData.bills.filter(function(x){return x.paid&&x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var usedWithBills=total+paidBillsMonth;
-
+ var budget=Number(data.budgets[month]||0);
+var paidBillsMonth=data.bills.filter(function(x){return x.paid&&x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+var usedWithBills=total+paidBillsMonth;
  $("month").value=month;
  $("monthLabel").textContent=new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
  $("spent").textContent=money(total);
  var rem=$("remaining");
  rem.textContent=budget?money(budget-usedWithBills):"—";
  rem.style.color=budget&&usedWithBills>budget?"var(--danger)":budget&&budget-usedWithBills<budget*0.2?"var(--amber)":"";
- $("unpaid").textContent=money(appData.bills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0));
+ $("unpaid").textContent=money(data.bills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0));
+ $("caHome").textContent=money(data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0)+actTotal(month));
 
- var caMonthEncaisse = appData.clientBills.reduce(function(s,c){
-  return s + getClientEncaisseInMonth(c, month);
- }, 0);
- $("caHome").textContent=money(caMonthEncaisse);
-
+ var pend=data.tasks.filter(function(x){return !x.done}).length;
+ var pendEl=$("pending");if(pendEl)pendEl.textContent=pend;$("pending2").textContent=pend;
  $("budget").value=budget||"";
  var pct=budget?Math.min(100,usedWithBills/budget*100):0;
  var bar=$("progress");
  bar.style.width=pct+"%";
  bar.style.background=pct>=100?"var(--danger)":pct>=80?"var(--amber)":"var(--accent)";
- $("budgetHint").textContent=budget?(usedWithBills>budget?"Budget dépassé de "+money(usedWithBills-budget):"Il reste "+money(budget-usedWithBills)+" ("+Math.round(pct)+"% utilisé)")+(paidBillsMonth>0?" · dont "+money(paidBillsMonth)+" de charges payées":""):"Définis ton budget mensuel.";
-
+ $("budgetHint").textContent=budget?(usedWithBills>budget?"Budget depasse de "+money(usedWithBills-budget):"Il reste "+money(budget-usedWithBills)+" ("+Math.round(pct)+"% utilise)")+(paidBillsMonth>0?" · dont "+money(paidBillsMonth)+" de factures payees":""):"Definis ton budget mensuel.";
  var m={};
  es.forEach(function(x){m[x.category]=(m[x.category]||0)+x.amount});
  var entries=Object.keys(m).map(function(id){return{label:catOf(id).label,color:catOf(id).color,value:Math.round(m[id]*100)/100}}).sort(function(a,b){return b.value-a.value});
- $("chartCats").innerHTML=entries.length?('<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:8px">'+donutSVG(entries,Math.round(total*100)/100)+'<div style="flex:1;min-width:150px">'+entries.map(function(e){return '<p style="margin:4px 0;font-size:13px"><span class="dot" style="background:'+escAttr(e.color)+'"></span>'+esc(e.label)+' <strong>'+money(e.value)+' · '+Math.round(e.value/total*100)+'%</strong></p>'}).join("")+'</div></div>'):'<div class="empty">Aucune dépense ce mois-ci.</div>';
+ $("chartCats").innerHTML=entries.length?('<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:8px">'+donutSVG(entries,Math.round(total*100)/100)+'<div style="flex:1;min-width:150px">'+entries.map(function(e){return '<p style="margin:4px 0;font-size:13px"><span class="dot" style="background:'+escAttr(e.color)+'"></span>'+esc(e.label)+' <strong>'+money(e.value)+' · '+Math.round(e.value/total*100)+'%</strong></p>'}).join("")+'</div></div>'):'<div class="empty">Aucune depense ce mois-ci.</div>';
  $("chartMonths").innerHTML=monthsSVG();
  var recent=[].concat(es).sort(function(a,b){return b.date.localeCompare(a.date)}).slice(0,4);
- $("recent").innerHTML=recent.map(expenseRow).join("")||'<div class="empty">Aucune dépense.</div>';
- var all=[].concat(appData.expenses).sort(function(a,b){return b.date.localeCompare(a.date)});
- $("elist").innerHTML=all.map(expenseRow).join("")||'<div class="empty">Aucune dépense enregistrée.</div>';
-
- var unpaidB=appData.bills.filter(function(x){return !x.paid});
+ $("recent").innerHTML=recent.map(expenseRow).join("")||'<div class="empty">Aucune depense.</div>';
+ var all=[].concat(data.expenses).sort(function(a,b){return b.date.localeCompare(a.date)});
+ $("elist").innerHTML=all.map(expenseRow).join("")||'<div class="empty">Aucune depense enregistre.</div>';
+ var unpaidB=data.bills.filter(function(x){return !x.paid});
  $("unpaid2").textContent=money(unpaidB.reduce(function(s,x){return s+x.amount},0));
- var sortedBills=[].concat(appData.bills).sort(function(a,b){return (a.paid-b.paid)||a.due.localeCompare(b.due)});
- $("blist").innerHTML=sortedBills.map(function(x){
+ var sorted=[].concat(data.bills).sort(function(a,b){return (a.paid-b.paid)||a.due.localeCompare(b.due)});
+ $("blist").innerHTML=sorted.map(function(x){
   var late=!x.paid&&x.due<today();
-  return '<div class="item"><input class="check" type="checkbox" data-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Charge payée"><div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>Échéance : '+esc(x.due)+' · '+esc(catOf(x.category).label)+(x.paid?" · Payée":late?' · <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" · à payer")+'</small></div><strong>'+money(x.amount)+'</strong><button class="primary" data-export-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button><button class="danger" data-delete-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
- }).join("")||'<div class="empty">Aucune facture enregistrée.</div>';
+  return '<div class="item"><input class="check" type="checkbox" data-paid="'+escAttr(x.id)+'" '+(x.paid?"checked":"")+' aria-label="Charge payee"><div class="details"><strong class="'+(x.paid?"done":"")+'">'+esc(x.label)+'</strong><br><small>Echeance : '+esc(x.due)+' · '+esc(catOf(x.category).label)+(x.paid?" · Payee":late?' · <span style="color:var(--danger);font-weight:600">EN RETARD</span>':" · a payer")+'</small></div><strong>'+money(x.amount)+'</strong><button class="danger" data-delete-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button><button class="primary" data-export-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button></div>';
+ }).join("")||'<div class="empty">Aucune facture enregistre.</div>';
+ var tk=[].concat(data.tasks).sort(function(a,b){return a.done-b.done});
+ $("tlist").innerHTML=tk.map(function(x){return '<div class="item"><input class="check" type="checkbox" data-task="'+escAttr(x.id)+'" '+(x.done?"checked":"")+' aria-label="Tache terminee"><div class="details '+(x.done?"done":"")+'">'+esc(x.text)+'</div><button class="danger" data-delete-task="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>'}).join("")||'<div class="empty">Aucune tache.</div>';
 
- renderClientsSection();
- renderProjectsSection();
- renderActivitiesSection();
- renderBilanSection();
-}
+ // ==================== RENDU CLIENTS ====================
+ var clientPaidTotal=data.clientBills.reduce(function(s,x){return s+paidAmountOf(x)},0);
+ var clientUnpaidTotal=data.clientBills.reduce(function(s,x){return s+restOf(x)},0);
+ var clientTotal=data.clientBills.reduce(function(s,x){return s+(Number(x.amount)||0)},0);
+ $("caTotal").textContent=money(clientTotal);
+ $("clientPaidTotal").textContent=money(clientPaidTotal);
+ $("clientUnpaidTotal").textContent=money(clientUnpaidTotal);
+ $("clientCount").textContent=data.clientBills.length;
 
-// RENDU TABLEAU CLIENTS
-function renderClientsSection(){
- var totalFacture = appData.clientBills.reduce(function(s,c){ return s + c.amount; }, 0);
- var totalEncaisse = appData.clientBills.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
- var totalReste = Math.max(0, totalFacture - totalEncaisse);
-
- $("caTotal").textContent = money(totalFacture);
- $("clientPaidTotal").textContent = money(totalEncaisse);
- $("clientUnpaidTotal").textContent = money(totalReste);
- $("clientCount").textContent = appData.clientBills.length;
-
- var sortedClients = [].concat(appData.clientBills).sort(function(a,b){
-  var encA = getClientTotalEncaisse(a), encB = getClientTotalEncaisse(b);
-  var soldeA = a.amount - encA, soldeB = b.amount - encB;
-  return (soldeB - soldeA) || b.date.localeCompare(a.date);
+ var groups={};
+ data.clientBills.forEach(function(x){
+  var n=x.clientName||"(sans nom)";
+  if(!groups[n])groups[n]={due:0,paid:0,count:0,paidCount:0};
+  var g=groups[n];
+  g.due+=Number(x.amount)||0;g.paid+=paidAmountOf(x);g.count++;
+  if(restOf(x)<=0.001)g.paidCount++;
  });
-
- var tbody = $("clientTableBody");
- var emptyMsg = $("clientTableEmpty");
-
- if (sortedClients.length === 0) {
-  tbody.innerHTML = "";
-  emptyMsg.style.display = "block";
-  return;
- }
- emptyMsg.style.display = "none";
-
- tbody.innerHTML = sortedClients.map(function(c){
-  var enc = getClientTotalEncaisse(c);
-  var solde = Math.max(0, c.amount - enc);
-  var badge = solde === 0 ? '<span class="badge badge-paid">Payé</span>' : (enc > 0 ? '<span class="badge badge-partial">Partiel</span>' : '<span class="badge badge-pending">En attente</span>');
-  var proj = c.projectId ? appData.projects.find(function(pj){return pj.id===c.projectId}) : null;
-  var projTag = proj ? '<br><small class="muted">📁 '+esc(proj.name)+'</small>' : '';
-
-  return '<tr>' +
-   '<td><strong>'+esc(c.clientName||"Non spécifié")+'</strong><br><small>'+esc(c.label)+'</small>'+projTag+'</td>' +
-   '<td><strong>'+money(c.amount)+'</strong></td>' +
-   '<td style="color:var(--green)">'+money(enc)+'</td>' +
-   '<td style="color:var(--amber)">'+money(solde)+'</td>' +
-   '<td>'+badge+'</td>' +
-   '<td><div style="display:flex;gap:4px">' +
-    (solde > 0 ? '<button class="primary" data-pay-client="'+escAttr(c.id)+'" style="padding:4px 8px;font-size:11px">+ Encaisser</button>' : '') +
-    '<button data-export-client-bill="'+escAttr(c.id)+'" style="padding:4px 6px;font-size:12px">📥</button>' +
-    '<button class="danger" data-delete-client-bill="'+escAttr(c.id)+'" style="padding:4px 6px;font-size:11px">✕</button>' +
-   '</div></td>' +
-  '</tr>';
- }).join("");
-}
-
-function renderProjectsSection(){
- var list = appData.projects || [];
-
- $("projectsList").innerHTML = list.map(function(pj){
-  var projExpenses = appData.expenses.filter(function(e){ return e.projectId === pj.id; });
-  var spentTotal = projExpenses.reduce(function(s,e){ return s + e.amount; }, 0);
-
-  var projClients = appData.clientBills.filter(function(c){ return c.projectId === pj.id; });
-  var totalFacture = projClients.reduce(function(s,c){ return s + c.amount; }, 0);
-  var totalEncaisse = projClients.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
-  var totalAEncaisser = Math.max(0, totalFacture - totalEncaisse);
-  var netProfit = totalEncaisse - spentTotal;
-
-  var envelope = Number(pj.envelope) || 0;
-  var remEnvelope = envelope - spentTotal;
-  var pctUsed = envelope > 0 ? Math.min(100, Math.round((spentTotal / envelope) * 100)) : 0;
-  var isOver = envelope > 0 && spentTotal > envelope;
-  var isAlert = envelope > 0 && pctUsed >= (pj.alertPercent || 80);
-
-  var alertBox = "";
-  if (isOver) {
-   alertBox = '<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:#241420;border:1px solid var(--danger);color:var(--danger);font-size:12px">⚠️ Enveloppe budgétaire dépassée de '+money(spentTotal - envelope)+' !</div>';
-  } else if (isAlert) {
-   alertBox = '<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:#2a2418;border:1px solid var(--amber);color:var(--amber);font-size:12px">⚠️ Seuil d\'alerte dépense atteint ('+pctUsed+'% de l\'enveloppe).</div>';
-  }
-
-  return '<div class="card" style="margin-bottom:12px;border-color:'+(isOver?'var(--danger)':(isAlert?'var(--amber)':'var(--line)'))+'">' +
-   '<div style="display:flex;justify-content:space-between;align-items:center">' +
-    '<strong style="font-size:18px;color:var(--accent)">📁 '+esc(pj.name)+'</strong>' +
-    '<button class="danger" data-delete-project="'+escAttr(pj.id)+'" style="border:0;background:none;padding:4px;font-size:12px">✕ Supprimer</button>' +
-   '</div>' +
-   '<div class="grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">' +
-    '<div><small class="muted">Enveloppe budgétaire</small><br><strong>'+money(envelope)+'</strong></div>' +
-    '<div><small class="muted">Dépenses engagées</small><br><strong style="color:'+(isOver?'var(--danger)':'var(--text)')+'">'+money(spentTotal)+'</strong></div>' +
-    '<div><small class="muted">Budget disponible</small><br><strong style="color:'+(remEnvelope<0?'var(--danger)':'var(--green)')+'">'+money(remEnvelope)+'</strong></div>' +
-    '<div><small class="muted">Consommation</small><br><strong>'+pctUsed+' %</strong></div>' +
-   '</div>' +
-   '<div class="bar" style="margin-top:8px"><span style="width:'+pctUsed+'%;background:'+(isOver?'var(--danger)':(isAlert?'var(--amber)':'var(--accent)'))+'"></span></div>' +
-   alertBox +
-   '<div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px;font-size:12px" class="grid">' +
-    '<div><small class="muted">CA Facturé</small><br><strong>'+money(totalFacture)+'</strong></div>' +
-    '<div><small class="muted">CA Encaissé</small><br><strong style="color:var(--green)">'+money(totalEncaisse)+'</strong></div>' +
-    '<div><small class="muted">Reste à encaisser</small><br><strong style="color:var(--amber)">'+money(totalAEncaisser)+'</strong></div>' +
-    '<div><small class="muted">Bénéfice Réel Provisoire</small><br><strong style="color:'+(netProfit<0?'var(--danger)':'var(--green)')+'">'+money(netProfit)+'</strong></div>' +
-   '</div>' +
-  '</div>';
- }).join("") || '<div class="empty">Aucun projet créé.</div>';
-}
-
-function renderActivitiesSection(){
- $("actDate").value = today();
-
- var monthsList = [];
- var now = new Date();
- for (var i = 0; i < 12; i++) {
-  var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-  monthsList.push(d.getFullYear() + "-" + pad(d.getMonth() + 1));
- }
-
- var html = "";
- monthsList.forEach(function(mKey){
-  var mLabel = new Date(mKey + "-01T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
-  var actsInMonth = (appData.activities || []).filter(function(a){ return a.date && a.date.slice(0,7) === mKey; })
-                                .sort(function(a,b){ return b.date.localeCompare(a.date); });
-
-  html += '<div style="margin-bottom:12px"><strong style="font-size:13px;color:var(--accent);display:block;margin-bottom:6px;border-bottom:1px solid var(--line);padding-bottom:2px">'+mLabel+' ('+actsInMonth.length+' activité'+(actsInMonth.length>1?'s':'')+')</strong>';
-  if (actsInMonth.length === 0) {
-   html += '<div class="hint" style="font-style:italic">Aucune activité ce mois-ci.</div>';
-  } else {
-   html += actsInMonth.map(function(a){
-    var proj = a.projectId ? appData.projects.find(function(pj){return pj.id===a.projectId}) : null;
-    var projTag = proj ? ' <span class="chip" style="background:#1e293b;color:#94a3b8">📁 '+esc(proj.name)+'</span>' : '';
-    return '<div class="item"><div class="details"><strong>'+esc(a.name)+'</strong>'+projTag+'<br><small>'+esc(a.date)+(a.note?' · '+esc(a.note):'')+'</small></div><button class="danger" data-delete-activity="'+escAttr(a.id)+'" style="border:0;background:none;padding:4px">✕</button></div>';
-   }).join("");
-  }
-  html += '</div>';
+ var tHtml='<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:420px">';
+ tHtml+='<thead><tr style="color:var(--muted);text-align:left">';
+ tHtml+='<th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Client</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Dû</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Encaissé</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Reste</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap">Statut</th>';
+ tHtml+='</tr></thead><tbody>';
+ Object.keys(groups).sort().forEach(function(n){
+  var g=groups[n],rest=Math.max(0,g.due-g.paid);
+  var st=rest<=0.001?"Paye":(g.paid>0?"Partiellement paye":"En attente");
+  var col=rest<=0.001?"var(--green)":(g.paid>0?"var(--amber)":"var(--danger)");
+  tHtml+='<tr><td style="padding:8px;border-bottom:1px solid var(--line)">'+esc(n)+' <small class="muted">('+g.paidCount+'/'+g.count+')</small></td><td style="padding:8px;border-bottom:1px solid var(--line)">'+money(g.due)+'</td><td style="padding:8px;border-bottom:1px solid var(--line)">'+money(g.paid)+'</td><td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700">'+money(rest)+'</td><td style="padding:8px;border-bottom:1px solid var(--line);color:'+col+';white-space:nowrap">'+st+'</td></tr>';
  });
+ if(!Object.keys(groups).length)tHtml+='<tr><td colspan="5" style="padding:12px;color:var(--muted)">Aucun client.</td></tr>';
+ tHtml+='</tbody></table>';
+ $("ctable").innerHTML=tHtml;
+ var sortedClients=[].concat(data.clientBills).sort(function(a,b){return restOf(b)-restOf(a)||b.date.localeCompare(a.date)});
+ $("clist").innerHTML=sortedClients.map(function(x){
+  var rest=restOf(x),paidSum=paidAmountOf(x),late=rest>0.001&&x.date<today();
+  var st=payStatusOf(x);
+  var html='<div class="item"><input class="check" type="checkbox" data-client-paid="'+escAttr(x.id)+'" '+(rest<=0.001?"checked":"")+' aria-label="Recapitulatif paye" style="accent-color:#B08D35">'+(x.clientName?'<span class="dot" style="background:#B08D35;flex:none"></span>':'')+'<div class="details"><strong class="'+(rest<=0.001?"done":"")+'">'+esc(x.label)+'</strong><br><small>'+(x.clientName?'Client : '+esc(x.clientName)+' - ':'')+'Date : '+esc(x.date)+' - Dû : '+money(x.amount)+' - Encaissé : '+money(paidSum)+' - Reste : '+money(rest)+' - '+st+(late?' - <span style="color:var(--danger);font-weight:600">EN RETARD</span>':'')+'</small></div><button class="primary" data-pay-toggle="'+escAttr(x.id)+'" aria-label="Ajouter un versement" style="border:0;background:none;padding:4px;font-size:16px">＋</button><button class="primary" data-export-client-bill="'+escAttr(x.id)+'" aria-label="Exporter en PNG" style="border:0;background:none;padding:4px;font-size:16px">📥</button><button class="danger" data-delete-client-bill="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
+  if(rest>0.001||paidSum>0){
+   html+='<div id="payform-'+escAttr(x.id)+'" style="display:none;padding:4px 0 10px;border-bottom:1px solid var(--line)">';
+   html+='<div class="row" style="margin:6px 0"><input type="number" min="0.01" step=".01" inputmode="decimal" id="payamt-'+escAttr(x.id)+'" placeholder="Montant du versement" style="max-width:170px"><button class="primary" data-pay="'+escAttr(x.id)+'">Encaisser</button></div>';
+   if(Array.isArray(x.payments)&&x.payments.length){
+    html+='<small class="muted">Versements : '+x.payments.map(function(p){return esc(p.date)+' '+money(p.amount)+(p.by?' ('+esc(p.by)+')':'')}).join(' - ')+'</small>';
+   }
+   html+='</div>';
+  }
+  return html;
+ }).join("")||'<div class="empty">Aucun recapitulatif client.</div>';
 
- $("activitiesHistory").innerHTML = html;
-}
+ // ==================== RENDU BILAN ====================
+ var allExpenses=data.expenses.reduce(function(s,x){return s+x.amount},0);
+ var allBills=data.bills.reduce(function(s,x){return s+x.amount},0);
+ var totalCharges=allExpenses+allBills;
+ var caTotal=data.clientBills.reduce(function(s,x){return s+x.amount},0)+actTotal(null);
+ var netProfit=caTotal-totalCharges;
+ var marginTarget=Number(data.marginTarget)||1000;
+ var targetProgress=marginTarget>0?Math.min(100,Math.max(0,netProfit/marginTarget*100)):0;
 
-function renderBilanSection(){
- // Render Period selector buttons state
- var periodBtns = document.querySelectorAll("#bilanPeriodWrap button");
- for (var pIdx = 0; pIdx < periodBtns.length; pIdx++) {
-  var pBtn = periodBtns[pIdx];
-  var isSel = pBtn.dataset.period === currentBilanPeriod;
-  pBtn.classList.toggle("sel", isSel);
-  pBtn.style.background = isSel ? "var(--accent)" : "";
-  pBtn.style.color = isSel ? "#0b1220" : "";
- }
-
- var targetMonths = getMonthsForPeriod(currentBilanPeriod);
- var targetKeys = targetMonths.map(function(m){ return m.key; });
-
- // Period Title
- var periodTitles = {
-  month: "Bilan du mois (" + new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"}) + ")",
-  "6months": "Bilan cumulé sur 6 mois",
-  "1year": "Bilan cumulé sur 1 an"
- };
- $("bilanPeriodTitle").textContent = periodTitles[currentBilanPeriod] || "Bilan de la période";
- $("chartBilanTitle").textContent = currentBilanPeriod === "month" ? "Bénéfice du mois" : "Bénéfice par mois (" + targetMonths.length + " mois)";
-
- var pExp = appData.expenses.filter(function(x){ return x.date && targetKeys.indexOf(x.date.slice(0,7)) !== -1; }).reduce(function(s,x){ return s + x.amount; }, 0);
- var pBills = appData.bills.filter(function(x){ return x.due && targetKeys.indexOf(x.due.slice(0,7)) !== -1; }).reduce(function(s,x){ return s + x.amount; }, 0);
- var pCharges = pExp + pBills;
-
- var pCAEncaisse = appData.clientBills.reduce(function(s, c){
-  return s + (c.payments || []).filter(function(pm){
-   return pm.date && targetKeys.indexOf(pm.date.slice(0,7)) !== -1;
-  }).reduce(function(ps, pm){ return ps + Number(pm.amount || 0); }, 0);
- }, 0);
-
- var pNetProfit = pCAEncaisse - pCharges;
-
- var caFacture = appData.clientBills.reduce(function(s,x){ return s + x.amount; }, 0);
- var caEncaisseTotal = appData.clientBills.reduce(function(s,x){ return s + getClientTotalEncaisse(x); }, 0);
- var caAEncaisser = Math.max(0, caFacture - caEncaisseTotal);
-
- var marginTarget = Number(appData.marginTarget) || 1000;
- var targetProgress = marginTarget > 0 ? Math.min(100, Math.max(0, pNetProfit / marginTarget * 100)) : 0;
-
- $("bilanMCA").textContent = money(pCAEncaisse);
- $("bilanMCharges").textContent = money(pCharges);
- $("bilanMNet").textContent = money(pNetProfit);
- $("bilanCA").textContent = money(caFacture);
-
- $("bilanNet").textContent = money(pNetProfit);
- $("bilanTarget").textContent = money(marginTarget);
- $("bilanProgress").style.width = targetProgress + "%";
- $("marginTarget").value = marginTarget;
+ $("bilanCA").textContent=money(caTotal);
+ $("bilanCharges").textContent=money(totalCharges);
+ $("bilanNet").textContent=money(netProfit);
+ $("bilanTarget").textContent=money(marginTarget);
+ $("bilanProgress").style.width=targetProgress+"%";
 
  var alertHtml="";
- if(pNetProfit < 0){
-  alertHtml='<div class="card" style="border-color:var(--danger);background:#241420">⚠️ Bénéfice de la période négatif : '+money(pNetProfit)+'</div>';
- }else if(pNetProfit < marginTarget){
-  alertHtml='<div class="card" style="border-color:var(--amber);background:#2a2418">▶ Objectif non atteint pour la période : '+money(marginTarget - pNetProfit)+' restant</div>';
- }else if(pNetProfit >= marginTarget * 2){
-  alertHtml='<div class="card" style="border-color:#34d399;background:#0f2418">✅ Excellent ! Objectif dépassé de '+money(pNetProfit - marginTarget)+'</div>';
+ if(netProfit<0){
+  alertHtml='<div class="card" style="border-color:var(--danger);background:#241420">⚠ Benefice negatif: '+money(netProfit)+' €</div>';
+ }else if(netProfit<marginTarget){
+  alertHtml='<div class="card" style="border-color:var(--amber);background:#2a2418">▶ Objectif non atteint: '+money(marginTarget-netProfit)+' € restant</div>';
+ }else if(netProfit>=marginTarget*2){
+  alertHtml='<div class="card" style="border-color:#34d399;background:#0f2418">✅ Excellent! Objectif depasse de '+money(netProfit-marginTarget)+' €</div>';
  }
- $("bilanAlert").innerHTML = alertHtml;
- $("bilanHint").textContent = "Objectif de marge : " + money(marginTarget) + " (" + Math.round(targetProgress) + "% atteint)";
- $("bilanMHint").textContent = "Période analysée : " + (targetKeys.length === 1 ? targetKeys[0] : "Du " + targetKeys[0] + " au " + targetKeys[targetKeys.length - 1]);
-
- $("chartBilan").innerHTML = bilanSVG(currentBilanPeriod);
+ $("bilanAlert").innerHTML=alertHtml;
+ $("bilanHint").textContent="Objectif: "+money(marginTarget)+" ("+Math.round(targetProgress)+"% atteint)";
+ var mExp=data.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mBills=data.bills.filter(function(x){return x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
+ var mCA=data.clientBills.filter(function(x){return x.date&&x.date.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0)+actTotal(month);
+ $("bilanMCA").textContent=money(mCA);
+ $("bilanMCharges").textContent=money(mExp+mBills);
+ $("bilanMNet").textContent=money(mCA-(mExp+mBills));
+ $("bilanMHint").textContent="Mois affiché : "+new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+ $("chartBilan").innerHTML=bilanSVG();
 
  var chargeDetails=[
-  {label:"Dépenses internes (Période)",value:money(pExp)},
-  {label:"Charges / Factures (Période)",value:money(pBills)},
-  {label:"Total Charges (Période)",value:money(pCharges)}
+  {label:"Depenses internes",value:money(allExpenses)},
+  {label:"Charges a payer",value:money(allBills)},
+  {label:"Total charges",value:money(totalCharges)}
  ];
- $("bilanDetails").innerHTML=chargeDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("");
+ $("bilanDetails").innerHTML=chargeDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucune charge.</div>';
 
+ var caPaid=data.clientBills.reduce(function(s,x){return s+paidAmountOf(x)},0)+actTotal(null);
+ var caUnpaid=caTotal-caPaid;
  var caDetails=[
-  {label:"CA Encaissé (Période)",value:money(pCAEncaisse)},
-  {label:"Total Encaissé Historique",value:money(caEncaisseTotal)},
-  {label:"Créances Clients Restantes",value:money(caAEncaisser)}
+  {label:"CA encaisse",value:money(caPaid)},
+  {label:"CA a encaisser",value:money(caUnpaid)},
+  {label:"CA total",value:money(caTotal)}
  ];
- $("caDetails").innerHTML=caDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("");
+ $("caDetails").innerHTML=caDetails.map(function(x){return '<div class="item" style="border:0;padding:8px 0">• '+esc(x.label)+': <strong>'+x.value+'</strong></div>'}).join("")||'<div class="empty">Aucun CA.</div>';
 
  renderChips();
+ renderProjectSelects();
+ renderActivities();
+ renderProjects();
 }
 
-// Bilan Period selector listener
-$("bilanPeriodWrap").addEventListener("click", function(e){
- var b = e.target.closest("[data-period]");
- if (!b) return;
- currentBilanPeriod = b.dataset.period;
- renderBilanSection();
-});
-
-// EXACTEMENT 5 ONGLETS PRINCIPAUX
-var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients & CA",projects:"Projets & Activités",bilan:"Bilan"};
-function showPage(name){
- if (name === "bills") {
-  var pages=document.querySelectorAll(".page");
-  for(var j=0;j<pages.length;j++)pages[j].classList.toggle("active",pages[j].id==="p-bills");
-  if($("hdrTitle")) $("hdrTitle").textContent="Charges & Factures";
-  window.scrollTo(0,0);
-  return;
+function renderProjectSelects(){
+ ["eproj","bproj","cproj","aproj"].forEach(function(id){
+  var sel=$(id);if(!sel)return;
+  var cur=sel.value;
+  sel.innerHTML='<option value="">— Aucun projet —</option>'+data.projects.map(function(p){return '<option value="'+escAttr(p.id)+'">'+esc(p.name)+'</option>'}).join("");
+  if(cur)sel.value=cur;
+ });
+}
+function renderActivities(){
+ if(!$("alist"))return;
+ var acts=[].concat(data.activities).sort(function(a,b){return b.date.localeCompare(a.date)||String(b.at||"").localeCompare(String(a.at||""))});
+ $("alist").innerHTML=acts.slice(0,10).map(function(x){
+  return '<div class="item"><span class="dot" style="background:#34d399;flex:none"></span><div class="details"><strong>'+esc(x.label)+'</strong><br><small>'+esc(x.date)+' - '+money(x.amount)+(x.note?' - '+esc(x.note):'')+(x.by?' - '+esc(x.by):'')+'</small></div><button class="danger" data-delete-activity="'+escAttr(x.id)+'" aria-label="Supprimer" style="border:0;background:none;padding:4px">✕</button></div>';
+ }).join("")||'<div class="empty">Aucune activite enregistree.</div>';
+ var m=new Date(),rows=[];
+ for(var i=0;i<12;i++){
+  var key=m.getFullYear()+"-"+pad(m.getMonth()+1);
+  var list=data.activities.filter(function(x){return x.date&&x.date.slice(0,7)===key});
+  rows.unshift({label:m.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),n:list.length,total:list.reduce(function(s,x){return s+(Number(x.amount)||0)},0)});
+  m.setMonth(m.getMonth()-1);
  }
+ var h='<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="color:var(--muted);text-align:left"><th style="padding:4px">Mois</th><th style="padding:4px">Activites</th><th style="padding:4px">Total</th></tr></thead><tbody>';
+ rows.forEach(function(r){h+='<tr><td style="padding:4px;border-bottom:1px solid var(--line)">'+esc(r.label)+'</td><td style="padding:4px;border-bottom:1px solid var(--line)">'+r.n+'</td><td style="padding:4px;border-bottom:1px solid var(--line)">'+money(r.total)+'</td></tr>'});
+ h+='</tbody></table>';
+ $("acthist").innerHTML=h;
+}
+function renderProjects(){
+ if(!$("pjlist"))return;
+ var html=data.projects.map(function(p){
+  var st=projectStats(p);
+  var col=st.benef<0?"var(--danger)":"var(--green)";
+  var alertHtml=st.alert?'<div class="card" style="border-color:var(--danger);background:#241420;margin-top:8px;padding:10px">⚠ Enveloppe : '+st.pct+'% consommé (alerte à '+st.alertAt+'%)</div>':"";
+  return '<div class="card" style="margin-bottom:10px"><div class="row"><strong style="flex:1">'+esc(p.name)+'</strong><button class="danger" data-pj-del="'+escAttr(p.id)+'" aria-label="Supprimer le projet" style="border:0;background:none;padding:4px">✕</button></div>'
+  +'<div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:10px">'
+  +'<div class="stat"><small>Enveloppe (budget disponible)</small><strong>'+money(st.envelope)+'</strong></div>'
+  +'<div class="stat"><small>Dépenses liées</small><strong>'+money(st.spent)+'</strong></div>'
+  +'<div class="stat"><small>Encaissé</small><strong>'+money(st.encaisse)+'</strong></div>'
+  +'<div class="stat"><small>Reste à encaisser</small><strong>'+money(st.reste)+'</strong></div>'
+  +'</div>'
+  +'<div class="row" style="margin-top:8px"><div class="stat" style="flex:1"><small>Bénéfice net</small><strong style="color:'+col+'">'+money(st.benef)+'</strong></div>'
+  +'<div class="stat" style="flex:1"><small>Reste enveloppe</small><strong style="color:'+(st.restEnv<0?"var(--danger)":"")+'">'+money(st.restEnv)+'</strong></div>'
+  +'<div class="stat" style="flex:1"><small>% consommé</small><strong style="color:'+(st.alert?"var(--danger)":"")+'">'+st.pct+'%</strong></div></div>'
+  +'<div class="bar" style="margin-top:8px"><span style="width:'+Math.min(100,Math.max(0,st.pct))+'%;background:'+(st.alert?"var(--danger)":"var(--accent)")+'"></span></div>'
+  +alertHtml
+  +'<label style="margin-top:10px">Modifier l\'enveloppe (€)</label><div class="row"><input type="number" min="0" step=".01" inputmode="decimal" data-pj-env="'+escAttr(p.id)+'" value="'+(Number(p.envelope)||0)+'" style="max-width:150px"><span class="muted" style="font-size:12px">L\'enveloppe est un budget disponible, pas un bénéfice attendu.</span></div>'
+  +'</div>';
+ }).join("")||'<div class="empty">Aucun projet. Crée par exemple « Courchevel » avec une enveloppe de 15 000 €.</div>';
+ $("pjlist").innerHTML=html;
+ var th='<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:420px"><thead><tr style="color:var(--muted);text-align:left"><th style="padding:6px">Projet</th><th style="padding:6px">Enveloppe</th><th style="padding:6px">Dépenses</th><th style="padding:6px">Encaissé</th><th style="padding:6px">Bénéfice</th><th style="padding:6px">% utilisé</th></tr></thead><tbody>';
+ data.projects.forEach(function(p){
+  var st=projectStats(p);
+  th+='<tr><td style="padding:6px;border-bottom:1px solid var(--line)">'+esc(p.name)+'</td><td style="padding:6px;border-bottom:1px solid var(--line)">'+money(st.envelope)+'</td><td style="padding:6px;border-bottom:1px solid var(--line)">'+money(st.spent)+'</td><td style="padding:6px;border-bottom:1px solid var(--line)">'+money(st.encaisse)+'</td><td style="padding:6px;border-bottom:1px solid var(--line);color:'+(st.benef<0?"var(--danger)":"var(--green)")+'">'+money(st.benef)+'</td><td style="padding:6px;border-bottom:1px solid var(--line)">'+st.pct+'%</td></tr>';
+ });
+ if(!data.projects.length)th+='<tr><td colspan="6" style="padding:12px;color:var(--muted)">Aucun projet.</td></tr>';
+ th+='</tbody></table>';
+ $("pjtable").innerHTML=th;
+}
+var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients",projects:"Projets",bilan:"Bilan",menu:"Menu",bills:"Charges & factures"};
+function showPage(name){
  var btns=document.querySelectorAll("nav button");
  for(var i=0;i<btns.length;i++)btns[i].classList.toggle("active",btns[i].dataset.page===name);
  var pages=document.querySelectorAll(".page");
- for(var k=0;k<pages.length;k++)pages[k].classList.toggle("active",pages[k].id==="p-"+name);
- if($("hdrTitle")) $("hdrTitle").textContent=TITLES[name] ? TITLES[name] + " · Espace financier" : "Votre espace financier";
+ for(var j=0;j<pages.length;j++)pages[j].classList.toggle("active",pages[j].id==="p-"+name);
+ $("hdrTitle").textContent=TITLES[name];
  window.scrollTo(0,0);
 }
-
 $("openBills").addEventListener("click",function(){showPage("bills")});
 $("closeBills").addEventListener("click",function(){showPage("expenses")});
-
 document.querySelector("nav").addEventListener("click",function(e){
  var b=e.target.closest("[data-page]");if(!b)return;
- showPage(b.dataset.page);
+ var btns=document.querySelectorAll("nav button");
+ for(var i=0;i<btns.length;i++)btns[i].classList.toggle("active",btns[i]===b);
+ var pages=document.querySelectorAll(".page");
+ for(var j=0;j<pages.length;j++)pages[j].classList.toggle("active",pages[j].id==="p-"+b.dataset.page);
+ $("hdrTitle").textContent=TITLES[b.dataset.page];
+ window.scrollTo(0,0);
 });
-
 $("month").addEventListener("change",function(e){if(e.target.value){month=e.target.value;render()}});
 
 $("saveBudget").addEventListener("click",function(){
  var v=$("budget").value;
  if(v===""||!Number.isFinite(Number(v))||Number(v)<0){toast("Saisis un budget valide.");return}
- appData.budgets[month]=Math.round(Number(v)*100)/100;
- logAudit("BUDGET_UPDATE", "Budget "+month+" défini à "+money(v));
- saveSpace();render();toast("Budget enregistré.");
+ data.budgets[month]=Math.round(Number(v)*100)/100;
+ save();render();toast("Budget enregistre.");
 });
 
-var saveTargetBtn = $("saveTarget");
-if (saveTargetBtn) {
- saveTargetBtn.addEventListener("click",function(){
-  var v=$("marginTarget").value;
-  if(v===""||!Number.isFinite(Number(v))||Number(v)<=0){toast("Saisis un objectif valide (supérieur à 0).");return}
-  appData.marginTarget=Math.round(Number(v)*100)/100;
-  logAudit("TARGET_UPDATE", "Objectif de marge défini à "+money(v));
-  saveSpace();render();toast("Objectif enregistré.");
- });
-}
+$("marginTarget").value=data.marginTarget;
+$("saveTarget").addEventListener("click",function(){
+ var v=$("marginTarget").value;
+ if(v===""||!Number.isFinite(Number(v))||Number(v)<=0){toast("Saisis un objectif valide (supérieur à 0).");return}
+ data.marginTarget=Math.round(Number(v)*100)/100;
+ save();render();toast("Objectif enregistre.");
+});
 
+$("adate").value=today();
+$("activityForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ setErr("err-aname");setErr("err-aamount");setErr("err-adate");
+ var label=$("aname").value.trim(),amount=$("aamount").value,date=$("adate").value;
+ var ok=true;
+ if(!label){setErr("err-aname","Nom requis.",true);ok=false}
+ var amt=Number(amount);
+ if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-aamount","Prix invalide (supérieur à 0).",true);ok=false}
+ if(!date){setErr("err-adate","Date requise.",true);ok=false}
+ if(!ok)return;
+ data.activities.push({id:uid(),label:label,amount:Math.round(amt*100)/100,date:date,projectId:($("aproj")&&$("aproj").value)||undefined,note:$("anote").value.trim()||undefined,by:userName()||undefined,at:new Date().toISOString()});
+ save();
+ $("aname").value="";$("aamount").value="";$("anote").value="";
+ render();
+ $("aname").focus();
+ toast("Activite enregistree. Saisis la suivante !");
+});
+$("projectForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ setErr("err-pjname");setErr("err-pjenvelope");
+ var name=$("pjname").value.trim(),env=$("pjenvelope").value,alertPct=$("pjalert").value;
+ var ok=true;
+ if(!name||name.length<2){setErr("err-pjname","Nom requis (2 caracteres min).",true);ok=false}
+ var envN=Number(env);
+ if(env===""||!Number.isFinite(envN)||envN<0){setErr("err-pjenvelope","Enveloppe invalide (>= 0).",true);ok=false}
+ if(!ok)return;
+ var ap=Number(alertPct);
+ if(!Number.isFinite(ap)||ap<1)ap=100;
+ data.projects.push({id:uid(),name:name,envelope:Math.round(envN*100)/100,alertPct:Math.round(ap),created:new Date().toISOString()});
+ save();e.target.reset();$("pjalert").value=100;render();
+ toast("Projet cree.");
+});
+$("cdate").value=today();
+$("clientBillForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ setErr("err-cname");setErr("err-camount");setErr("err-cdate");
+ var label=$("cname").value.trim(),clientName=$("cclient").value.trim(),amount=$("camount").value,date=$("cdate").value,isPaid=$("cpaid").checked;
+ var ok=true;
+ if(!label){setErr("err-cname","Intitule requis.",true);ok=false}
+ var amt=Number(amount);
+ if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-camount","Montant invalide (superieur a 0).",true);ok=false}
+ if(!date){setErr("err-cdate","Date requise.",true);ok=false}
+ if(!ok)return;
+ data.clientBills.push({id:uid(),label:label,clientName:clientName,amount:Math.round(amt*100)/100,date:date,paid:isPaid,payments:[],projectId:($("cproj")&&$("cproj").value)||undefined,by:userName()||undefined,at:new Date().toISOString()});
+ save();e.target.reset();$("cdate").value=today();render();
+ toast("Recapitulatif client ajoute.");
+});
+
+$("edate").value=today();
 $("expenseForm").addEventListener("submit",function(e){
  e.preventDefault();
  setErr("err-ename");setErr("err-amount");setErr("err-date");
- var label=$("ename").value.trim(),amount=$("eamount").value,date=$("edate").value,projId=$("eproject").value;
- var actName = $("eactName").value.trim();
+ var label=$("ename").value.trim(),amount=$("eamount").value,date=$("edate").value;
  var ok=true;
- if(!label){setErr("err-ename","Intitulé requis.",true);ok=false}
+ if(!label){setErr("err-ename","Intitule requis.",true);ok=false}
  var amt=Number(amount);
- if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-amount","Montant invalide (supérieur à 0).",true);ok=false}
+ if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-amount","Montant invalide (superieur a 0).",true);ok=false}
  if(!date){setErr("err-date","Date requise.",true);ok=false}
  if(!ok)return;
-
- var expObj = {id:uid(),label:label,amount:Math.round(amt*100)/100,category:ecat,date:date,projectId:projId||null};
- appData.expenses.push(expObj);
-
- // Si catégorie Loisirs et nom d'activité renseigné, créer aussi l'activité liée sans doublon de dépense
- if (ecat === "loisirs" && actName) {
-  if (!Array.isArray(appData.activities)) appData.activities = [];
-  appData.activities.push({
-   id: uid(),
-   name: actName,
-   date: date,
-   projectId: projId || null,
-   note: "Associée à dépense Loisirs : " + label + " (" + money(amt) + ")"
-  });
+ data.expenses.push({id:uid(),label:label,amount:Math.round(amt*100)/100,category:ecat,date:date,projectId:($("eproj")&&$("eproj").value)||undefined,by:userName()||undefined,at:new Date().toISOString()});
+ var actMsg="";
+ if(ecat==="loisirs"&&$("eactCheck").checked){
+  setErr("err-eactamount");
+  var an=$("eactname").value.trim()||label;
+  var av=$("eactamount").value,ap2=Number(av);
+  if(av!==""&&Number.isFinite(ap2)&&ap2>0){
+   data.activities.push({id:uid(),label:an,amount:Math.round(ap2*100)/100,date:date,projectId:($("eproj")&&$("eproj").value)||undefined,note:"Liée à la dépense : "+label,by:userName()||undefined,at:new Date().toISOString()});
+   actMsg=" Activite ajoutee ("+money(ap2)+").";
+  }else{
+   setErr("err-eactamount","Prix invalide : activité non enregistrée (la dépense est bien enregistrée).",true);
+  }
  }
-
- logAudit("EXPENSE_ADD", label + " (" + money(amt) + ")");
- saveSpace();e.target.reset();$("edate").value=today();
- $("loisirsActivityWrap").style.display = "none";
+ save();e.target.reset();$("edate").value=today();
+ $("eactname").removeAttribute("data-touched");$("eactamount").removeAttribute("data-touched");
  render();
- toast("Dépense enregistrée.");
+ toast("Depense enregistree."+actMsg);
 });
 
+$("bdue").value=today();
 $("billForm").addEventListener("submit",function(e){
  e.preventDefault();
  setErr("err-bname");setErr("err-bamount");setErr("err-bdue");
  var label=$("bname").value.trim(),amount=$("bamount").value,due=$("bdue").value;
  var ok=true;
- if(!label){setErr("err-bname","Intitulé requis.",true);ok=false}
+ if(!label){setErr("err-bname","Intitule requis.",true);ok=false}
  var amt=Number(amount);
- if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-bamount","Montant invalide (supérieur à 0).",true);ok=false}
- if(!due){setErr("err-bdue","Échéance requise.",true);ok=false}
+ if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-bamount","Montant invalide (superieur a 0).",true);ok=false}
+ if(!due){setErr("err-bdue","Echeance requise.",true);ok=false}
  if(!ok)return;
- appData.bills.push({id:uid(),label:label,amount:Math.round(amt*100)/100,due:due,category:$("bcat").value,paid:false});
- logAudit("BILL_ADD", label + " (" + money(amt) + ")");
- saveSpace();e.target.reset();$("bdue").value=today();render();
- toast("Charge ajoutée.");
+ data.bills.push({id:uid(),label:label,amount:Math.round(amt*100)/100,due:due,category:$("bcat").value,paid:false,projectId:($("bproj")&&$("bproj").value)||undefined,by:userName()||undefined,at:new Date().toISOString()});
+ save();e.target.reset();$("bdue").value=today();render();
+ toast("Charge ajoutee.");
 });
 
-$("clientBillForm").addEventListener("submit",function(e){
+$("taskForm").addEventListener("submit",function(e){
  e.preventDefault();
- setErr("err-cname");setErr("err-camount");setErr("err-cdate");
- var label=$("cname").value.trim(),clientName=$("cclient").value.trim(),amount=$("camount").value,date=$("cdate").value,projId=$("cproject").value;
- var ok=true;
- if(!label){setErr("err-cname","Intitulé requis.",true);ok=false}
- var amt=Number(amount);
- if(!amount||!Number.isFinite(amt)||amt<=0){setErr("err-camount","Montant invalide (supérieur à 0).",true);ok=false}
- if(!date){setErr("err-cdate","Date requise.",true);ok=false}
- if(!ok)return;
- appData.clientBills.push({
-  id: uid(),
-  label: label,
-  clientName: clientName,
-  amount: Math.round(amt*100)/100,
-  date: date,
-  projectId: projId||null,
-  paid: false,
-  payments: []
- });
- logAudit("CLIENT_ADD", (clientName?clientName+" - ":"")+label + " (" + money(amt) + ")");
- saveSpace();e.target.reset();$("cdate").value=today();render();
- toast("Prestation client créée.");
-});
-
-$("paymentForm").addEventListener("submit",function(e){
- e.preventDefault();
- setErr("err-payAmount");setErr("err-payDate");
- var cId = $("payClientId").value;
- var amount = $("payAmount").value;
- var date = $("payDate").value;
- var note = $("payNote").value.trim();
- var amt = Number(amount);
- var ok = true;
- if (!amount || !Number.isFinite(amt) || amt <= 0) { setErr("err-payAmount","Montant invalide.",true); ok = false; }
- if (!date) { setErr("err-payDate","Date requise.",true); ok = false; }
- if (!ok) return;
-
- var client = appData.clientBills.find(function(c){ return c.id === cId; });
- if (client) {
-  if (!Array.isArray(client.payments)) client.payments = [];
-  client.payments.push({
-   id: uid(),
-   amount: Math.round(amt * 100) / 100,
-   date: date,
-   note: note
-  });
-  var totalEnc = getClientTotalEncaisse(client);
-  if (totalEnc >= client.amount) {
-   client.paid = true;
-  }
-  logAudit("PAYMENT_ADD", "Encaissement " + money(amt) + " pour " + client.label);
-  saveSpace();
-  render();
-  $("paymentModal").style.display = "none";
-  toast("Encaissement enregistré !");
- }
-});
-$("closePayModal").addEventListener("click",function(){ $("paymentModal").style.display = "none"; });
-
-$("projectForm").addEventListener("submit",function(e){
- e.preventDefault();
- setErr("err-pname");setErr("err-penvelope");
- var name = $("pname").value.trim();
- var env = $("penvelope").value;
- var alertPct = $("palert").value || 80;
- var ok = true;
- if (!name) { setErr("err-pname", "Nom requis.", true); ok = false; }
- var envAmt = Number(env);
- if (env === "" || !Number.isFinite(envAmt) || envAmt < 0) { setErr("err-penvelope", "Enveloppe invalide.", true); ok = false; }
- if (!ok) return;
-
- var existing = appData.projects.find(function(pj){ return pj.name.toLowerCase() === name.toLowerCase(); });
- if (existing) {
-  existing.envelope = Math.round(envAmt * 100) / 100;
-  existing.alertPercent = Number(alertPct);
-  logAudit("PROJECT_UPDATE", name + " (Enveloppe: " + money(envAmt) + ")");
-  toast("Projet mis à jour.");
- } else {
-  appData.projects.push({
-   id: uid(),
-   name: name,
-   envelope: Math.round(envAmt * 100) / 100,
-   alertPercent: Number(alertPct)
-  });
-  logAudit("PROJECT_ADD", name + " (Enveloppe: " + money(envAmt) + ")");
-  toast("Projet créé.");
- }
- saveSpace();e.target.reset();render();
-});
-
-$("activityForm").addEventListener("submit",function(e){
- e.preventDefault();
- setErr("err-actName");
- var name = $("actName").value.trim();
- var date = $("actDate").value;
- var projId = $("actProject").value;
- var note = $("actNote").value.trim();
- if (!name) { setErr("err-actName", "Intitulé requis.", true); return; }
-
- if (!Array.isArray(appData.activities)) appData.activities = [];
- appData.activities.push({
-  id: uid(),
-  name: name,
-  date: date || today(),
-  projectId: projId || null,
-  note: note
- });
- logAudit("ACTIVITY_ADD", name);
- saveSpace();
- $("actName").value = "";
- $("actNote").value = "";
- render();
- toast("⚡ Activité enregistrée !");
+ setErr("err-tname");
+ var text=$("tname").value.trim();
+ if(!text){setErr("err-tname","Description requise.",true);return}
+ data.tasks.push({id:uid(),text:text,done:false});
+ save();e.target.reset();render();
 });
 
 document.addEventListener("click",function(e){
  var b=e.target.closest("button");if(!b)return;
-
- if(b.dataset.deleteExpense||b.dataset.deleteBill||b.dataset.deleteClientBill||b.dataset.deleteProject||b.dataset.deleteActivity){
-  if(!confirm("Supprimer cet élément ?"))return;
-  if(b.dataset.deleteExpense) {
-   appData.expenses=appData.expenses.filter(function(x){return x.id!==b.dataset.deleteExpense});
-   logAudit("EXPENSE_DELETE", b.dataset.deleteExpense);
-  }
-  if(b.dataset.deleteBill) {
-   appData.bills=appData.bills.filter(function(x){return x.id!==b.dataset.deleteBill});
-   logAudit("BILL_DELETE", b.dataset.deleteBill);
-  }
-  if(b.dataset.deleteClientBill) {
-   appData.clientBills=appData.clientBills.filter(function(x){return x.id!==b.dataset.deleteClientBill});
-   logAudit("CLIENT_DELETE", b.dataset.deleteClientBill);
-  }
-  if(b.dataset.deleteProject) {
-   appData.projects=appData.projects.filter(function(x){return x.id!==b.dataset.deleteProject});
-   logAudit("PROJECT_DELETE", b.dataset.deleteProject);
-  }
-  if(b.dataset.deleteActivity) {
-   appData.activities=appData.activities.filter(function(x){return x.id!==b.dataset.deleteActivity});
-   logAudit("ACTIVITY_DELETE", b.dataset.deleteActivity);
-  }
-  saveSpace();render();
- }
-
- if (b.dataset.payClient) {
-  var cId = b.dataset.payClient;
-  var client = appData.clientBills.find(function(c){ return c.id === cId; });
-  if (client) {
-   var enc = getClientTotalEncaisse(client);
-   var solde = Math.max(0, client.amount - enc);
-   $("payClientId").value = client.id;
-   $("payClientLabel").textContent = "Prestation : " + client.label + " (Facturé: " + money(client.amount) + " · Solde: " + money(solde) + ")";
-   $("payAmount").value = solde > 0 ? solde : "";
-   $("payDate").value = today();
-   $("payNote").value = "";
-   setErr("err-payAmount"); setErr("err-payDate");
-   $("paymentModal").style.display = "flex";
-  }
+ if(b.dataset.deleteExpense||b.dataset.deleteBill||b.dataset.deleteTask||b.dataset.deleteClientBill||b.dataset.deleteActivity||b.dataset.pjDel){
+  if(!confirm("Supprimer cet element ?"))return;
+  if(b.dataset.deleteExpense)data.expenses=data.expenses.filter(function(x){return x.id!==b.dataset.deleteExpense});
+  if(b.dataset.deleteBill)data.bills=data.bills.filter(function(x){return x.id!==b.dataset.deleteBill});
+  if(b.dataset.deleteTask)data.tasks=data.tasks.filter(function(x){return x.id!==b.dataset.deleteTask});
+  if(b.dataset.deleteClientBill)data.clientBills=data.clientBills.filter(function(x){return x.id!==b.dataset.deleteClientBill});
+  if(b.dataset.deleteActivity)data.activities=data.activities.filter(function(x){return x.id!==b.dataset.deleteActivity});
+  if(b.dataset.pjDel)data.projects=data.projects.filter(function(x){return x.id!==b.dataset.pjDel});
+  save();render();
  }
 });
 
 document.addEventListener("change",function(e){
  var t=e.target;
- if(t.dataset&&t.dataset.paid){
-  for(var i=0;i<appData.bills.length;i++){
-   if(appData.bills[i].id===t.dataset.paid){
-    appData.bills[i].paid=t.checked;
-    logAudit("BILL_STATUS", appData.bills[i].label + " (Payée: "+t.checked+")");
-    saveSpace();render();break;
-   }
-  }
- }
+ if(t.dataset&&t.dataset.paid){for(var i=0;i<data.bills.length;i++){if(data.bills[i].id===t.dataset.paid){data.bills[i].paid=t.checked;save();render();break}}}
+ if(t.dataset&&t.dataset.task){for(var j=0;j<data.tasks.length;j++){if(data.tasks[j].id===t.dataset.task){data.tasks[j].done=t.checked;save();render();break}}}
+ if(t.dataset&&t.dataset.clientPaid){for(var k=0;k<data.clientBills.length;k++){if(data.clientBills[k].id===t.dataset.clientPaid){var cb=data.clientBills[k];if(Array.isArray(cb.payments)&&cb.payments.length){toast("Utilise le bouton + pour gerer les versements.");render()}else{cb.paid=t.checked;save();render()}break}}}
+ if(t.dataset&&t.dataset.pjEnv){for(var l=0;l<data.projects.length;l++){if(data.projects[l].id===t.dataset.pjEnv){var ev=Number(t.value);if(Number.isFinite(ev)&&ev>=0){data.projects[l].envelope=Math.round(ev*100)/100;save();render();toast("Enveloppe mise a jour.")}break}}}
 });
 
-// EXPORT & RESTAURATION JSON / PNG COMPLETS
-function renderProfileSubContent(section){
- var box = $("profileSubContent");
- var btns = ["btnSectionProfile", "btnSectionExport", "btnSectionAudit", "btnSectionSettings"];
- btns.forEach(function(bId){
-  var btn = $(bId);
-  if (btn) btn.style.borderColor = "var(--line)";
- });
-
- if (!section) {
-  box.style.display = "none";
-  box.innerHTML = "";
-  return;
- }
-
- box.style.display = "block";
- var activeBtnMap = {
-  profile: "btnSectionProfile",
-  export: "btnSectionExport",
-  audit: "btnSectionAudit",
-  settings: "btnSectionSettings"
- };
- if (activeBtnMap[section] && $(activeBtnMap[section])) {
-  $(activeBtnMap[section]).style.borderColor = "var(--accent)";
- }
-
- if (section === "profile") {
-  box.innerHTML = '<strong style="color:var(--accent)">👤 Modification du Profil & Sécurité PIN</strong>' +
-   '<form id="updateProfileForm" novalidate style="margin-top:10px">' +
-    '<label style="margin-top:0">Nom d\'utilisateur / Enseigne (Émojis autorisés)</label>' +
-    '<input id="upUsername" value="'+escAttr(appData.username)+'" maxlength="40">' +
-    '<label>Nouveau Code PIN (4 à 8 chiffres)</label>' +
-    '<input id="upPin" type="password" maxlength="8" inputmode="numeric" placeholder="Ex. 1234" style="text-align:center;font-size:18px">' +
-    '<label>Confirmer le Code PIN</label>' +
-    '<input id="upConfirmPin" type="password" maxlength="8" inputmode="numeric" placeholder="Confirmer PIN" style="text-align:center;font-size:18px">' +
-    '<div style="margin-top:8px;display:flex;align-items:center;gap:6px">' +
-     '<input type="checkbox" id="disablePinCheck" style="width:auto;min-width:18px;height:18px">' +
-     '<label for="disablePinCheck" style="margin:0;font-size:12px;color:var(--danger)">Désactiver la protection par PIN (déverrouillage automatique)</label>' +
-    '</div>' +
-    '<div class="err" id="err-upProfile"></div>' +
-    '<button type="submit" class="primary block" style="margin-top:12px">Enregistrer les modifications</button>' +
-   '</form>';
-
-  $("updateProfileForm").addEventListener("submit", function(e){
-   e.preventDefault();
-   setErr("err-upProfile");
-   var name = $("upUsername").value.trim();
-   var pin = $("upPin").value.trim();
-   var cPin = $("upConfirmPin").value.trim();
-   var disablePin = $("disablePinCheck").checked;
-
-   if (!name) { setErr("err-upProfile", "Le nom ne peut pas être vide.", true); return; }
-
-   if (disablePin) {
-    if (!confirm("Êtes-vous sûr de vouloir DÉSACTIVER le code PIN ? L'application ne demandera plus de code au démarrage.")) {
-     return;
-    }
-    appData.pin = "";
-   } else if (pin || cPin) {
-    if (pin.length < 4) { setErr("err-upProfile", "Le PIN doit contenir au moins 4 chiffres.", true); return; }
-    if (pin !== cPin) { setErr("err-upProfile", "Les deux codes PIN ne correspondent pas.", true); return; }
-    appData.pin = pin;
-   }
-
-   appData.username = name;
-   logAudit("PROFILE_UPDATE", "Mise à jour profil (" + name + ")");
-   saveSpace();
-   render();
-   toast("Profil mis à jour avec succès !");
-  });
- } else if (section === "export") {
-  box.innerHTML = '<strong style="color:var(--accent)">📥 Sauvegarde JSON & Reports PNG</strong>' +
-   '<p class="hint">Le JSON sert à restaurer vos données. Le PNG produit des fiches visuelles détaillées avec logo AŪREOR.</p>' +
-   '<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">' +
-    '<button id="btnExportJSON" class="primary block">💾 EXPORTER LA SAUVEGARDE (JSON)</button>' +
-    '<button id="btnExportPNGProfile" class="block">🖼️ Exporter Fiche Profil (PNG)</button>' +
-    '<button id="btnExportPNGBilan" class="block">🖼️ Exporter Bilan Financier (PNG)</button>' +
-    '<button id="btnExportPNGAudit" class="block">🖼️ Exporter Historique Modifications (PNG)</button>' +
-   '</div>' +
-   '<div style="margin-top:16px;border-top:1px dashed var(--line);padding-top:12px">' +
-    '<label style="margin-top:0">Restaurer depuis un fichier JSON</label>' +
-    '<input id="fileRestore" type="file" accept=".json,application/json">' +
-    '<button id="btnRestoreJSON" class="block" style="margin-top:8px">Restaurer les données</button>' +
-    '<p id="msgRestore" class="hint" role="status"></p>' +
-   '</div>';
-
-  $("btnExportJSON").addEventListener("click", exportJSONSpace);
-  $("btnExportPNGProfile").addEventListener("click", exportPNGProfile);
-  $("btnExportPNGBilan").addEventListener("click", exportPNGBilan);
-  $("btnExportPNGAudit").addEventListener("click", exportPNGAudit);
-  $("btnRestoreJSON").addEventListener("click", restoreJSONSpace);
- } else if (section === "audit") {
-  var logs = appData.auditLog || [];
-  var html = '<strong style="color:var(--accent)">📜 Historique des Modifications Local</strong><br><small class="muted">Heure de dernière modification : '+(appData.lastModifiedAt ? new Date(appData.lastModifiedAt).toLocaleString("fr-FR") : "-")+'</small><div style="margin-top:10px;max-height:250px;overflow-y:auto">';
-  if (logs.length === 0) {
-   html += '<div class="empty">Aucune opération enregistrée.</div>';
-  } else {
-   html += logs.map(function(l){
-    return '<div style="font-size:12px;border-bottom:1px solid var(--line);padding:6px 0">' +
-     '<strong>'+esc(l.action)+'</strong> · <span class="muted">'+new Date(l.timestamp).toLocaleString("fr-FR")+'</span><br>' +
-     '<span>'+esc(l.details)+'</span>' +
-    '</div>';
-   }).join("");
-  }
-  html += '</div>';
-  box.innerHTML = html;
- } else if (section === "settings") {
-  box.innerHTML = '<strong style="color:var(--accent)">⚙️ Paramètres & Informations</strong>' +
-   '<p class="hint" style="margin-top:8px">Stockage 100% local sur cet appareil. Aucune transmission serveur.</p>' +
-   '<button id="btnClearSpace" class="danger block" style="margin-top:12px">⚠️ Effacer toutes les données de mon espace</button>';
-
-  $("btnClearSpace").addEventListener("click", function(){
-   if (confirm("EFFACER TOUTES LES DONNÉES ? Assurez-vous d'avoir exporté une sauvegarde JSON !")) {
-    logAudit("SPACE_CLEAR", "Réinitialisation complète de l'espace");
-    saveSpace();
-    localStorage.removeItem(STORAGE_KEY_SPACE);
-    appData = null;
-    location.reload();
-   }
-  });
- }
-}
-
-function exportJSONSpace(){
- var payload = JSON.parse(JSON.stringify(appData));
- payload.exportedAt = nowISO();
- var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
- var url = URL.createObjectURL(blob), a = document.createElement("a");
- a.href = url; a.download = "AUREOR-Sauvegarde-"+appData.username.replace(/[^a-zA-Z0-9]/g,"_")+"-"+today()+".json";
- document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
- logAudit("EXPORT_JSON", "Export sauvegarde JSON");
- toast("Sauvegarde JSON exportée !");
-}
-
-function restoreJSONSpace(){
- var f = $("fileRestore").files[0];
- if (!f) { $("msgRestore").textContent = "Choisis un fichier JSON."; return; }
- f.text().then(function(txt){
-  var s;
-  try { s = JSON.parse(txt); } catch(e) { $("msgRestore").textContent = "Fichier JSON invalide."; return; }
-  if (!s || typeof s !== "object" || !Array.isArray(s.expenses)) {
-   $("msgRestore").textContent = "Structure JSON incompatible.";
-   return;
-  }
-  if (!confirm("Restaurer et remplacer les données actuelles ? Une copie de sécurité sera conservée.")) return;
-
-  try { localStorage.setItem("aureor_backup_before_restore", JSON.stringify(appData)); } catch(e){}
-
-  appData = s;
-  logAudit("RESTORE_JSON", "Restauration effectuée");
-  saveSpace();
-  render();
-  $("msgRestore").textContent = "Restauration réussie !";
-  toast("Données restaurées !");
- });
-}
-
-// EXPORTS PNG VISUELS DÉTAILLÉS
-function exportPNGProfile(){
- var canvas = $("canvasExport");
- var ctx = canvas.getContext("2d");
- var width = 600, height = 450;
- canvas.width = width * 2; canvas.height = height * 2;
- ctx.scale(2, 2);
- ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
-
- drawAureorHeader(ctx, width, 100, "FICHE DE PROFIL OFFICIELLE");
-
- ctx.fillStyle = "#222222"; ctx.textAlign = "left";
- ctx.font = "bold 16px system-ui, sans-serif";
- ctx.fillText("Nom de l'Espace / Profil :", 40, 140);
- ctx.fillStyle = "#B08D35"; ctx.font = "bold 20px system-ui, sans-serif";
- ctx.fillText(appData.username, 260, 140);
-
- ctx.fillStyle = "#222222"; ctx.font = "14px system-ui, sans-serif";
- var rows = [
-  { label: "Date de création :", value: appData.createdAt ? new Date(appData.createdAt).toLocaleDateString("fr-FR") : "-" },
-  { label: "Dernière modification :", value: appData.lastModifiedAt ? new Date(appData.lastModifiedAt).toLocaleString("fr-FR") : "-" },
-  { label: "Sécurité PIN :", value: appData.pin ? "Actif (🔒 Local)" : "Désactivé" },
-  { label: "Total Dépenses :", value: appData.expenses.length + " enregistrées (" + money(appData.expenses.reduce(function(s,x){return s+x.amount},0)) + ")" },
-  { label: "Total Prestations Clients :", value: appData.clientBills.length + " dossiers (" + money(appData.clientBills.reduce(function(s,x){return s+x.amount},0)) + ")" },
-  { label: "Projets Actifs :", value: (appData.projects||[]).length + " projet(s)" }
- ];
-
- var y = 180;
- rows.forEach(function(r){
-  ctx.font = "bold 14px system-ui, sans-serif"; ctx.fillText(r.label, 40, y);
-  ctx.font = "14px system-ui, sans-serif"; ctx.fillText(r.value, 260, y);
-  y += 28;
- });
-
- ctx.strokeStyle = "#B08D35"; ctx.lineWidth = 1;
- ctx.beginPath(); ctx.moveTo(40, y + 10); ctx.lineTo(width - 40, y + 10); ctx.stroke();
-
- ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
- ctx.fillText("Document visuel généré le : " + new Date().toLocaleString("fr-FR"), width / 2, height - 20);
-
- downloadPNG(canvas, "AUREOR-Fiche-Profil-"+today()+".png");
- toast("PNG Fiche Profil généré !");
-}
-
-function exportPNGBilan(){
- var canvas = $("canvasExport");
- var ctx = canvas.getContext("2d");
- var width = 600, height = 520;
- canvas.width = width * 2; canvas.height = height * 2;
- ctx.scale(2, 2);
- ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
-
- drawAureorHeader(ctx, width, 100, "BILAN FINANCIER GLOBAL");
-
- var allExpenses = appData.expenses.reduce(function(s,x){return s+x.amount},0);
- var allBills = appData.bills.reduce(function(s,x){return s+x.amount},0);
- var totalCharges = allExpenses + allBills;
- var caFacture = appData.clientBills.reduce(function(s,x){return s+x.amount},0);
- var caEncaisse = appData.clientBills.reduce(function(s,x){return s+getClientTotalEncaisse(x)},0);
- var netProfit = caEncaisse - totalCharges;
-
- ctx.fillStyle = "#222222"; ctx.textAlign = "left";
- var rows = [
-  { label: "Chiffre d'Affaires Facturé :", value: money(caFacture) },
-  { label: "Total Réellement Encaissé :", value: money(caEncaisse) },
-  { label: "Dépenses Internes :", value: money(allExpenses) },
-  { label: "Charges & Factures :", value: money(allBills) },
-  { label: "Total des Charges :", value: money(totalCharges) },
-  { label: "BÉNÉFICE NET RÉEL :", value: money(netProfit) },
-  { label: "Objectif Marge Actuel :", value: money(appData.marginTarget || 1000) }
- ];
-
- var y = 140;
- rows.forEach(function(r, idx){
-  ctx.font = idx === 5 ? "bold 16px system-ui, sans-serif" : "14px system-ui, sans-serif";
-  ctx.fillStyle = idx === 5 ? (netProfit < 0 ? "#f87171" : "#B08D35") : "#222222";
-  ctx.fillText(r.label, 40, y);
-  ctx.textAlign = "right";
-  ctx.fillText(r.value, width - 40, y);
-  ctx.textAlign = "left";
-  y += 32;
- });
-
- ctx.strokeStyle = "#B08D35"; ctx.lineWidth = 1;
- ctx.beginPath(); ctx.moveTo(40, y + 10); ctx.lineTo(width - 40, y + 10); ctx.stroke();
-
- ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
- ctx.fillText("Généré le : " + new Date().toLocaleString("fr-FR") + " · Profil : " + appData.username, width / 2, height - 20);
-
- downloadPNG(canvas, "AUREOR-Bilan-Financier-"+today()+".png");
- toast("PNG Bilan généré !");
-}
-
-function exportPNGAudit(){
- var canvas = $("canvasExport");
- var ctx = canvas.getContext("2d");
- var logs = (appData.auditLog || []).slice(0, 15);
- var width = 600, height = 140 + Math.max(1, logs.length) * 30 + 40;
- canvas.width = width * 2; canvas.height = height * 2;
- ctx.scale(2, 2);
- ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
-
- drawAureorHeader(ctx, width, 100, "HISTORIQUE DES MODIFICATIONS");
-
- var y = 130;
- ctx.font = "bold 12px system-ui, sans-serif"; ctx.fillStyle = "#B08D35";
- ctx.fillText("HORODATAGE", 40, y);
- ctx.fillText("ACTION", 200, y);
- ctx.fillText("DÉTAILS", 320, y);
- y += 10;
- ctx.strokeStyle = "#B08D35"; ctx.lineWidth = 1;
- ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(width - 40, y); ctx.stroke();
- y += 18;
-
- ctx.font = "12px system-ui, sans-serif"; ctx.fillStyle = "#222222";
- if (logs.length === 0) {
-  ctx.fillText("Aucune opération enregistrée.", 40, y);
- } else {
-  logs.forEach(function(l){
-   ctx.fillText(new Date(l.timestamp).toLocaleDateString("fr-FR") + " " + new Date(l.timestamp).toLocaleTimeString("fr-FR").slice(0,5), 40, y);
-   ctx.fillText(l.action, 200, y);
-   var det = l.details; if(det.length > 25) det = det.substring(0,22) + "...";
-   ctx.fillText(det, 320, y);
-   y += 26;
-  });
- }
-
- ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
- ctx.fillText("Généré le : " + new Date().toLocaleString("fr-FR"), width / 2, height - 15);
-
- downloadPNG(canvas, "AUREOR-Historique-Modifications-"+today()+".png");
- toast("PNG Historique généré !");
-}
-
-function exportBillAsPNG(bill){
- var canvas=$("canvasExport");
- var filename="AUREOR-Charge-"+bill.id+"-"+(bill.due||"").replace(/[-:]/g,"")+".png";
- var ctx=canvas.getContext("2d");
- canvas.width=600*2;canvas.height=450*2;ctx.scale(2,2);
- ctx.fillStyle="#ffffff";ctx.fillRect(0,0,600,450);
- drawAureorHeader(ctx,600,100,"FICHE CHARGE / FACTURE");
- var cat=catOf(bill.category);
- var lines=[
-  {label:"INTITULÉ :",value:bill.label},
-  {label:"MONTANT :",value:money(bill.amount)},
-  {label:"CATÉGORIE :",value:cat.label},
-  {label:"ÉCHÉANCE :",value:bill.due},
-  {label:"STATUT :",value:bill.paid?"Payée":"À payer"}
- ];
- var startY=140;
- lines.forEach(function(line,i){
-  ctx.font=i===0?"bold 16px system-ui,sans-serif":"14px system-ui,sans-serif";
-  ctx.fillStyle=i===0?"#B08D35":"#222222";
-  ctx.textAlign="right";ctx.fillText(line.label,280,startY);
-  ctx.textAlign="left";ctx.fillText(line.value,300,startY);
-  startY+=30;
- });
- ctx.font="11px system-ui,sans-serif";ctx.fillStyle="#888888";ctx.textAlign="center";
- ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR")+" · Profil : "+appData.username,300,420);
- downloadPNG(canvas,filename);
- toast("Export PNG lancé.");
-}
-
-function exportClientBillAsPNG(c){
- var canvas=$("canvasExport");
- var filename="AUREOR-Client-"+(c.clientName||"X").replace(/[^a-zA-Z0-9]/g,"_")+"-"+c.id+".png";
- var ctx=canvas.getContext("2d");
- canvas.width=600*2;canvas.height=500*2;ctx.scale(2,2);
- ctx.fillStyle="#ffffff";ctx.fillRect(0,0,600,500);
- drawAureorHeader(ctx,600,100,"FICHE CLIENT & PRESTATION");
- var enc=getClientTotalEncaisse(c);
- var solde=Math.max(0,c.amount-enc);
- var st=solde===0?"Payé":(enc>0?"Partiellement payé":"En attente");
- var lines=[
-  {label:"CLIENT :",value:c.clientName||"Non spécifié"},
-  {label:"PRESTATION :",value:c.label},
-  {label:"MONTANT FACTURÉ :",value:money(c.amount)},
-  {label:"TOTAL ENCAISSÉ :",value:money(enc)},
-  {label:"SOLDE RESTANT :",value:money(solde)},
-  {label:"STATUT :",value:st},
-  {label:"DATE FACTURE :",value:c.date}
- ];
- var startY=140;
- lines.forEach(function(line,i){
-  ctx.font=i===0?"bold 16px system-ui,sans-serif":"14px system-ui,sans-serif";
-  ctx.fillStyle=i===0?"#B08D35":"#222222";
-  ctx.textAlign="right";ctx.fillText(line.label,280,startY);
-  ctx.textAlign="left";ctx.fillText(line.value,300,startY);
-  startY+=28;
- });
- ctx.font="11px system-ui,sans-serif";ctx.fillStyle="#888888";ctx.textAlign="center";
- ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR")+" · Profil : "+appData.username,300,470);
- downloadPNG(canvas,filename);
- toast("Export PNG client lancé.");
-}
-
-$("exportAllBills").addEventListener("click",function(){
- toast("Export groupé PNG disponible dans chaque fiche.");
+$("export").addEventListener("click",function(){
+ var payload=JSON.parse(JSON.stringify(data));
+ payload.format="aureor-budget";
+ payload.version=2;
+ payload.profile=currentProfileName||"inconnu";
+ payload.exportedBy=userName()||"inconnu";
+ payload.exportedAt=new Date().toISOString();
+ payload.exportedOn=new Date().toLocaleString("fr-FR");
+ var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+ var url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="mon-quotidien-sauvegarde-"+today()+".json";
+ document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ $("msg").textContent="Verifie dans Fichiers/Telechargements que la sauvegarde est bien la.";
+ toast("Sauvegarde exporte.");
+});
+$("exportAllP").addEventListener("click",function(){
+ var ps=getProfiles(),out={format:"aureor-budget",version:2,kind:"all-profiles",exportedBy:userName()||"inconnu",exportedAt:new Date().toISOString(),exportedOn:new Date().toLocaleString("fr-FR"),profiles:{}};
+ Object.keys(ps).forEach(function(n){var d=loadProfileData(n);if(d)out.profiles[n]=d});
+ if(!Object.keys(out.profiles).length){toast("Aucun profil a exporter.");return}
+ var blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
+ var url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="aureor-tous-profils-"+today()+".json";
+ document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ toast("Export de tous les profils lance.");
 });
 
-$("exportAllClientBills").addEventListener("click",exportPNGBilan);
+function validateImport(s,errCb){
+ if(!s||typeof s!=="object"){if(errCb)errCb("Donnees invalides: racine manquante ou non objet");return false;}
+ if(!Array.isArray(s.expenses)){if(errCb)errCb("Donnees invalides: expenses doit etre un tableau");return false;}
+ if(!s.budgets||typeof s.budgets!=="object"){if(errCb)errCb("Donnees invalides: budgets doit etre un objet");return false;}
+ if(!Array.isArray(s.bills)){if(errCb)errCb("Donnees invalides: bills doit etre un tableau");return false;}
+ if(!Array.isArray(s.clientBills)){if(errCb)errCb("Donnees invalides: clientBills doit etre un tableau");return false;}
+ if(!Array.isArray(s.tasks)){if(errCb)errCb("Donnees invalides: tasks doit etre un tableau");return false;}
+ for(var i=0;i<s.expenses.length;i++){
+  var e=s.expenses[i];
+  if(!e||typeof e!=="object"){if(errCb)errCb("Depense #"+(i+1)+": objet manquant ou invalide");return false;}
+  if(typeof e.label!=="string"){if(errCb)errCb("Depense #"+(i+1)+": label doit etre une chaine");return false;}
+  if(e.label.length>500){if(errCb)errCb("Depense #"+(i+1)+": label trop long (max 500)");return false;}
+  if(hasInvisibleChars(e.label)){if(errCb)errCb("Depense #"+(i+1)+": label contient des caracteres invisibles");return false;}
+  if(typeof e.amount!=="number"){if(errCb)errCb("Depense #"+(i+1)+": amount doit etre un nombre");return false;}
+  if(e.amount<=0||!Number.isFinite(e.amount)){if(errCb)errCb("Depense #"+(i+1)+": amount doit etre > 0");return false;}
+  if(typeof e.date!=="string"){if(errCb)errCb("Depense #"+(i+1)+": date doit etre une chaine");return false;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(e.date)){if(errCb)errCb("Depense #"+(i+1)+": date invalide (format: AAAA-MM-JJ)");return false;}
+  if(typeof e.category!=="string"){if(errCb)errCb("Depense #"+(i+1)+": category doit etre une chaine");return false;}
+  if(typeof e.id!=="string"){if(errCb)errCb("Depense #"+(i+1)+": id doit etre une chaine");return false;}
+  if(e.id.length>100){if(errCb)errCb("Depense #"+(i+1)+": id trop long (max 100)");return false;}
+ }
+ for(var j=0;j<s.bills.length;j++){
+  var b=s.bills[j];
+  if(!b||typeof b!=="object"){if(errCb)errCb("Facture #"+(j+1)+": objet manquant ou invalide");return false;}
+  if(typeof b.label!=="string"){if(errCb)errCb("Facture #"+(j+1)+": label doit etre une chaine");return false;}
+  if(b.label.length>500){if(errCb)errCb("Facture #"+(j+1)+": label trop long (max 500)");return false;}
+  if(hasInvisibleChars(b.label)){if(errCb)errCb("Facture #"+(j+1)+": label contient des caracteres invisibles");return false;}
+  if(typeof b.amount!=="number"){if(errCb)errCb("Facture #"+(j+1)+": amount doit etre un nombre");return false;}
+  if(b.amount<=0||!Number.isFinite(b.amount)){if(errCb)errCb("Facture #"+(j+1)+": amount doit etre > 0");return false;}
+  if(typeof b.due!=="string"){if(errCb)errCb("Facture #"+(j+1)+": due doit etre une chaine");return false;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(b.due)){if(errCb)errCb("Facture #"+(j+1)+": due invalide (format: AAAA-MM-JJ)");return false;}
+  if(typeof b.category!=="string"){if(errCb)errCb("Facture #"+(j+1)+": category doit etre une chaine");return false;}
+  if(typeof b.paid!=="boolean"){if(errCb)errCb("Facture #"+(j+1)+": paid doit etre un booleen");return false;}
+  if(typeof b.id!=="string"){if(errCb)errCb("Facture #"+(j+1)+": id doit etre une chaine");return false;}
+  if(b.id.length>100){if(errCb)errCb("Facture #"+(j+1)+": id trop long (max 100)");return false;}
+ }
+ for(var k=0;k<s.clientBills.length;k++){
+  var c=s.clientBills[k];
+  if(!c||typeof c!=="object"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": objet manquant ou invalide");return false;}
+  if(typeof c.label!=="string"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": label doit etre une chaine");return false;}
+  if(c.label.length>500){if(errCb)errCb("Recapitulatif client #"+(k+1)+": label trop long (max 500)");return false;}
+  if(hasInvisibleChars(c.label)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": label contient des caracteres invisibles");return false;}
+  if(c.clientName&&typeof c.clientName!=="string"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": clientName doit etre une chaine");return false;}
+  if(c.clientName&&c.clientName.length>500){if(errCb)errCb("Recapitulatif client #"+(k+1)+": clientName trop long (max 500)");return false;}
+  if(c.clientName&&hasInvisibleChars(c.clientName)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": clientName contient des caracteres invisibles");return false;}
+  if(typeof c.amount!=="number"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": amount doit etre un nombre");return false;}
+  if(c.amount<=0||!Number.isFinite(c.amount)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": amount doit etre > 0");return false;}
+  if(typeof c.date!=="string"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": date doit etre une chaine");return false;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(c.date)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": date invalide (format: AAAA-MM-JJ)");return false;}
+  if(typeof c.paid!=="boolean"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": paid doit etre un booleen");return false;}
+  if(c.payments===undefined)c.payments=[];
+  if(!Array.isArray(c.payments)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": payments doit etre un tableau");return false;}
+  for(var pq=0;pq<c.payments.length;pq++){
+   var pay=c.payments[pq];
+   if(!pay||typeof pay!=="object"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": versement invalide");return false;}
+   if(typeof pay.amount!=="number"||!(pay.amount>0)||!Number.isFinite(pay.amount)){if(errCb)errCb("Recapitulatif client #"+(k+1)+": versement avec amount invalide");return false;}
+  }
+  if(typeof c.id!=="string"){if(errCb)errCb("Recapitulatif client #"+(k+1)+": id doit etre une chaine");return false;}
+  if(c.id.length>100){if(errCb)errCb("Recapitulatif client #"+(k+1)+": id trop long (max 100)");return false;}
+ }
+ for(var k=0;k<s.tasks.length;k++){
+  var t=s.tasks[k];
+  if(!t||typeof t!=="object"){if(errCb)errCb("Tache #"+(k+1)+": objet manquant ou invalide");return false;}
+  if(typeof t.text!=="string"){if(errCb)errCb("Tache #"+(k+1)+": text doit etre une chaine");return false;}
+  if(t.text.length>500){if(errCb)errCb("Tache #"+(k+1)+": text trop long (max 500)");return false;}
+  if(hasInvisibleChars(t.text)){if(errCb)errCb("Tache #"+(k+1)+": text contient des caractere invisibles");return false;}
+  if(typeof t.done!=="boolean"){if(errCb)errCb("Tache #"+(k+1)+": done doit etre un booleen");return false;}
+  if(typeof t.id!=="string"){if(errCb)errCb("Tache #"+(k+1)+": id doit etre une chaine");return false;}
+  if(t.id.length>100){if(errCb)errCb("Tache #"+(k+1)+": id trop long (max 100)");return false;}
+ }
+ for(var key in s.budgets){
+  if(typeof s.budgets[key]!=="number"){if(errCb)errCb("Budget pour "+key+": doit etre un nombre");return false;}
+  if(s.budgets[key]<0||!Number.isFinite(s.budgets[key])){if(errCb)errCb("Budget pour "+key+": doit etre >= 0");return false;}
+  if(key.length>10){if(errCb)errCb("Budget: cle "+key+" trop longue (max 10)");return false;}
+ }
+ if(typeof s.marginTarget!=="undefined"&&typeof s.marginTarget!=="number"){if(errCb)errCb("marginTarget doit etre un nombre");return false;}
+ if(typeof s.marginTarget!=="undefined"&&(s.marginTarget<=0||!Number.isFinite(s.marginTarget))){if(errCb)errCb("marginTarget doit etre > 0");return false;}
+ if(s.activities===undefined)s.activities=[];
+ if(!Array.isArray(s.activities)){if(errCb)errCb("activities doit etre un tableau");return false;}
+ for(var ai=0;ai<s.activities.length;ai++){
+  var ac=s.activities[ai];
+  if(!ac||typeof ac!=="object"||typeof ac.label!=="string"||!ac.label){if(errCb)errCb("Activite #"+(ai+1)+" invalide");return false;}
+  if(typeof ac.amount!=="number"||!(ac.amount>0)||!Number.isFinite(ac.amount)){if(errCb)errCb("Activite #"+(ai+1)+" : amount doit etre > 0");return false;}
+ }
+ if(s.projects===undefined)s.projects=[];
+ if(!Array.isArray(s.projects)){if(errCb)errCb("projects doit etre un tableau");return false;}
+ for(var pi=0;pi<s.projects.length;pi++){
+  var pj=s.projects[pi];
+  if(!pj||typeof pj!=="object"||typeof pj.name!=="string"||!pj.name){if(errCb)errCb("Projet #"+(pi+1)+" invalide");return false;}
+  if(typeof pj.envelope!=="number"||pj.envelope<0||!Number.isFinite(pj.envelope)){if(errCb)errCb("Projet #"+(pi+1)+" : enveloppe invalide");return false;}
+ }
+ return true;
+}
+
+// Export PNG Clients
+$("exportAllClientBills").addEventListener("click",exportAllClientBillsAsPNG);
 
 document.addEventListener("click",function(e){
  var b=e.target.closest("[data-export-client-bill]");
  if(b&&b.dataset.exportClientBill){
-  var c = appData.clientBills.find(function(x){return x.id===b.dataset.exportClientBill});
-  if(c) exportClientBillAsPNG(c);
+  var billId=b.dataset.exportClientBill;
+  for(var i=0;i<data.clientBills.length;i++){
+   if(data.clientBills[i].id===billId){exportClientBillAsPNG(data.clientBills[i]);break}
+  }
  }
 });
 
 document.addEventListener("click",function(e){
  var b=e.target.closest("[data-export-bill]");
  if(b&&b.dataset.exportBill){
-  var bill = appData.bills.find(function(x){return x.id===b.dataset.exportBill});
-  if(bill) exportBillAsPNG(bill);
+  var billId=b.dataset.exportBill;
+  for(var i=0;i<data.bills.length;i++){
+   if(data.bills[i].id===billId){exportBillAsPNG(data.bills[i]);break}
+  }
  }
 });
 
-// ÉCRAN AUTHENTIFICATION & CREATION DE L'ESPACE LOCAL
-function showUserGate(){
- $("userGate").classList.add("show");
- if (!appData || !appData.username) {
-  // Première ouverture : Formulaire Créer mon espace
-  $("gateTitle").textContent = "Création de votre espace local sécurisé";
-  $("createSpaceForm").style.display = "block";
-  $("loginPinForm").style.display = "none";
- } else {
-  // Ouvertures suivantes : Formulaire Déverrouiller PIN
-  $("gateTitle").textContent = "Votre espace financier local";
-  $("createSpaceForm").style.display = "none";
-  $("loginUserName").textContent = appData.username;
-  $("loginPinForm").style.display = "block";
-  $("loginPinInput").value = "";
-  setErr("err-loginPin");
-  $("loginPinInput").focus();
+document.addEventListener("click",function(e){
+ var t=e.target.closest("[data-pay-toggle]");
+ if(t){var f=$("payform-"+t.dataset.payToggle);if(f){f.style.display=(f.style.display==="none"||!f.style.display)?"block":"none"}return}
+ var p=e.target.closest("[data-pay]");
+ if(p&&p.dataset.pay){
+  var id=p.dataset.pay,bill=null;
+  for(var i=0;i<data.clientBills.length;i++){if(data.clientBills[i].id===id){bill=data.clientBills[i];break}}
+  if(!bill)return;
+  var amt=Number(($("payamt-"+id)||{}).value);
+  if(!Number.isFinite(amt)||amt<=0){toast("Saisis un montant de versement valide.");return}
+  if(!Array.isArray(bill.payments))bill.payments=[];
+  bill.payments.push({id:uid(),amount:Math.round(amt*100)/100,date:today(),by:userName()||undefined,at:new Date().toISOString()});
+  var sum=paidAmountOf(bill);
+  bill.paid=sum>=(Number(bill.amount)||0)-0.001;
+  save();render();
+  toast("Versement de "+money(amt)+" enregistre.");
+ }
+});
+$("restore").addEventListener("click",function(){
+ var f=$("file").files[0];
+ if(!f){$("msg").textContent="Choisis d'abord un fichier JSON.";return}
+ if(f.size>2097152){$("msg").textContent="Fichier trop volumineux (max 2 Mo).";return}
+ f.text().then(function(txt){
+  var s;
+  try{s=JSON.parse(txt)}catch(e){$("msg").textContent="Fichier invalide. Aucune donnee restauree.";return}
+  if(s&&s.kind==="all-profiles"&&s.profiles&&typeof s.profiles==="object"){
+   var names=Object.keys(s.profiles);
+   if(!names.length){$("msg").textContent="Aucun profil dans ce fichier.";return}
+   if(!confirm("Restaurer "+names.length+" profil(s) ? Les espaces existants du meme nom seront remplaces (une copie de securite de chaque espace remplace sera conservee)."))return;
+   var ps=getProfiles(),okCount=0;
+   names.forEach(function(n){
+    var d=normalizeData(s.profiles[n]);
+    if(!ps[n]){
+     var pin=null;
+     while(!(pin&&/^\d{4,6}$/.test(pin))){
+      pin=prompt("Code PIN pour le profil restaure : "+n+" (4 a 6 chiffres) :");
+      if(pin===null)return;
+     }
+     ps[n]={pin:hashPin(pin),created:new Date().toISOString()};
+    }
+    var old=loadProfileData(n);
+    if(old){try{localStorage.setItem("aureor_backup_"+n,JSON.stringify(old))}catch(e2){}}
+    try{localStorage.setItem(profileDataKey(n),JSON.stringify(d));okCount++}catch(e3){}
+   });
+   setProfiles(ps);
+   if(currentProfileName&&s.profiles[currentProfileName])openProfile(currentProfileName);
+   $("msg").textContent=okCount+" profil(s) restaure(s).";
+   toast("Profils restaures.");
+   return;
+  }
+  if(s&&typeof s==="object"&&!Array.isArray(s.clientBills))s.clientBills=[];
+  if(s&&typeof s==="object"&&!Array.isArray(s.activities))s.activities=[];
+  if(s&&typeof s==="object"&&!Array.isArray(s.projects))s.projects=[];
+  if(!validateImport(s,function(err){$("msg").textContent=err}))return
+  if(!currentProfileName){$("msg").textContent="Ouvre d'abord un profil pour restaurer des donnees.";return}
+  if(!confirm("Remplacer les donnees de "+currentProfileName+" par cette sauvegarde ? (Une copie de securite de l'espace actuel sera conservee.)"))return;
+  try{localStorage.setItem("aureor_backup_"+currentProfileName,JSON.stringify(data))}catch(e2){}
+  data=normalizeData(s);
+  save();render();$("msg").textContent="Sauvegarde restauree.";
+  toast("Donnees restaurees.");
+ });
+});
+$("clear").addEventListener("click",function(){
+ if(!confirm("Effacer toutes les donnees ? Exporte d'abord une sauvegarde si necessaire."))return;
+ data={expenses:[],budgets:{},bills:[],clientBills:[],tasks:[],marginTarget:1000};
+ save();render();toast("Donnees effacees.");
+});
+
+$("exportAllBills").addEventListener("click",exportAllBillsAsPNG);
+
+function hashPin(pin){var h=5381,s="aureor~"+pin;for(var i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))|0}return "h"+(h>>>0).toString(36)}
+function getProfiles(){try{var p=JSON.parse(localStorage.getItem(profilesKey));if(p&&typeof p==="object"&&!Array.isArray(p))return p}catch(e){}return {}}
+function setProfiles(p){try{localStorage.setItem(profilesKey,JSON.stringify(p))}catch(e){toast("Impossible d'enregistrer le profil.")}}
+function loadProfileData(name){try{var r=localStorage.getItem(profileDataKey(name));return r?JSON.parse(r):null}catch(e){return null}}
+function blankData(){return{expenses:[],budgets:{},bills:[],clientBills:[],tasks:[],activities:[],projects:[],marginTarget:1000}}
+function normalizeData(d){
+ d=d&&typeof d==="object"?d:{};
+ return{expenses:Array.isArray(d.expenses)?d.expenses:[],budgets:d.budgets&&typeof d.budgets==="object"&&!Array.isArray(d.budgets)?d.budgets:{},bills:Array.isArray(d.bills)?d.bills:[],clientBills:Array.isArray(d.clientBills)?d.clientBills:[],tasks:Array.isArray(d.tasks)?d.tasks:[],activities:Array.isArray(d.activities)?d.activities:[],projects:Array.isArray(d.projects)?d.projects:[],marginTarget:Number(d.marginTarget)||1000}
+}
+function userName(){return currentProfileName||""}
+function applyUser(){
+ $("hdrUser").textContent=currentProfileName?("Bienvenue "+currentProfileName):"";
+ $("userGate").classList.toggle("show",!currentProfileName);
+ if(!currentProfileName)renderGate();
+}
+function renderGate(){
+ var ps=getProfiles(),names=Object.keys(ps).sort();
+ $("gateSelect").style.display=names.length?"block":"none";
+ $("gateLogin").style.display="none";
+ $("gateCreate").style.display=names.length?"none":"block";
+ $("createBack").style.display=names.length?"inline-block":"none";
+ if(names.length){
+  $("gateUsers").innerHTML=names.map(function(n){return '<div class="row" style="width:100%;margin-bottom:10px"><button type="button" data-guser="'+escAttr(n)+'" style="flex:1;padding:20px 10px;font-size:19px;font-weight:bold;background:#142033;border:1px solid #B08D35;color:#B08D35;border-radius:14px">'+esc(n)+'</button></div>'}).join("");
  }
 }
-
-$("createSpaceForm").addEventListener("submit", function(e){
- e.preventDefault();
- setErr("err-createUsername");setErr("err-createPin");setErr("err-confirmPin");
- var name = $("createUsername").value.trim();
- var pin = $("createPin").value.trim();
- var cPin = $("confirmPin").value.trim();
- var ok = true;
- if (!name) { setErr("err-createUsername", "Nom requis.", true); ok = false; }
- if (pin !== cPin) { setErr("err-confirmPin", "Les deux codes PIN ne correspondent pas.", true); ok = false; }
- if (!ok) return;
-
- appData = emptySpaceData(name, pin);
- logAudit("SPACE_CREATE", "Création initiale de l'espace local pour " + name);
- saveSpace();
- isUnlocked = true;
- $("userGate").classList.remove("show");
- render();
- toast("Espace " + name + " créé avec succès !");
+$("gateUsers").addEventListener("click",function(e){
+ var b=e.target.closest("[data-guser]");if(!b)return;
+ var n=b.dataset.guser;
+ $("gateSelect").style.display="none";$("gateCreate").style.display="none";$("gateLogin").style.display="block";
+ $("gateLoginName").textContent="Espace de "+n;
+ $("loginGo").dataset.user=n;$("loginDel").dataset.user=n;
+ $("loginPin").value="";setErr("err-loginpin");
+ $("loginPin").focus();
 });
-
-$("loginPinForm").addEventListener("submit", function(e){
- e.preventDefault();
- setErr("err-loginPin");
- var pinInput = $("loginPinInput").value.trim();
- if (appData && appData.pin && appData.pin !== pinInput) {
-  setErr("err-loginPin", "Code PIN incorrect.", true);
-  $("loginPinInput").value = "";
-  $("loginPinInput").focus();
-  return;
+$("gateNew").addEventListener("click",function(){
+ $("gateSelect").style.display="none";$("gateLogin").style.display="none";$("gateCreate").style.display="block";
+ $("createBack").style.display="inline-block";
+});
+$("createBack").addEventListener("click",function(){renderGate()});
+$("loginBack").addEventListener("click",function(){$("loginPin").value="";renderGate()});
+$("loginPin").addEventListener("keydown",function(e){if(e.key==="Enter")$("loginGo").click()});
+$("loginGo").addEventListener("click",function(){
+ var ps=getProfiles(),n=$("loginGo").dataset.user,pin=$("loginPin").value;
+ if(!ps[n]){setErr("err-loginpin","Profil introuvable.",true);return}
+ if(hashPin(pin)!==ps[n].pin){setErr("err-loginpin","Code PIN incorrect.",true);return}
+ openProfile(n);
+});
+$("loginDel").addEventListener("click",function(){
+ var n=$("loginDel").dataset.user;
+ if(!n)return;
+ if(!confirm("Supprimer le profil "+n+" et TOUTES ses donnees ? Exporte-le d'abord si besoin."))return;
+ var ps=getProfiles();delete ps[n];setProfiles(ps);
+ try{localStorage.removeItem(profileDataKey(n))}catch(e){}
+ renderGate();toast("Profil supprime.");
+});
+$("createGo").addEventListener("click",function(){
+ setErr("err-uname");setErr("err-upin");setErr("err-upin2");
+ var name=$("uname").value.trim(),pin=$("upin").value,pin2=$("upin2").value,ok=true;
+ if(!name||name.length<2){setErr("err-uname","Indique un nom (2 caracteres min).",true);ok=false}
+ var ps=getProfiles();
+ if(name&&ps[name]){setErr("err-uname","Ce profil existe deja. Choisis-le dans la liste.",true);ok=false}
+ if(!/^\d{4,6}$/.test(pin)){setErr("err-upin","PIN : 4 a 6 chiffres.",true);ok=false}
+ if(pin!==pin2){setErr("err-upin2","Les codes ne correspondent pas.",true);ok=false}
+ if(!ok)return;
+ var firstProfile=Object.keys(ps).length===0;
+ ps[name]={pin:hashPin(pin),created:new Date().toISOString()};
+ setProfiles(ps);
+ var nd=blankData();
+ if(firstProfile&&legacyDataPending){
+  if(confirm("D'anciennes donnees (version precedente) ont ete trouvees sur cet appareil.\nLes importer dans le profil "+name+" ?\n(L'original reste conserve ; reponds Annuler pour partir d'un espace vide.)")){
+   try{localStorage.setItem("aureor_backup_preprofils",JSON.stringify(data))}catch(e2){}
+   nd=normalizeData(data);legacyDataPending=false;
+  }
  }
- isUnlocked = true;
- $("userGate").classList.remove("show");
- render();
- toast("Ravi de vous revoir !");
+ try{localStorage.setItem(profileDataKey(name),JSON.stringify(nd))}catch(e3){toast("Impossible de creer l'espace de stockage du profil.");return}
+ $("uname").value="";$("upin").value="";$("upin2").value="";
+ openProfile(name);
+ toast("Profil "+name+" cree. Bienvenue !");
 });
-
-// BOUTON PROFIL HEADER & MODAL PROFIL SLIDE
-$("profileHeaderBtn").addEventListener("click", function(){
- $("profileModal").classList.add("show");
- renderProfileSubContent(null);
-});
-
-$("closeProfileModal").addEventListener("click", function(){
- $("profileModal").classList.remove("show");
-});
-
-$("btnSectionProfile").addEventListener("click", function(){ renderProfileSubContent("profile"); });
-$("btnSectionExport").addEventListener("click", function(){ renderProfileSubContent("export"); });
-$("btnSectionAudit").addEventListener("click", function(){ renderProfileSubContent("audit"); });
-$("btnSectionSettings").addEventListener("click", function(){ renderProfileSubContent("settings"); });
-$("btnLockLogout").addEventListener("click", function(){ lockSession(); });
-
-// DÉMARRAGE INITIAL
-if (!appData || !appData.username || (appData.pin && !isUnlocked)) {
- showUserGate();
-} else {
- isUnlocked = true;
- render();
+function openProfile(name){
+ var d=loadProfileData(name);
+ data=normalizeData(d||blankData());
+ currentProfileName=name;
+ try{localStorage.setItem(activeKey,name)}catch(e){}
+ applyUser();render();
 }
-
+$("switchUser").addEventListener("click",function(){
+ save();
+ currentProfileName=null;
+ try{localStorage.removeItem(activeKey)}catch(e){}
+ applyUser();
+ toast("Espace sauvegarde. Choisis l'utilisateur suivant.");
+});
+(function initProfiles(){
+ try{
+  var legacy=JSON.parse(localStorage.getItem(legacyKey));
+  if(legacy&&(legacy.expenses||legacy.bills||legacy.clientBills||legacy.tasks))legacyDataPending=true;
+ }catch(e){}
+ var ps=getProfiles(),active=null;
+ try{active=localStorage.getItem(activeKey)}catch(e){}
+ if(ps[active]){openProfile(active);return}
+ currentProfileName=null;
+ data=normalizeData(data);
+ applyUser();render();
+})();
 })();
 </script>
 </body>
