@@ -744,6 +744,17 @@ footer { font-size: 11px; color: var(--muted); text-align: center; padding: 12px
       </div>
     </div>
 
+    <!-- Recherche et Filtres Clients -->
+    <div class="row" style="margin-bottom:12px;gap:8px">
+      <input id="clientSearchInput" type="search" placeholder="🔍 Rechercher un client..." style="flex:1;min-height:38px;font-size:13px">
+      <select id="clientFilterStatus" style="width:130px;min-height:38px;font-size:13px">
+        <option value="all">Tous les statuts</option>
+        <option value="pending">En attente</option>
+        <option value="partial">Partiel</option>
+        <option value="paid">Payé</option>
+      </select>
+    </div>
+
     <div class="card">
       <div class="card-title">
         <span>Dossier / Facture client</span>
@@ -957,12 +968,32 @@ footer { font-size: 11px; color: var(--muted); text-align: center; padding: 12px
 
 <!-- USER GATE -->
 <div id="userGate">
-  <h2 style="color:var(--accent);letter-spacing:0.35em;font-size:20px;margin-bottom:8px">AŪREOR</h2>
-  <p id="gateTitle" style="color:var(--muted);font-size:15px;margin-bottom:20px">Qui pilote l'application aujourd'hui ?</p>
-  <div id="gateProfilesChoices" class="choices" style="width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px"></div>
+  <h2 style="color:var(--accent);letter-spacing:0.35em;font-size:22px;margin-bottom:6px">AŪREOR</h2>
+  <p id="gateTitle" style="color:var(--muted);font-size:14px;margin-bottom:20px">Gestion financière personnelle & professionnelle</p>
 
-  <div id="gatePinForm" style="display:none;width:100%;max-width:320px;margin-top:15px">
-    <p id="gatePinPrompt" style="font-weight:700;color:var(--accent);margin-bottom:12px">Entre ton code PIN</p>
+  <div id="gateProfilesChoices" class="choices" style="width:100%;max-width:360px;display:flex;flex-direction:column;gap:12px"></div>
+
+  <div id="gateCreateForm" style="display:none;width:100%;max-width:360px;background:var(--panel);border:1px solid var(--panel-border);padding:20px;border-radius:20px;text-align:left">
+    <div style="font-weight:700;color:var(--accent);font-size:16px;margin-bottom:12px;text-align:center">Créer un nouveau profil</div>
+    <label for="newGateName">Nom ou Pseudo</label>
+    <input id="newGateName" maxlength="30" placeholder="Ex. Alex">
+    <div class="err" id="err-newGateName"></div>
+
+    <label for="newGatePin" style="margin-top:8px">Code PIN (facultatif - 4 chiffres)</label>
+    <input id="newGatePin" type="password" maxlength="8" inputmode="numeric" placeholder="Ex. 1234">
+
+    <label for="newGatePin2" style="margin-top:8px">Confirmer le code PIN</label>
+    <input id="newGatePin2" type="password" maxlength="8" inputmode="numeric" placeholder="Ex. 1234">
+    <div class="err" id="err-newGatePin"></div>
+
+    <div class="row" style="margin-top:16px">
+      <button id="gateCreateCancel" type="button" style="flex:1">Annuler</button>
+      <button id="gateCreateSubmit" type="button" class="primary" style="flex:1">Créer</button>
+    </div>
+  </div>
+
+  <div id="gatePinForm" style="display:none;width:100%;max-width:320px;margin-top:15px;background:var(--panel);border:1px solid var(--panel-border);padding:20px;border-radius:20px">
+    <p id="gatePinPrompt" style="font-weight:700;color:var(--accent);margin-bottom:12px;text-align:center">Entre ton code PIN</p>
     <input id="gatePinInput" type="password" maxlength="8" inputmode="numeric" placeholder="••••" style="text-align:center;font-size:24px;letter-spacing:0.3em;padding:12px;margin-bottom:12px">
     <div class="err" id="gatePinErr" style="margin-bottom:12px"></div>
     <div class="row">
@@ -1087,36 +1118,76 @@ function initDataStorage(){
   var rawV2 = localStorage.getItem(STORAGE_KEY_V2);
   if (rawV2) {
    var parsedV2 = JSON.parse(rawV2);
-   if (parsedV2 && parsedV2.profiles) {
+   if (parsedV2 && parsedV2.profiles && typeof parsedV2.profiles === "object") {
     db = parsedV2;
-    if (!db.profiles[db.activeProfile]) {
-     var keys = Object.keys(db.profiles);
-     db.activeProfile = keys.length ? keys[0] : "Omar";
-    }
-   }
-  } else {
-   var rawV1 = localStorage.getItem(STORAGE_KEY_V1);
-   if (rawV1) {
-    try { localStorage.setItem(BACKUP_PRE_MIGRATION_KEY, rawV1); } catch(eBackup){}
-    var parsedV1 = JSON.parse(rawV1);
-    if (parsedV1 && typeof parsedV1 === "object") {
-     db.profiles["Omar"].expenses = parsedV1.expenses || [];
-     db.profiles["Omar"].budgets = parsedV1.budgets || {};
-     db.profiles["Omar"].bills = parsedV1.bills || [];
-     db.profiles["Omar"].clientBills = (parsedV1.clientBills || []).map(function(c){
-      if (!Array.isArray(c.payments)) {
-       c.payments = c.paid ? [{ id: uid(), amount: c.amount, date: c.date || today(), note: "Migré (Payé)" }] : [];
-      }
-      return c;
-     });
-     db.profiles["Omar"].tasks = parsedV1.tasks || [];
-     db.profiles["Omar"].marginTarget = parsedV1.marginTarget || 1000;
-    }
-    saveDB();
-   } else {
-    saveDB();
    }
   }
+
+  // Migration avancée et récupération transparente des anciennes données (v1, aureor_profiles, aureor_profile_*)
+  if (!db.profiles || typeof db.profiles !== "object") db.profiles = {};
+
+  // Diagnostic & Récupération des profils individuels (aureor_profile_<nom>) et aureor_profiles
+  var legacyProfilesMap = null;
+  try {
+   var lpRaw = localStorage.getItem("aureor_profiles");
+   if (lpRaw) legacyProfilesMap = JSON.parse(lpRaw);
+  } catch(eLP){}
+
+  // Récupérer la liste des clés dans localStorage
+  for (var i = 0; i < localStorage.length; i++) {
+   var key = localStorage.key(i);
+   if (key && key.indexOf("aureor_profile_") === 0) {
+    var profName = key.replace("aureor_profile_", "");
+    if (profName && !db.profiles[profName]) {
+     try {
+      var pData = JSON.parse(localStorage.getItem(key));
+      if (pData) db.profiles[profName] = pData;
+     } catch(eProf){}
+    }
+   }
+  }
+
+  // Intégrer les données de legacyProfilesMap si existant
+  if (legacyProfilesMap && typeof legacyProfilesMap === "object") {
+   Object.keys(legacyProfilesMap).forEach(function(pName){
+    if (!db.profiles[pName]) db.profiles[pName] = emptyProfileData();
+    if (legacyProfilesMap[pName] && legacyProfilesMap[pName].pin) {
+     db.profiles[pName].pin = legacyProfilesMap[pName].pin;
+    }
+   });
+  }
+
+  // Anciennes données mon-quotidien-v1 ou aureor_data
+  var rawV1 = localStorage.getItem(STORAGE_KEY_V1) || localStorage.getItem("aureor_data");
+  if (rawV1) {
+   try {
+    var parsedV1 = JSON.parse(rawV1);
+    if (parsedV1 && typeof parsedV1 === "object" && (parsedV1.expenses || parsedV1.bills || parsedV1.clientBills)) {
+     if (!db.profiles["Omar"]) db.profiles["Omar"] = emptyProfileData();
+     if (!db.profiles["Omar"].expenses || db.profiles["Omar"].expenses.length === 0) {
+      db.profiles["Omar"].expenses = parsedV1.expenses || [];
+      db.profiles["Omar"].budgets = parsedV1.budgets || {};
+      db.profiles["Omar"].bills = parsedV1.bills || [];
+      db.profiles["Omar"].clientBills = (parsedV1.clientBills || []).map(function(c){
+       if (!Array.isArray(c.payments)) {
+        c.payments = c.paid ? [{ id: uid(), amount: c.amount, date: c.date || today(), note: "Migré (Payé)" }] : [];
+       }
+       return c;
+      });
+      db.profiles["Omar"].tasks = parsedV1.tasks || [];
+      db.profiles["Omar"].marginTarget = parsedV1.marginTarget || 1000;
+     }
+    }
+   } catch(eV1){}
+  }
+
+  // Si l'utilisateur n'a encore aucun profil, db.profiles sera vide (ce qui déclenchera la création du premier profil).
+  if (db.activeProfile && !db.profiles[db.activeProfile]) {
+   var keys = Object.keys(db.profiles);
+   db.activeProfile = keys.length ? keys[0] : null;
+  }
+
+  saveDB();
  } catch(e) {
   console.error("Storage init error", e);
  }
@@ -1658,7 +1729,25 @@ function renderClientsSection(){
  $("clientUnpaidTotal").textContent = money(totalReste);
  $("clientCount").textContent = p.clientBills.length;
 
- var sortedClients = [].concat(p.clientBills).sort(function(a,b){
+ var searchVal = ($("clientSearchInput") ? $("clientSearchInput").value : "").toLowerCase().trim();
+ var statusFilter = $("clientFilterStatus") ? $("clientFilterStatus").value : "all";
+
+ var filteredClients = p.clientBills.filter(function(c){
+  var enc = getClientTotalEncaisse(c);
+  var solde = Math.max(0, c.amount - enc);
+  var status = solde === 0 ? "paid" : (enc > 0 ? "partial" : "pending");
+
+  if (statusFilter !== "all" && status !== statusFilter) return false;
+
+  if (searchVal) {
+   var matchName = (c.clientName || "").toLowerCase().indexOf(searchVal) !== -1;
+   var matchLabel = (c.label || "").toLowerCase().indexOf(searchVal) !== -1;
+   if (!matchName && !matchLabel) return false;
+  }
+  return true;
+ });
+
+ var sortedClients = [].concat(filteredClients).sort(function(a,b){
   var encA = getClientTotalEncaisse(a), encB = getClientTotalEncaisse(b);
   var soldeA = a.amount - encA, soldeB = b.amount - encB;
   return (soldeB - soldeA) || b.date.localeCompare(a.date);
@@ -1673,9 +1762,10 @@ function renderClientsSection(){
 
   var paymentsHistory = '';
   if (c.payments && c.payments.length > 0) {
-   paymentsHistory = '<div style="font-size:11px;color:var(--muted);margin-top:4px;padding-left:8px;border-left:2px solid var(--accent)">'+
+   paymentsHistory = '<div style="font-size:11px;color:var(--muted);margin-top:6px;padding:8px;background:rgba(255,255,255,0.02);border-radius:8px;border-left:3px solid var(--accent)">'+
+    '<div style="font-weight:600;margin-bottom:4px;color:var(--accent)">Historique des versements ('+c.payments.length+') :</div>' +
     c.payments.map(function(pm){
-     return '• '+esc(pm.date)+' : <strong>'+money(pm.amount)+'</strong>'+(pm.note?' ('+esc(pm.note)+')':'');
+     return '• '+esc(pm.date)+' : <strong style="color:var(--green)">'+money(pm.amount)+'</strong>'+(pm.note?' ('+esc(pm.note)+')':'');
     }).join('<br>') +
    '</div>';
   }
@@ -1683,7 +1773,7 @@ function renderClientsSection(){
   return '<div class="item" style="flex-direction:column;align-items:stretch;gap:6px">' +
    '<div style="display:flex;justify-content:space-between;align-items:center">' +
     '<div><strong>'+esc(c.label)+'</strong> ' + badge + projTag + '</div>' +
-    '<strong>'+money(c.amount)+'</strong>' +
+    '<strong style="font-size:15px">'+money(c.amount)+'</strong>' +
    '</div>' +
    '<div style="font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px">' +
     '<span>Client : <strong>'+(esc(c.clientName)||"Non spécifié")+'</strong> · Date : '+esc(c.date)+'</span>' +
@@ -1696,7 +1786,7 @@ function renderClientsSection(){
     '<button class="danger" data-delete-client-bill="'+escAttr(c.id)+'" aria-label="Supprimer" style="font-size:12px;padding:4px 8px;min-height:34px">✕</button>' +
    '</div>' +
   '</div>';
- }).join("") || '<div class="empty">Aucun dossier client enregistré.</div>';
+ }).join("") || '<div class="empty">Aucun dossier client trouvé.</div>';
 }
 
 function renderProjectsSection(){
@@ -1967,6 +2057,9 @@ $("billForm").addEventListener("submit",function(e){
  saveDB();e.target.reset();$("bdue").value=today();render();
  toast("Charge ajoutée.");
 });
+
+if ($("clientSearchInput")) $("clientSearchInput").addEventListener("input", renderClientsSection);
+if ($("clientFilterStatus")) $("clientFilterStatus").addEventListener("change", renderClientsSection);
 
 $("clientBillForm").addEventListener("submit",function(e){
  e.preventDefault();
@@ -2264,21 +2357,36 @@ var pendingProfileSwitch = null;
 function renderGateChoices(){
  var choices = $("gateProfilesChoices");
  var keys = Object.keys(db.profiles);
+
+ if (keys.length === 0) {
+  $("gateTitle").textContent = "Bienvenue sur Mon Budget AŪREOR";
+  choices.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--muted)">Aucun profil trouvé sur cet appareil.</div>' +
+   '<button type="button" id="btnFirstProfile" style="padding:18px;font-size:16px;font-weight:700;background:var(--accent);color:#000;border:0;border-radius:14px;cursor:pointer">Créer mon profil</button>';
+  return;
+ }
+
+ $("gateTitle").textContent = "Qui pilote l'application aujourd'hui ?";
  choices.innerHTML = keys.map(function(k){
   var hasPin = !!db.profiles[k].pin;
-  return '<button type="button" data-user-select="'+escAttr(k)+'"><span>'+esc(k.toUpperCase())+'</span><span>'+(hasPin?'🔒 PIN':'▶')+'</span></button>';
- }).join("");
+  return '<button type="button" data-user-select="'+escAttr(k)+'" style="padding:16px 14px;font-size:16px;font-weight:700;background:var(--panel);border:1px solid var(--panel-border);color:var(--accent);border-radius:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer"><span>'+esc(k.toUpperCase())+'</span><span>'+(hasPin?'🔒 PIN':'▶')+'</span></button>';
+ }).join("") +
+ '<button type="button" id="btnOpenCreateGate" style="padding:14px;font-size:14px;font-weight:600;background:transparent;border:1px dashed var(--accent);color:var(--accent);border-radius:14px;margin-top:10px;cursor:pointer">+ Créer un nouveau profil</button>';
 }
 
 window.showUserGate = function(){
  renderGateChoices();
- $("gateTitle").textContent = "Qui pilote l'application aujourd'hui ?";
  $("gateProfilesChoices").style.display = "flex";
+ $("gateCreateForm").style.display = "none";
  $("gatePinForm").style.display = "none";
  $("userGate").classList.add("show");
 };
 
 $("gateProfilesChoices").addEventListener("click", function(e){
+ if (e.target.closest("#btnFirstProfile") || e.target.closest("#btnOpenCreateGate")) {
+  showGateCreateForm();
+  return;
+ }
+
  var b = e.target.closest("[data-user-select]"); if(!b) return;
  var targetName = b.dataset.userSelect;
  var targetProfile = db.profiles[targetName];
@@ -2286,6 +2394,7 @@ $("gateProfilesChoices").addEventListener("click", function(e){
  if (targetProfile && targetProfile.pin) {
   pendingProfileSwitch = targetName;
   $("gateProfilesChoices").style.display = "none";
+  $("gateCreateForm").style.display = "none";
   $("gatePinPrompt").textContent = "Code PIN pour " + targetName;
   $("gatePinInput").value = "";
   setErr("gatePinErr");
@@ -2298,6 +2407,63 @@ $("gateProfilesChoices").addEventListener("click", function(e){
   render();
   toast("Bonjour " + targetName + " !");
  }
+});
+
+function showGateCreateForm(){
+ $("gateProfilesChoices").style.display = "none";
+ $("gatePinForm").style.display = "none";
+ $("gateCreateForm").style.display = "block";
+ $("newGateName").value = "";
+ $("newGatePin").value = "";
+ $("newGatePin2").value = "";
+ setErr("err-newGateName");
+ setErr("err-newGatePin");
+ $("newGateName").focus();
+}
+
+$("gateCreateCancel").addEventListener("click", function(){
+ if (Object.keys(db.profiles).length === 0) {
+  showUserGate();
+ } else {
+  $("gateCreateForm").style.display = "none";
+  $("gateProfilesChoices").style.display = "flex";
+ }
+});
+
+$("gateCreateSubmit").addEventListener("click", function(){
+ setErr("err-newGateName");
+ setErr("err-newGatePin");
+ var name = $("newGateName").value.trim();
+ var pin1 = $("newGatePin").value.trim();
+ var pin2 = $("newGatePin2").value.trim();
+
+ if (!name || name.length < 2) {
+  setErr("err-newGateName", "Saisis un nom d'au moins 2 caractères.", true);
+  return;
+ }
+ if (db.profiles[name]) {
+  setErr("err-newGateName", "Ce nom de profil existe déjà.", true);
+  return;
+ }
+ if (pin1 || pin2) {
+  if (!/^\d{4,8}$/.test(pin1)) {
+   setErr("err-newGatePin", "Le code PIN doit comporter au moins 4 chiffres.", true);
+   return;
+  }
+  if (pin1 !== pin2) {
+   setErr("err-newGatePin", "Les deux codes PIN ne correspondent pas.", true);
+   return;
+  }
+ }
+
+ db.profiles[name] = emptyProfileData();
+ if (pin1) db.profiles[name].pin = pin1;
+ db.activeProfile = name;
+ saveDB();
+
+ $("userGate").classList.remove("show");
+ render();
+ toast("Profil " + name + " créé avec succès !");
 });
 
 $("gatePinCancel").addEventListener("click", function(){
@@ -2368,7 +2534,7 @@ $("changePinForm").addEventListener("submit", function(e){
 });
 
 // DÉMARRAGE
-if (!db.activeProfile || !db.profiles[db.activeProfile]) {
+if (!db.activeProfile || !db.profiles[db.activeProfile] || Object.keys(db.profiles).length === 0) {
  showUserGate();
 } else {
  var curP = db.profiles[db.activeProfile];
