@@ -120,6 +120,13 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 <div class="err" id="err-date"></div>
 <label>Categorie</label><div id="ecatWrap"></div>
 <label for="eproj">Projet (facultatif)</label><select id="eproj"></select>
+<div id="eactBox" style="display:none;margin-top:4px;border:1px solid var(--line);border-radius:12px;padding:12px;background:#101b2c">
+<div class="row"><input type="checkbox" id="eactCheck" class="check"><label for="eactCheck" style="margin:0;color:var(--text);font-size:14px">C'est aussi une activité (revenu)</label></div>
+<label for="eactname">Nom de l'activité</label><input id="eactname" maxlength="100" placeholder="Pré-rempli depuis l'intitulé">
+<label for="eactamount">Prix encaissé (€)</label><input id="eactamount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="Pré-rempli depuis le montant">
+<div class="err" id="err-eactamount"></div>
+<small class="muted">Ajuste le prix si l'argent encaissé diffère du montant de la dépense.</small>
+</div>
 <button class="primary block">Ajouter la depense</button>
 </form>
 </div>
@@ -432,7 +439,13 @@ function renderChips(){
   b.classList.toggle("sel",sel);
   b.style.background=sel&&isValidHexColor(c.color)?escAttr(c.color):"";b.style.color=sel?"#0b1220":"";
  }
+ var box=$("eactBox");
+ if(box){box.style.display=(ecat==="loisirs")?"block":"none";if(ecat!=="loisirs"){$("eactCheck").checked=false;setErr("err-eactamount")}}
 }
+$("ename").addEventListener("input",function(){if(!$("eactname").dataset.touched)$("eactname").value=this.value});
+$("eamount").addEventListener("input",function(){if(!$("eactamount").dataset.touched)$("eactamount").value=this.value});
+$("eactname").addEventListener("input",function(){this.dataset.touched="1"});
+$("eactamount").addEventListener("input",function(){this.dataset.touched="1"});
 CATS.forEach(function(c){var o=document.createElement("option");o.value=c.id;o.textContent=c.label;$("bcat").appendChild(o)});
 
 function donutSVG(entries,total){
@@ -1127,8 +1140,22 @@ $("expenseForm").addEventListener("submit",function(e){
  if(!date){setErr("err-date","Date requise.",true);ok=false}
  if(!ok)return;
  data.expenses.push({id:uid(),label:label,amount:Math.round(amt*100)/100,category:ecat,date:date,projectId:($("eproj")&&$("eproj").value)||undefined,by:userName()||undefined,at:new Date().toISOString()});
- save();e.target.reset();$("edate").value=today();render();
- toast("Depense enregistre.");
+ var actMsg="";
+ if(ecat==="loisirs"&&$("eactCheck").checked){
+  setErr("err-eactamount");
+  var an=$("eactname").value.trim()||label;
+  var av=$("eactamount").value,ap2=Number(av);
+  if(av!==""&&Number.isFinite(ap2)&&ap2>0){
+   data.activities.push({id:uid(),label:an,amount:Math.round(ap2*100)/100,date:date,projectId:($("eproj")&&$("eproj").value)||undefined,note:"Liée à la dépense : "+label,by:userName()||undefined,at:new Date().toISOString()});
+   actMsg=" Activite ajoutee ("+money(ap2)+").";
+  }else{
+   setErr("err-eactamount","Prix invalide : activité non enregistrée (la dépense est bien enregistrée).",true);
+  }
+ }
+ save();e.target.reset();$("edate").value=today();
+ $("eactname").removeAttribute("data-touched");$("eactamount").removeAttribute("data-touched");
+ render();
+ toast("Depense enregistree."+actMsg);
 });
 
 $("bdue").value=today();
