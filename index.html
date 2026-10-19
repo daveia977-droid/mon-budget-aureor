@@ -581,6 +581,23 @@ function resetInactivityTimer(){
  window.addEventListener(evt, resetInactivityTimer, { passive: true });
 });
 
+// Verrouillage automatique au retour d'arrière-plan (iPhone / Safari / PWA)
+var backgroundHiddenAt = null;
+document.addEventListener("visibilitychange", function(){
+ if (document.hidden) {
+  backgroundHiddenAt = Date.now();
+ } else {
+  if (backgroundHiddenAt && isUnlocked && appData && appData.pin &&
+      Date.now() - backgroundHiddenAt >= 3000) {
+   lockSession();
+   toast("Espace verrouillé après absence.");
+  }
+  backgroundHiddenAt = null;
+  resetInactivityTimer();
+ }
+});
+window.addEventListener("pagehide", function(){ if (appData) saveSpace(); });
+
 function lockSession(){
  isUnlocked = false;
  $("profileModal").classList.remove("show");
@@ -1358,7 +1375,7 @@ function renderProfileSubContent(section){
     }
     appData.pin = "";
    } else if (pin || cPin) {
-    if (pin.length < 4) { setErr("err-upProfile", "Le PIN doit contenir au moins 4 chiffres.", true); return; }
+    if (!/^\d{4,8}$/.test(pin)) { setErr("err-upProfile", "Le PIN doit contenir 4 à 8 chiffres.", true); return; }
     if (pin !== cPin) { setErr("err-upProfile", "Les deux codes PIN ne correspondent pas.", true); return; }
     appData.pin = pin;
    }
@@ -1425,6 +1442,8 @@ function renderProfileSubContent(section){
 function exportJSONSpace(){
  var payload = JSON.parse(JSON.stringify(appData));
  payload.exportedAt = nowISO();
+ payload.pin = ""; // Sécurité : le code PIN n'est jamais exporté
+ payload.exportedOn = new Date().toLocaleString("fr-FR");
  var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
  var url = URL.createObjectURL(blob), a = document.createElement("a");
  a.href = url; a.download = "AUREOR-Sauvegarde-"+appData.username.replace(/[^a-zA-Z0-9]/g,"_")+"-"+today()+".json";
@@ -1436,6 +1455,7 @@ function exportJSONSpace(){
 function restoreJSONSpace(){
  var f = $("fileRestore").files[0];
  if (!f) { $("msgRestore").textContent = "Choisis un fichier JSON."; return; }
+ if (f.size > 2097152) { $("msgRestore").textContent = "Fichier trop volumineux (2 Mo maximum)."; return; }
  f.text().then(function(txt){
   var s;
   try { s = JSON.parse(txt); } catch(e) { $("msgRestore").textContent = "Fichier JSON invalide."; return; }
@@ -1447,8 +1467,23 @@ function restoreJSONSpace(){
 
   try { localStorage.setItem("aureor_backup_before_restore", JSON.stringify(appData)); } catch(e){}
 
+  // Normalisation sécurisée des données importées
+  var keepName = (appData && appData.username) ? appData.username : "Mon Espace";
+  var keepPin = (appData && typeof appData.pin === "string" && appData.pin) ? appData.pin : "";
+  ["expenses","bills","clientBills","tasks","activities","projects","auditLog"].forEach(function(k){
+   if (!Array.isArray(s[k])) s[k] = [];
+  });
+  if (!s.budgets || typeof s.budgets !== "object" || Array.isArray(s.budgets)) s.budgets = {};
+  if (!s.username || typeof s.username !== "string") s.username = keepName;
+  if (typeof s.pin !== "string") s.pin = "";
+  if (!s.pin) s.pin = keepPin; // les exports ne contiennent plus le PIN : on conserve le PIN actuel de l'espace
+  s.marginTarget = Number(s.marginTarget) > 0 ? Number(s.marginTarget) : 1000;
+  if (!s.createdAt) s.createdAt = nowISO();
+  if (!s.lastModifiedAt) s.lastModifiedAt = nowISO();
+  s.version = 3;
+
   appData = s;
-  logAudit("RESTORE_JSON", "Restauration effectuée");
+  logAudit("RESTORE_JSON", "Restauration effectuée (données normalisées)");
   saveSpace();
   render();
   $("msgRestore").textContent = "Restauration réussie !";
@@ -1658,6 +1693,60 @@ $("exportAllBills").addEventListener("click",function(){
 
 $("exportAllClientBills").addEventListener("click",exportPNGBilan);
 
+function exportPNGPeriodBilan(){
+ var keys = getMonthsForPeriod(currentBilanPeriod).map(function(m){ return m.key; });
+ var pExp = appData.expenses.filter(function(x){ return x.date && keys.indexOf(x.date.slice(0,7)) !== -1; }).reduce(function(s,x){ return s + x.amount; }, 0);
+ var pBills = appData.bills.filter(function(x){ return x.due && keys.indexOf(x.due.slice(0,7)) !== -1; }).reduce(function(s,x){ return s + x.amount; }, 0);
+ var pCharges = pExp + pBills;
+ var pCAEncaisse = appData.clientBills.reduce(function(s, c){
+  return s + (c.payments || []).filter(function(pm){
+   return pm.date && keys.indexOf(pm.date.slice(0,7)) !== -1;
+  }).reduce(function(ps, pm){ return ps + Number(pm.amount || 0); }, 0);
+ }, 0);
+ var pNet = pCAEncaisse - pCharges;
+ var periodLabel = currentBilanPeriod === "month" ? ("MOIS ANALYSÉ : " + keys[0]) : (currentBilanPeriod === "6months" ? "6 DERNIERS MOIS" : "12 DERNIERS MOIS");
+
+ var canvas = $("canvasExport");
+ var ctx = canvas.getContext("2d");
+ var width = 600, height = 420;
+ canvas.width = width * 2; canvas.height = height * 2;
+ ctx.scale(2, 2);
+ ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
+
+ drawAureorHeader(ctx, width, 100, "RAPPORT DE PÉRIODE");
+
+ ctx.fillStyle = "#B08D35"; ctx.font = "bold 13px system-ui, sans-serif"; ctx.textAlign = "center";
+ ctx.fillText(periodLabel, width / 2, 128);
+
+ ctx.textAlign = "left";
+ var rows = [
+  { label: "CA Encaissé (Période) :", value: money(pCAEncaisse) },
+  { label: "Dépenses internes :", value: money(pExp) },
+  { label: "Charges / Factures :", value: money(pBills) },
+  { label: "Total des Charges :", value: money(pCharges) },
+  { label: "BÉNÉFICE DE LA PÉRIODE :", value: money(pNet) },
+  { label: "Objectif de Marge :", value: money(Number(appData.marginTarget) || 1000) }
+ ];
+
+ var y = 165;
+ rows.forEach(function(r, idx){
+  ctx.font = idx === 4 ? "bold 16px system-ui, sans-serif" : "14px system-ui, sans-serif";
+  ctx.fillStyle = idx === 4 ? (pNet < 0 ? "#f87171" : "#B08D35") : "#222222";
+  ctx.fillText(r.label, 40, y);
+  ctx.textAlign = "right";
+  ctx.fillText(r.value, width - 40, y);
+  ctx.textAlign = "left";
+  y += 32;
+ });
+
+ ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
+ ctx.fillText("Généré le : " + new Date().toLocaleString("fr-FR") + " · Profil : " + appData.username, width / 2, height - 20);
+
+ downloadPNG(canvas, "AUREOR-Rapport-Periode-" + today() + ".png");
+ toast("Rapport de la période exporté !");
+}
+$("exportMonth").addEventListener("click", exportPNGPeriodBilan);
+
 document.addEventListener("click",function(e){
  var b=e.target.closest("[data-export-client-bill]");
  if(b&&b.dataset.exportClientBill){
@@ -1702,6 +1791,7 @@ $("createSpaceForm").addEventListener("submit", function(e){
  var cPin = $("confirmPin").value.trim();
  var ok = true;
  if (!name) { setErr("err-createUsername", "Nom requis.", true); ok = false; }
+ if (!/^\d{4,8}$/.test(pin)) { setErr("err-createPin", "PIN : 4 à 8 chiffres exactement.", true); ok = false; }
  if (pin !== cPin) { setErr("err-confirmPin", "Les deux codes PIN ne correspondent pas.", true); ok = false; }
  if (!ok) return;
 
