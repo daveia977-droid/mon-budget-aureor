@@ -1,36 +1,40 @@
-# Mon Quotidien
+# Mon Budget AŪREOR
 
-Application web mobile-first de gestion du quotidien : dépenses, budget mensuel, factures, tâches et graphiques par catégorie.
+Application web mobile de gestion de budget professionnel : dépenses, charges/factures, clients, projets et bilan. 100% locale, aucune API, aucune dépendance (fichier unique `index.html`, police Lobster via Google Fonts).
 
-## Utiliser l'application
+**🌐 Application en ligne :** https://daveia977-droid.github.io/mon-budget-aureor/
 
-- En local : ouvrir `index.html` dans un navigateur.
-- En ligne : activer GitHub Pages (voir ci-dessous).
+## Structure du dépôt
 
-## Activer GitHub Pages
-
-1. Aller dans **Settings > Pages** du dépôt.
-2. Section **Build and deployment** : choisir **Deploy from a branch**.
-3. Branch : `main`, dossier : `/ (root)`.
-4. Cliquer **Save** et attendre 1-2 minutes.
-5. Le site sera disponible sur : `https://daveia977-droid.github.io/mon-budget-aureor/`
-
-## Installer sur téléphone (PWA-like)
-
-1. Ouvrir l'URL du site dans Safari (iOS) ou Chrome (Android).
-2. Menu Partager > **Sur l'écran d'accueil**.
-3. L'app s'ouvrira en plein écran comme une application.
-
-## Données
-
-- Stockage local du navigateur (localStorage), aucune API, 100% gratuit.
-- Export/import de sauvegarde JSON intégré (onglet Sauvegarde).
-- Ne pas stocker d'informations bancaires sensibles.
+- `index.html` — l'application complète (HTML + CSS + JS dans un seul fichier)
+- `apple-touch-icon.PNG` — icône pour l'installation sur écran d'accueil iPhone
+- `README.md` — ce fichier
 
 ## Fonctionnalités
 
-- Dépenses avec validation, 7 catégories, historique par mois
-- Budget mensuel avec barre de progression (vert / orange / rouge)
-- Factures : échéances, détection des retards, statut payée
-- Tâches avec compteur
-- Graphique donut par catégorie + tendance sur 6 mois (SVG natif, aucune dépendance)
+- **Espace local sécurisé** : code PIN 4 à 8 chiffres, écran de verrouillage, verrouillage automatique après 15 min d'inactivité ou au retour d'arrière-plan
+- **5 onglets** : Accueil, Dépenses, Clients, Projets, Bilan
+- **Dépenses** : catégories, historique, budget mensuel avec barre de progression
+- **Charges/Factures** : échéances, détection des retards, export PNG individuel
+- **Clients** : tableau Client / Dû / Encaissé / Reste / Statut, versements partiels mémorisés, récapitulatif PNG par client
+- **Projets** : enveloppe budgétaire, dépenses et activités liées, % consommé, alerte
+- **Bilan** : période Mois / 6 mois / 12 mois, CA encaissé, charges, bénéfice net, objectif de marge, graphique SVG, rapport PNG exportable
+- **Sauvegarde JSON** : export (jamais le code PIN) et import avec vérification, limite 2 Mo
+
+## Installer sur téléphone (iPhone / Android)
+
+1. Ouvrir l'URL dans Safari (iOS) ou Chrome (Android).
+2. Menu Partager > **Sur l'écran d'accueil**.
+3. L'app s'ouvre en plein écran comme une application native.
+
+## Données et sécurité
+
+- Stockage **local** au navigateur (clé `aureor_local_space_v3`) : les données ne quittent jamais l'appareil.
+- Le code PIN est un verrou d'accès, **pas un chiffrement** : ne pas stocker d'informations bancaires sensibles.
+- **Exporter régulièrement la sauvegarde JSON** (profil > Exporter) : vider le cache du navigateur effacerait les données.
+
+## Maintenance
+
+- L'application est déployée automatiquement par GitHub Pages depuis la branche `main`.
+- Ne pas modifier `index.html` directement sur `main` : passer par une branche + pull request.
+- Ne jamais résoudre les conflits de `index.html` à la main dans l'éditeur web : demander une vérification après résolution (un mauvais découpage du bloc `<script>` peut bloquer toute l'application).
