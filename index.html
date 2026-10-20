@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0D0D0D">
 <title>Mon Budget AŪREOR</title>
 <!-- V3.1 : fiches clients & échéances, PIN haché, devise EUR/FCFA, périodes bilan étendues, confort desktop -->
+<!-- V3.2 : créances & statuts (Payé / Partiellement payé / Impayé), exports PNG clients (fiche détaillée + récapitulatif groupé), exports charges individuels et groupés, tableau de bord 4 indicateurs, identité noir/or -->
 <link rel="icon" type="image/png" href="./apple-touch-icon.PNG">
 <link rel="apple-touch-icon" href="./apple-touch-icon.PNG">
 <!-- Police Lobster pour la marque AŪREOR -->
@@ -14,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
 
 <style>
-:root{color-scheme:dark;--bg:#0b1220;--panel:#142033;--line:#2a3b53;--text:#f4f7fb;--muted:#a7b4c7;--accent:#B08D35;--danger:#ff9aa5;--amber:#fbbf24;--green:#34d399}
+:root{color-scheme:dark;--bg:#0D0D0D;--panel:#161616;--line:#2E2E2E;--text:#f4f7fb;--muted:#a7b4c7;--accent:#B08D35;--danger:#ff9aa5;--amber:#fbbf24;--green:#34d399}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,-apple-system,sans-serif;padding-bottom:74px}
 
@@ -31,17 +32,19 @@ header small{color:var(--muted);font-size:11px;display:block;margin-top:2px}
 
 main{max-width:640px;margin:auto;padding:12px 12px 25px}
 .page{display:none}.page.active{display:block}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,0.45)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 @media(min-width:520px){.grid{grid-template-columns:repeat(4,1fr)}}
 .stat small{color:var(--muted);font-size:12px}
 .stat strong{display:block;font-size:20px;margin-top:4px;overflow-wrap:anywhere}
 label{display:block;color:var(--muted);font-size:13px;margin:12px 0 5px}
-input,select,textarea{width:100%;padding:11px;border-radius:9px;border:1px solid var(--line);background:#0b1423;color:var(--text);font:inherit}
+input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:#101010;color:var(--text);font:inherit}
 input:focus,select:focus{outline:2px solid var(--accent);border-color:transparent}
 .row{display:flex;gap:8px;align-items:center}.row input,.row select{flex:1;min-width:0}
-button{font:inherit;cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#1a2a40;color:var(--text)}
+button{font:inherit;cursor:pointer;border:1px solid #3a3a3a;border-radius:10px;padding:10px 14px;background:#1f1f1f;color:var(--text);transition:border-color .15s,background .15s}
+button:hover{border-color:var(--accent)}
 button.primary{background:var(--accent);color:#0D0D0D;font-weight:bold;border-color:transparent}
+button.primary:hover{background:#c9a244}
 button.block{width:100%;margin-top:12px}
 button.danger{color:var(--danger);border-color:#5b2a33;background:#241420}
 .err{color:var(--danger);font-size:12px;margin-top:4px;min-height:14px;display:none}
@@ -52,7 +55,7 @@ button.danger{color:var(--danger);border-color:#5b2a33;background:#241420}
 .item small{color:var(--muted)}
 .muted{color:var(--muted)}
 .empty{color:var(--muted);padding:12px 0}
-.bar{height:9px;background:#2a3b53;border-radius:10px;overflow:hidden;margin:8px 0}
+.bar{height:9px;background:#262626;border-radius:10px;overflow:hidden;margin:8px 0}
 .bar span{display:block;height:100%;border-radius:10px;transition:width .4s}
 .hint{font-size:12px;line-height:1.5;color:var(--muted)}
 .check{width:auto;min-width:20px;height:20px;accent-color:var(--accent)}
@@ -75,37 +78,45 @@ nav button.active{color:var(--accent);font-weight:600}
 /* Profile Slide Modal Menu */
 #profileModal{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:80;display:none;align-items:flex-end;justify-content:center}
 #profileModal.show{display:flex}
-#profileModal .modal-body{background:#142033;border-top:1px solid #B08D35;border-radius:20px 20px 0 0;width:100%;max-width:540px;padding:20px;max-height:85vh;overflow-y:auto}
+#profileModal .modal-body{background:#161616;border-top:1px solid #B08D35;border-radius:20px 20px 0 0;width:100%;max-width:540px;padding:20px;max-height:85vh;overflow-y:auto}
 
-.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#0d1526;border:1px solid var(--line);color:var(--text);font-size:13px;padding:9px 16px;border-radius:99px;z-index:120;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#1c1c1c;border:1px solid var(--accent);color:var(--text);font-size:13px;padding:9px 16px;border-radius:99px;z-index:120;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
 .toast.show{opacity:1}
 .done{text-decoration:line-through;color:var(--muted)}
 footer{font-size:11px;color:var(--muted);text-align:center;padding:6px 0 14px}
 svg text{font-family:system-ui,sans-serif}
-input[type=date],input[type=month]{-webkit-appearance:none;appearance:none;background:#0b1423;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:9px;font:inherit}
+input[type=date],input[type=month]{-webkit-appearance:none;appearance:none;background:#101010;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:10px;font:inherit}
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4px;cursor:pointer}
 input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4px;cursor:pointer}
 @media(max-width:520px){.row input[type=date],.row input[type=month]{min-width:0}}
 
 /* Badges de Statut */
 .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:bold}
-.badge-pending{background:#2a2418;color:var(--amber);border:1px solid var(--amber)}
+.badge-pending{background:#2a2418;color:#fbbf24;border:1px solid #fbbf24}
 .badge-partial{background:#172554;color:#60a5fa;border:1px solid #3b82f6}
-.badge-paid{background:#0f2418;color:var(--green);border:1px solid var(--green)}
-.badge-late{background:#241420;color:var(--danger);border:1px solid var(--danger)}
+.badge-paid{background:#0f2418;color:#34d399;border:1px solid #34d399}
+.badge-late{background:#241420;color:#ff9aa5;border:1px solid #ff9aa5}
 
 /* Table Responsive Clients */
 .table-responsive{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
 table.data-table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
-table.data-table th{background:#0b1423;color:var(--accent);padding:10px 8px;border-bottom:1px solid var(--line);font-weight:600}
-table.data-table td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.data-table th{background:#0b1423;color:#B08D35;padding:10px 8px;border-bottom:1px solid #2a3b53;font-weight:600}
+table.data-table td{padding:10px 8px;border-bottom:1px solid #2a3b53;vertical-align:middle}
 table.data-table tr:last-child td{border-bottom:0}
 /* ===== V3.1 AJOUTS — fiche client, confort desktop (ne modifie aucune règle existante) ===== */
 #clientSheetModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:95;display:none;align-items:center;justify-content:center;padding:16px}
 #clientSheetModal.show{display:flex}
 .sheet-body{background:var(--panel);border:1px solid var(--accent);border-radius:16px;width:100%;max-width:540px;max-height:86vh;overflow-y:auto;padding:18px}
+.sheet-export-btn{background:var(--accent);color:#0D0D0D;font-weight:bold;border:1px solid transparent}
+.sheet-export-btn:hover{background:#c9a244}
+.exp-check-item{display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:8px 0}
+.exp-check-item:last-child{border:0}
+.exp-check-item .details{flex:1;min-width:0;overflow-wrap:anywhere}
+.kpi-grid .stat strong{font-size:22px}
+.kpi-grid .stat small{color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+.sheet-status{margin-left:8px;vertical-align:middle}
 .sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
-.inst-item{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:#0e1930}
+.inst-item{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:#141414}
 .inst-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .inst-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .inst-actions button{padding:4px 8px;font-size:11px}
@@ -139,14 +150,19 @@ main{max-width:960px;padding:20px 20px 30px}
 <div style="flex:1"><small class="muted">Mois affiché</small><div id="monthLabel"></div></div>
 <input type="month" id="month" aria-label="Choisir le mois" style="max-width:160px">
 </div>
-<div class="grid">
-<div class="card stat"><small>Dépenses internes</small><strong id="spent">0 €</strong></div>
-<div class="card stat"><small>Budget restant</small><strong id="remaining">—</strong></div>
+<div class="grid kpi-grid">
+<div class="card stat"><small>Total facturé</small><strong id="kpiTotalInvoiced">0 €</strong></div>
+<div class="card stat"><small>Total encaissé</small><strong id="kpiTotalCollected" style="color:var(--green)">0 €</strong></div>
+<div class="card stat"><small>Créances restantes</small><strong id="kpiClaims" style="color:var(--amber)">0 €</strong></div>
 <div class="card stat"><small>Charges à payer</small><strong id="unpaid">0 €</strong></div>
-<div class="card stat"><small>CA Encaissé (Mois)</small><strong id="caHome">0 €</strong></div>
 </div>
 <div class="card">
 <strong>Budget mensuel</strong>
+<div class="grid" style="grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">
+<div class="stat"><small>Dépenses internes</small><strong id="spent" style="font-size:15px">0 €</strong></div>
+<div class="stat"><small>Budget restant</small><strong id="remaining" style="font-size:15px">—</strong></div>
+<div class="stat"><small>CA Encaissé (Mois)</small><strong id="caHome" style="font-size:15px">0 €</strong></div>
+</div>
 <label for="budget">Budget du mois (<span class="cur-suffix">\u20ac</span>)</label>
 <div class="row"><input id="budget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 800"><button id="saveBudget">OK</button></div>
 <div class="bar"><span id="progress" style="width:0;background:var(--accent)"></span></div>
@@ -184,7 +200,7 @@ main{max-width:960px;padding:20px 20px 30px}
 <label>Catégorie</label><div id="ecatWrap"></div>
 
 <!-- Formulaire optionnel activité si Loisirs -->
-<div id="loisirsActivityWrap" style="display:none;margin-top:10px;padding:10px;background:#0b1423;border:1px dashed var(--accent);border-radius:9px">
+<div id="loisirsActivityWrap" style="display:none;margin-top:10px;padding:10px;background:#101010;border:1px dashed var(--accent);border-radius:10px">
 <label for="eactName" style="margin-top:0;color:var(--accent)">💡 Saisie rapide de l'activité (Loisirs)</label>
 <input id="eactName" maxlength="150" placeholder="Ex. Concert / Restaurant Courchevel">
 </div>
@@ -218,6 +234,19 @@ main{max-width:960px;padding:20px 20px 30px}
 </form>
 </div>
 <div class="card"><strong>Mes charges à payer</strong><div id="blist"></div></div>
+
+<div class="card" id="billsExportCard">
+<strong>📤 Exports charges (PNG)</strong>
+<p class="hint" style="margin-top:6px">Coche plusieurs charges pour un export groupé, ou utilise le bouton « Exporter toutes les charges » ci-dessus. Fichiers clairement nommés : AUREOR-Charge…, AUREOR-Recap-Charges…</p>
+<div class="row" style="margin-top:10px">
+<button id="billsExportSelAll" style="flex:1">Tout cocher</button>
+<button id="billsExportSelNone" style="flex:1">Tout décocher</button>
+</div>
+<div id="billsExportList" class="empty" style="padding-top:4px">Aucune charge.</div>
+<div class="row" style="margin-top:10px">
+<button id="exportSelectedBills" class="primary" style="flex:1">📤 Exporter la sélection (PNG)</button>
+</div>
+</div>
 </section>
 
 <!-- 3. CLIENTS -->
@@ -232,7 +261,7 @@ main{max-width:960px;padding:20px 20px 30px}
 <div class="card">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
 <strong>Tableau des Clients & Encaissements</strong>
-<button id="exportAllClientBills" class="primary" style="padding:6px 12px;font-size:12px">📥 Exporter PNG</button>
+<button id="exportAllClientBills" class="primary" style="padding:6px 12px;font-size:12px">📥 Récapitulatif clients (PNG)</button>
 </div>
 <div class="table-responsive">
 <table class="data-table" id="clientTable">
@@ -261,6 +290,20 @@ main{max-width:960px;padding:20px 20px 30px}
 <button id="openSheetBtn" class="primary" style="white-space:nowrap">Ouvrir la fiche</button>
 </div>
 <div id="sheetLateWarn" class="hint" style="margin-top:8px"></div>
+</div>
+
+<div class="card" id="clientExportCard">
+<strong>📤 Exports clients (PNG)</strong>
+<p class="hint" style="margin-top:6px">Coche un ou plusieurs dossiers puis exporte leurs fiches détaillées ou un récapitulatif groupé. Rappel : les échéances prévues ne sont jamais comptées comme recettes encaissées.</p>
+<div class="row" style="margin-top:10px">
+<button id="clientExportSelAll" style="flex:1">Tout cocher</button>
+<button id="clientExportSelNone" style="flex:1">Tout décocher</button>
+</div>
+<div id="clientExportList" class="empty" style="padding-top:4px">Aucun dossier client.</div>
+<div class="row" style="margin-top:10px">
+<button id="exportSelectedSheets" class="primary" style="flex:2">📤 Exporter les fiches détaillées (PNG)</button>
+<button id="exportSelectedRecap" style="flex:1">📊 Récapitulatif</button>
+</div>
 </div>
 
 <div class="card">
@@ -733,6 +776,15 @@ function getClientTotalEncaisse(c){
  return c.payments.reduce(function(s,p){ return s + Number(p.amount||0); }, 0);
 }
 
+function clientBillStatus(c){
+ var amt = Number(c.amount)||0;
+ var enc = getClientTotalEncaisse(c);
+ var solde = Math.max(0, Math.round((amt - enc)*100)/100);
+ if (solde <= 0) return { key: "paid", label: "Payé" };
+ if (enc > 0) return { key: "partial", label: "Partiellement payé" };
+ return { key: "unpaid", label: "Impayé" };
+}
+
 var currentBilanPeriod = "month"; // "month", "6months", "1year", "civyear" (année civile), "custom" (personnalisée)
 var currentBilanYear = new Date().getFullYear();
 var customStart = month + "-01"; // début personnalisé : 1er jour du mois affiché
@@ -873,6 +925,12 @@ function render(){
   return s + getClientEncaisseInMonth(c, month);
  }, 0);
  $("caHome").textContent=money(caMonthEncaisse);
+ var kpiFacture = appData.clientBills.reduce(function(s,c){ return s + (Number(c.amount)||0); }, 0);
+ var kpiEncaisse = appData.clientBills.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
+ var kpiCreances = Math.max(0, Math.round((kpiFacture - kpiEncaisse)*100)/100);
+ $("kpiTotalInvoiced").textContent = money(kpiFacture);
+ $("kpiTotalCollected").textContent = money(kpiEncaisse);
+ $("kpiClaims").textContent = money(kpiCreances);
 
  $("budget").value=budget||"";
  var pct=budget?Math.min(100,usedWithBills/budget*100):0;
@@ -905,6 +963,8 @@ function render(){
  renderBilanSection();
  refreshCurrencySuffixes();
  renderSheetOptions();
+ renderClientExportList();
+ renderBillsExportList();
 }
 
 // RENDU TABLEAU CLIENTS
@@ -1336,6 +1396,7 @@ function instBadge(st){ if (st==="paid") return '<span class="badge badge-paid">
 function renderClientSheet(id){
  var c = findBill(id);
  if (!c) return;
+ var stGlob = clientBillStatus(c);
  var insts = getBillInstallments(c);
  var enc = getClientTotalEncaisse(c);
  var reste = Math.max(0, c.amount - enc);
@@ -1343,12 +1404,13 @@ function renderClientSheet(id){
  var plannedPaid = insts.reduce(function(s,i){ return s+getInstallmentReceived(c,i.id); },0);
  var ecart = Math.round((plannedTotal - c.amount)*100)/100;
  var h = '';
- h += '<div class="sheet-head"><div><strong style="font-size:17px;color:var(--accent)">'+esc(c.clientName||"Non spécifié")+'</strong><br><small class="muted">'+esc(c.label)+' · Facturé le '+esc(c.date)+'</small></div><button id="closeSheetModal" type="button" aria-label="Fermer la fiche" style="border:0;background:none;font-size:20px;color:var(--muted)">✕</button></div>';
+ h += '<div class="sheet-head"><div><strong style="font-size:17px;color:var(--accent)">'+esc(c.clientName||"Non spécifié")+'</strong><br><small class="muted">'+esc(c.label)+' · Facturé le '+esc(c.date)+'</small><span class="badge badge-'+stGlob.key+' sheet-status">'+stGlob.label+'</span></div><button id="closeSheetModal" type="button" aria-label="Fermer la fiche" style="border:0;background:none;font-size:20px;color:var(--muted)">✕</button></div>';
  h += '<div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:8px">';
  h += '<div class="stat"><small>Total dû</small><strong>'+money(c.amount)+'</strong></div>';
  h += '<div class="stat"><small>Encaissé</small><strong style="color:var(--green)">'+money(enc)+'</strong></div>';
  h += '<div class="stat"><small>Restant</small><strong style="color:var(--amber)">'+money(reste)+'</strong></div>';
  h += '</div>';
+ h += '<button type="button" class="sheet-export-btn block" data-sheet-export="1" style="margin-top:10px">📤 Exporter la fiche détaillée en PNG</button>';
  if (insts.length) {
   h += '<small class="muted" style="display:block;margin-top:10px">Échéances prévues : '+money(plannedTotal)+' · Reçu sur échéances : '+money(plannedPaid)+(Math.abs(ecart)>0.009 ? ' · <span style="color:var(--amber)">⚠ écart échéances/facturé : '+money(ecart)+'</span>' : '')+'</small>';
  }
@@ -1463,6 +1525,7 @@ $("openSheetBtn").addEventListener("click", function(){
 document.addEventListener("click", function(e){
  var b = e.target.closest("button");
  if (!b) return;
+ if (b.dataset.sheetExport) { var cX = findBill(sheetBillId); if (cX) exportClientSheetAsPNG(cX); return; }
  if (b.dataset.sheetPay) { setSheetPayTarget(b.dataset.sheetPay); $("sheetPayAmount").focus(); return; }
  if (b.dataset.sheetEdit) {
   var c = findBill(sheetBillId);
@@ -1809,17 +1872,17 @@ function exportPNGProfile(){
  var width = 600, height = 450;
  canvas.width = width * 2; canvas.height = height * 2;
  ctx.scale(2, 2);
- ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
+ ctx.fillStyle = "#0D0D0D"; ctx.fillRect(0, 0, width, height);
 
  drawAureorHeader(ctx, width, 100, "FICHE DE PROFIL OFFICIELLE");
 
- ctx.fillStyle = "#222222"; ctx.textAlign = "left";
+ ctx.fillStyle = "#f4f7fb"; ctx.textAlign = "left";
  ctx.font = "bold 16px system-ui, sans-serif";
  ctx.fillText("Nom de l'Espace / Profil :", 40, 140);
  ctx.fillStyle = "#B08D35"; ctx.font = "bold 20px system-ui, sans-serif";
  ctx.fillText(appData.username, 260, 140);
 
- ctx.fillStyle = "#222222"; ctx.font = "14px system-ui, sans-serif";
+ ctx.fillStyle = "#f4f7fb"; ctx.font = "14px system-ui, sans-serif";
  var rows = [
   { label: "Date de création :", value: appData.createdAt ? new Date(appData.createdAt).toLocaleDateString("fr-FR") : "-" },
   { label: "Dernière modification :", value: appData.lastModifiedAt ? new Date(appData.lastModifiedAt).toLocaleString("fr-FR") : "-" },
@@ -1839,7 +1902,7 @@ function exportPNGProfile(){
  ctx.strokeStyle = "#B08D35"; ctx.lineWidth = 1;
  ctx.beginPath(); ctx.moveTo(40, y + 10); ctx.lineTo(width - 40, y + 10); ctx.stroke();
 
- ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
+ ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#a7b4c7"; ctx.textAlign = "center";
  ctx.fillText("Document visuel généré le : " + new Date().toLocaleString("fr-FR"), width / 2, height - 20);
 
  downloadPNG(canvas, "AUREOR-Fiche-Profil-"+today()+".png");
@@ -1852,7 +1915,7 @@ function exportPNGBilan(){
  var width = 600, height = 520;
  canvas.width = width * 2; canvas.height = height * 2;
  ctx.scale(2, 2);
- ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
+ ctx.fillStyle = "#0D0D0D"; ctx.fillRect(0, 0, width, height);
 
  drawAureorHeader(ctx, width, 100, "BILAN FINANCIER GLOBAL");
 
@@ -1863,7 +1926,7 @@ function exportPNGBilan(){
  var caEncaisse = appData.clientBills.reduce(function(s,x){return s+getClientTotalEncaisse(x)},0);
  var netProfit = caEncaisse - totalCharges;
 
- ctx.fillStyle = "#222222"; ctx.textAlign = "left";
+ ctx.fillStyle = "#f4f7fb"; ctx.textAlign = "left";
  var rows = [
   { label: "Chiffre d'Affaires Facturé :", value: money(caFacture) },
   { label: "Total Réellement Encaissé :", value: money(caEncaisse) },
@@ -1877,7 +1940,7 @@ function exportPNGBilan(){
  var y = 140;
  rows.forEach(function(r, idx){
   ctx.font = idx === 5 ? "bold 16px system-ui, sans-serif" : "14px system-ui, sans-serif";
-  ctx.fillStyle = idx === 5 ? (netProfit < 0 ? "#f87171" : "#B08D35") : "#222222";
+  ctx.fillStyle = idx === 5 ? (netProfit < 0 ? "#f87171" : "#B08D35") : "#f4f7fb";
   ctx.fillText(r.label, 40, y);
   ctx.textAlign = "right";
   ctx.fillText(r.value, width - 40, y);
@@ -1888,7 +1951,7 @@ function exportPNGBilan(){
  ctx.strokeStyle = "#B08D35"; ctx.lineWidth = 1;
  ctx.beginPath(); ctx.moveTo(40, y + 10); ctx.lineTo(width - 40, y + 10); ctx.stroke();
 
- ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
+ ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#a7b4c7"; ctx.textAlign = "center";
  ctx.fillText("Généré le : " + new Date().toLocaleString("fr-FR") + " · Profil : " + appData.username, width / 2, height - 20);
 
  downloadPNG(canvas, "AUREOR-Bilan-Financier-"+today()+".png");
@@ -1902,7 +1965,7 @@ function exportPNGAudit(){
  var width = 600, height = 140 + Math.max(1, logs.length) * 30 + 40;
  canvas.width = width * 2; canvas.height = height * 2;
  ctx.scale(2, 2);
- ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
+ ctx.fillStyle = "#0D0D0D"; ctx.fillRect(0, 0, width, height);
 
  drawAureorHeader(ctx, width, 100, "HISTORIQUE DES MODIFICATIONS");
 
@@ -1916,7 +1979,7 @@ function exportPNGAudit(){
  ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(width - 40, y); ctx.stroke();
  y += 18;
 
- ctx.font = "12px system-ui, sans-serif"; ctx.fillStyle = "#222222";
+ ctx.font = "12px system-ui, sans-serif"; ctx.fillStyle = "#f4f7fb";
  if (logs.length === 0) {
   ctx.fillText("Aucune opération enregistrée.", 40, y);
  } else {
@@ -1929,7 +1992,7 @@ function exportPNGAudit(){
   });
  }
 
- ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
+ ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#a7b4c7"; ctx.textAlign = "center";
  ctx.fillText("Généré le : " + new Date().toLocaleString("fr-FR"), width / 2, height - 15);
 
  downloadPNG(canvas, "AUREOR-Historique-Modifications-"+today()+".png");
@@ -1941,68 +2004,275 @@ function exportBillAsPNG(bill){
  var filename="AUREOR-Charge-"+bill.id+"-"+(bill.due||"").replace(/[-:]/g,"")+".png";
  var ctx=canvas.getContext("2d");
  canvas.width=600*2;canvas.height=450*2;ctx.scale(2,2);
- ctx.fillStyle="#ffffff";ctx.fillRect(0,0,600,450);
+ ctx.fillStyle="#0D0D0D";ctx.fillRect(0,0,600,450);
  drawAureorHeader(ctx,600,100,"FICHE CHARGE / FACTURE");
+ ctx.textBaseline="alphabetic";
  var cat=catOf(bill.category);
+ var late=!bill.paid&&bill.due&&bill.due<today();
  var lines=[
   {label:"INTITULÉ :",value:bill.label},
   {label:"MONTANT :",value:money(bill.amount)},
   {label:"CATÉGORIE :",value:cat.label},
   {label:"ÉCHÉANCE :",value:bill.due},
-  {label:"STATUT :",value:bill.paid?"Payée":"À payer"}
+  {label:"STATUT :",value:bill.paid?"Payée":(late?"EN RETARD":"À payer")}
  ];
  var startY=140;
  lines.forEach(function(line,i){
   ctx.font=i===0?"bold 16px system-ui,sans-serif":"14px system-ui,sans-serif";
-  ctx.fillStyle=i===0?"#B08D35":"#222222";
-  ctx.textAlign="right";ctx.fillText(line.label,280,startY);
-  ctx.textAlign="left";ctx.fillText(line.value,300,startY);
+  ctx.fillStyle=i===0?"#B08D35":(i===4?(bill.paid?"#34d399":(late?"#ff9aa5":"#fbbf24")):"#f4f7fb");
+  ctx.textAlign="right";ctx.fillText(String(line.label),280,startY);
+  ctx.textAlign="left";ctx.fillText(String(line.value||""),300,startY);
   startY+=30;
  });
- ctx.font="11px system-ui,sans-serif";ctx.fillStyle="#888888";ctx.textAlign="center";
+ ctx.font="11px system-ui,sans-serif";ctx.fillStyle="#a7b4c7";ctx.textAlign="center";
  ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR")+" · Profil : "+appData.username,300,420);
  downloadPNG(canvas,filename);
- toast("Export PNG lancé.");
+ toast("Export PNG de la charge lancé.");
 }
 
-function exportClientBillAsPNG(c){
- var canvas=$("canvasExport");
- var filename="AUREOR-Client-"+(c.clientName||"X").replace(/[^a-zA-Z0-9]/g,"_")+"-"+c.id+".png";
- var ctx=canvas.getContext("2d");
- canvas.width=600*2;canvas.height=500*2;ctx.scale(2,2);
- ctx.fillStyle="#ffffff";ctx.fillRect(0,0,600,500);
- drawAureorHeader(ctx,600,100,"FICHE CLIENT & PRESTATION");
+function exportClientBillAsPNG(c){ exportClientSheetAsPNG(c); }
+
+// ===== V3.2 — MODULE EXPORTS PNG (fiches détaillées, récapitulatifs groupés, pagination multi-pages, identité noir/or) =====
+function exportSlug(s){ var r=String(s||"").replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,40); return r||"X"; }
+
+function paginateBlocks(blocks){
+ var pages=[],cur=[];
+ for (var i=0;i<blocks.length;i++){
+  cur.push(blocks[i]);
+  if (cur.length>=18){ pages.push(cur); cur=[]; }
+ }
+ if (cur.length) pages.push(cur);
+ if (!pages.length) pages=[[]];
+ return pages;
+}
+
+function exportMultiPagePNG(subtitle, sectionTitle, blocks, baseName, onDone){
+ var pages = paginateBlocks(blocks);
+ var W=600,H=800;
+ var idx=0;
+ function drawPage(){
+  var canvas=$("canvasExport");
+  var ctx=canvas.getContext("2d");
+  canvas.width=W*2;canvas.height=H*2;ctx.scale(2,2);
+  ctx.fillStyle="#0D0D0D";ctx.fillRect(0,0,W,H);
+  drawAureorHeader(ctx,W,100,subtitle);
+  ctx.textBaseline="alphabetic";
+  ctx.fillStyle="#B08D35";ctx.font="bold 15px system-ui,sans-serif";ctx.textAlign="left";
+  ctx.fillText(sectionTitle+(pages.length>1?(" (page "+(idx+1)+"/"+pages.length+")"):""),40,130);
+  var y=156;
+  var pgs=pages[idx];
+  for (var k=0;k<pgs.length;k++){
+   var bl=pgs[k];
+   if (bl.t==="row"){
+    ctx.font=bl.strong?"bold 14px system-ui,sans-serif":"13px system-ui,sans-serif";
+    ctx.fillStyle=bl.color||"#f4f7fb";
+    ctx.textAlign="left";ctx.fillText(String(bl.label),40+(bl.indent||0),y);
+    ctx.textAlign="right";ctx.fillText(String(bl.value),W-40,y);
+    ctx.textAlign="left";
+    y+=26;
+   } else if (bl.t==="text"){
+    ctx.font=bl.font||"12px system-ui,sans-serif";
+    ctx.fillStyle=bl.color||"#a7b4c7";
+    ctx.textAlign="left";ctx.fillText(String(bl.s),40+(bl.indent||0),y);
+    y+=(bl.dy||24);
+   } else if (bl.t==="sep"){
+    ctx.strokeStyle="#B08D35";ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(W-40,y);ctx.stroke();
+    y+=18;
+   }
+  }
+  ctx.font="11px system-ui,sans-serif";ctx.fillStyle="#a7b4c7";ctx.textAlign="center";
+  ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR")+" · Profil : "+(appData?appData.username:""),W/2,H-20);
+  downloadPNG(canvas,baseName+(pages.length>1?("-p"+(idx+1)):"")+".png");
+  idx++;
+  if (idx<pages.length) setTimeout(drawPage,600);
+  else if (onDone) setTimeout(onDone,300);
+ }
+ drawPage();
+}
+
+function clientSheetBlocks(c){
+ var insts=getBillInstallments(c);
+ var pays=[].concat(Array.isArray(c.payments)?c.payments:[]).slice().sort(function(a,b){return String(b.date||"").localeCompare(String(a.date||""));});
+ var st=clientBillStatus(c);
  var enc=getClientTotalEncaisse(c);
- var solde=Math.max(0,c.amount-enc);
- var st=solde===0?"Payé":(enc>0?"Partiellement payé":"En attente");
- var lines=[
-  {label:"CLIENT :",value:c.clientName||"Non spécifié"},
-  {label:"PRESTATION :",value:c.label},
-  {label:"MONTANT FACTURÉ :",value:money(c.amount)},
-  {label:"TOTAL ENCAISSÉ :",value:money(enc)},
-  {label:"SOLDE RESTANT :",value:money(solde)},
-  {label:"STATUT :",value:st},
-  {label:"DATE FACTURE :",value:c.date}
+ var reste=Math.max(0,Math.round((Number(c.amount)-enc)*100)/100);
+ var stColor=st.key==="paid"?"#34d399":(st.key==="partial"?"#60a5fa":"#fbbf24");
+ var blocks=[
+  {t:"row",label:"CLIENT :",value:c.clientName||"Non spécifié",strong:true,color:"#B08D35"},
+  {t:"row",label:"PRESTATION :",value:c.label},
+  {t:"row",label:"MONTANT FACTURÉ :",value:money(c.amount)},
+  {t:"row",label:"TOTAL ENCAISSÉ :",value:money(enc),color:"#34d399"},
+  {t:"row",label:"SOLDE RESTANT :",value:money(reste),color:"#fbbf24"},
+  {t:"row",label:"STATUT :",value:st.label,color:stColor,strong:true},
+  {t:"row",label:"DATE FACTURE :",value:c.date},
+  {t:"sep"},
+  {t:"text",s:"📅 ÉCHÉANCES PRÉVUES ("+insts.length+") — jamais comptées comme recettes",color:"#B08D35",font:"bold 12px system-ui,sans-serif"}
  ];
- var startY=140;
- lines.forEach(function(line,i){
-  ctx.font=i===0?"bold 16px system-ui,sans-serif":"14px system-ui,sans-serif";
-  ctx.fillStyle=i===0?"#B08D35":"#222222";
-  ctx.textAlign="right";ctx.fillText(line.label,280,startY);
-  ctx.textAlign="left";ctx.fillText(line.value,300,startY);
-  startY+=28;
- });
- ctx.font="11px system-ui,sans-serif";ctx.fillStyle="#888888";ctx.textAlign="center";
- ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR")+" · Profil : "+appData.username,300,470);
- downloadPNG(canvas,filename);
- toast("Export PNG client lancé.");
+ if (!insts.length) blocks.push({t:"text",s:"Aucune échéance prévue.",indent:10});
+ for (var i=0;i<insts.length;i++){
+  var inst=insts[i];
+  var ist=getInstallmentStatus(c,inst);
+  var rec=getInstallmentReceived(c,inst.id);
+  var soldeInst=Math.max(0,Math.round((Number(inst.plannedAmount||0)-rec)*100)/100);
+  var istLbl=ist==="paid"?"Payé":(ist==="late"?"En retard":"À payer");
+  blocks.push({t:"row",label:"• "+money(inst.plannedAmount)+" prévue le "+(inst.plannedDate||"—"),value:"Reçu "+money(rec)+(soldeInst>0?(" · Reste "+money(soldeInst)):""),indent:10});
+  blocks.push({t:"text",s:"Statut : "+istLbl,color:ist==="paid"?"#34d399":(ist==="late"?"#ff9aa5":"#fbbf24"),indent:22,dy:22});
+ }
+ blocks.push({t:"sep"});
+ blocks.push({t:"text",s:"🧾 HISTORIQUE DES RÈGLEMENTS ("+pays.length+")",color:"#B08D35",font:"bold 12px system-ui,sans-serif"});
+ if (!pays.length) blocks.push({t:"text",s:"Aucun règlement enregistré.",indent:10});
+ for (var j=0;j<pays.length;j++){
+  var p=pays[j];
+  var instRef=null;
+  for (var m=0;m<insts.length;m++){ if (insts[m].id===p.installmentId) instRef=insts[m]; }
+  blocks.push({t:"row",label:"• "+(p.date||"—")+" · "+methodLabel(p.method),value:money(p.amount),color:"#34d399",indent:10});
+  blocks.push({t:"text",s:(instRef?("Échéance liée : "+(instRef.plannedDate||"—")+" · "):"")+(p.note||"Règlement"),indent:22,dy:22});
+ }
+ return blocks;
+}
+
+function exportClientSheetAsPNG(c, onDone){
+ if (!c) { toast("Dossier introuvable."); return; }
+ exportMultiPagePNG("FICHE CLIENT DÉTAILLÉE","DOSSIER : "+(c.clientName||"Non spécifié"),clientSheetBlocks(c),"AUREOR-Fiche-"+exportSlug(c.clientName)+"-"+c.id, onDone || function(){ toast("Fiche détaillée exportée en PNG."); });
+}
+
+function exportClientsRecapPNG(clients, onDone){
+ var list = (Array.isArray(clients)&&clients.length) ? clients : (appData.clientBills||[]).slice();
+ if (!list.length) { toast("Aucun dossier client à exporter."); return; }
+ var totalF=0,totalE=0,nPaid=0,nPartial=0,nUnpaid=0;
+ var blocks=[{t:"text",s:"👥 "+list.length+" dossier(s) client",color:"#B08D35",font:"bold 13px system-ui,sans-serif"}];
+ for (var i=0;i<list.length;i++){
+  var c=list[i];
+  var st=clientBillStatus(c);
+  var enc=getClientTotalEncaisse(c);
+  var reste=Math.max(0,Math.round((Number(c.amount)-enc)*100)/100);
+  totalF+=Number(c.amount)||0; totalE+=enc;
+  if (st.key==="paid") nPaid++; else if (st.key==="partial") nPartial++; else nUnpaid++;
+  var stColor=st.key==="paid"?"#34d399":(st.key==="partial"?"#60a5fa":"#fbbf24");
+  blocks.push({t:"row",label:"• "+(c.clientName||"Non spécifié")+" — "+c.label,value:money(c.amount),strong:true,color:"#B08D35"});
+  blocks.push({t:"row",label:"Facturé : "+money(c.amount)+" · Encaissé : "+money(enc)+" · Reste : "+money(reste),value:st.label,color:stColor,indent:12});
+  var insts=getBillInstallments(c);
+  if (insts.length){
+   var recInst=0;
+   for (var q=0;q<insts.length;q++){ recInst+=getInstallmentReceived(c,insts[q].id); }
+   blocks.push({t:"text",s:"Échéances prévues : "+insts.length+" · Reçu sur échéances : "+money(recInst),indent:24,dy:22});
+  }
+  var np=(Array.isArray(c.payments)?c.payments:[]).length;
+  var lastDate="—";
+  if (np){
+   var sorted=[].concat(c.payments).sort(function(a,b){return String(b.date||"").localeCompare(String(a.date||""));});
+   lastDate=(sorted[0]||{}).date||"—";
+  }
+  blocks.push({t:"text",s:"Règlements enregistrés : "+np+(np?(" · dernier le "+lastDate):""),indent:24,dy:22});
+ }
+ blocks.push({t:"sep"});
+ blocks.push({t:"row",label:"TOTAL FACTURÉ :",value:money(totalF),strong:true,color:"#B08D35"});
+ blocks.push({t:"row",label:"TOTAL ENCAISSÉ :",value:money(totalE),strong:true,color:"#34d399"});
+ blocks.push({t:"row",label:"CRÉANCES RESTANTES :",value:money(Math.max(0,Math.round((totalF-totalE)*100)/100)),strong:true,color:"#fbbf24"});
+ blocks.push({t:"row",label:"STATISTIQUES :",value:nPaid+" payé(s) · "+nPartial+" partiel(s) · "+nUnpaid+" impayé(s)"});
+ exportMultiPagePNG("RÉCAPITULATIF CLIENTS","DOSSIERS CLIENTS & ENCAISSEMENTS",blocks,"AUREOR-Recap-Clients-"+today(), onDone || function(){ toast("Récapitulatif clients exporté en PNG."); });
+}
+
+function exportBillsRecapPNG(bills, onDone){
+ var list = (Array.isArray(bills)&&bills.length) ? bills : (appData.bills||[]).slice();
+ if (!list.length) { toast("Aucune charge à exporter."); return; }
+ var totalAll=0,totalUnpaid=0,totalPaid=0,nLate=0,nOpen=0;
+ var blocks=[{t:"text",s:"🧾 "+list.length+" charge(s) / facture(s)",color:"#B08D35",font:"bold 13px system-ui,sans-serif"}];
+ for (var i=0;i<list.length;i++){
+  var b=list[i];
+  var late=!b.paid&&b.due&&b.due<today();
+  totalAll+=Number(b.amount)||0;
+  if (b.paid) totalPaid+=Number(b.amount)||0; else { totalUnpaid+=Number(b.amount)||0; nOpen++; }
+  if (late) nLate++;
+  blocks.push({t:"row",label:"• "+b.label+" — "+catOf(b.category).label,value:money(b.amount),strong:true,color:"#B08D35"});
+  blocks.push({t:"row",label:"Échéance : "+(b.due||"—"),value:b.paid?"Payée":(late?"EN RETARD":"À payer"),color:b.paid?"#34d399":(late?"#ff9aa5":"#fbbf24"),indent:12});
+ }
+ blocks.push({t:"sep"});
+ blocks.push({t:"row",label:"TOTAL CHARGES :",value:money(totalAll),strong:true,color:"#B08D35"});
+ blocks.push({t:"row",label:"TOTAL À PAYER :",value:money(totalUnpaid),strong:true,color:"#fbbf24"});
+ blocks.push({t:"row",label:"TOTAL PAYÉES :",value:money(totalPaid),strong:true,color:"#34d399"});
+ blocks.push({t:"row",label:"STATISTIQUES :",value:nOpen+" à payer · "+nLate+" en retard"});
+ exportMultiPagePNG("RÉCAPITULATIF CHARGES","CHARGES & FACTURES",blocks,"AUREOR-Recap-Charges-"+today(), onDone || function(){ toast("Récapitulatif charges exporté en PNG."); });
+}
+
+function renderClientExportList(){
+ var el=$("clientExportList"); if (!el) return;
+ var list=(appData&&appData.clientBills)||[];
+ if (!list.length){ el.innerHTML="Aucun dossier client."; el.classList.add("empty"); return; }
+ el.classList.remove("empty");
+ var h="";
+ for (var i=0;i<list.length;i++){
+  var c=list[i];
+  var st=clientBillStatus(c);
+  var enc=getClientTotalEncaisse(c);
+  var reste=Math.max(0,Math.round((Number(c.amount)-enc)*100)/100);
+  h+='<div class="exp-check-item"><input class="check" type="checkbox" data-clientsel="'+escAttr(c.id)+'" aria-label="Sélectionner le dossier '+escAttr(c.clientName||"")+'"><div class="details"><strong>'+esc(c.clientName||"Non spécifié")+'</strong> <small class="muted">'+esc(c.label)+'</small><br><small>Facturé : '+money(c.amount)+' · Encaissé : '+money(enc)+' · Reste : '+money(reste)+'</small></div><span class="badge badge-'+st.key+'">'+st.label+'</span></div>';
+ }
+ el.innerHTML=h;
+}
+
+function renderBillsExportList(){
+ var el=$("billsExportList"); if (!el) return;
+ var list=(appData&&appData.bills)||[];
+ if (!list.length){ el.innerHTML="Aucune charge."; el.classList.add("empty"); return; }
+ el.classList.remove("empty");
+ var h="";
+ for (var i=0;i<list.length;i++){
+  var b=list[i];
+  var late=!b.paid&&b.due&&b.due<today();
+  var badge=b.paid?'<span class="badge badge-paid">Payée</span>':(late?'<span class="badge badge-late">En retard</span>':'<span class="badge badge-pending">À payer</span>');
+  h+='<div class="exp-check-item"><input class="check" type="checkbox" data-billsel="'+escAttr(b.id)+'" aria-label="Sélectionner la charge '+escAttr(b.label||"")+'"><div class="details"><strong>'+esc(b.label)+'</strong><br><small>'+esc(catOf(b.category).label)+' · Échéance : '+esc(b.due||"—")+'</small></div><span><strong>'+money(b.amount)+'</strong></span> '+badge+'</div>';
+ }
+ el.innerHTML=h;
+}
+
+function getCheckedIds(attr){
+ var out=[];
+ var els=document.querySelectorAll("input[data-"+attr+"]");
+ for (var i=0;i<els.length;i++){ if (els[i].checked) out.push(String(els[i].getAttribute("data-"+attr))); }
+ return out;
+}
+
+function selectedClients(){
+ var ids=getCheckedIds("clientsel");
+ return (appData.clientBills||[]).filter(function(c){ return ids.indexOf(c.id)!==-1; });
+}
+
+function selectedBills(){
+ var ids=getCheckedIds("billsel");
+ return (appData.bills||[]).filter(function(b){ return ids.indexOf(b.id)!==-1; });
 }
 
 $("exportAllBills").addEventListener("click",function(){
- toast("Export groupé PNG disponible dans chaque fiche.");
+ exportBillsRecapPNG(null);
 });
 
-$("exportAllClientBills").addEventListener("click",exportPNGBilan);
+$("exportAllClientBills").addEventListener("click",function(){ exportClientsRecapPNG(null); });
+
+$("clientExportSelAll").addEventListener("click",function(){ var els=document.querySelectorAll("input[data-clientsel]"); for (var i=0;i<els.length;i++) els[i].checked=true; toast("Tous les dossiers cochés."); });
+$("clientExportSelNone").addEventListener("click",function(){ var els=document.querySelectorAll("input[data-clientsel]"); for (var i=0;i<els.length;i++) els[i].checked=false; });
+$("exportSelectedSheets").addEventListener("click",function(){
+ var sel=selectedClients();
+ if (!sel.length){ toast("Coche au moins un dossier client (ou utilise Tout cocher)."); return; }
+ var i=0;
+ function nextSheet(){
+  exportClientSheetAsPNG(sel[i], function(){
+   i++;
+   if (i<sel.length) setTimeout(nextSheet,700);
+   else toast(sel.length+" fiche(s) détaillée(s) exportée(s) en PNG.");
+  });
+ }
+ nextSheet();
+});
+$("exportSelectedRecap").addEventListener("click",function(){ exportClientsRecapPNG(selectedClients()); });
+$("billsExportSelAll").addEventListener("click",function(){ var els=document.querySelectorAll("input[data-billsel]"); for (var i=0;i<els.length;i++) els[i].checked=true; toast("Toutes les charges cochées."); });
+$("billsExportSelNone").addEventListener("click",function(){ var els=document.querySelectorAll("input[data-billsel]"); for (var i=0;i<els.length;i++) els[i].checked=false; });
+$("exportSelectedBills").addEventListener("click",function(){
+ var sel=selectedBills();
+ if (!sel.length){ toast("Coche au moins une charge (ou utilise Tout cocher)."); return; }
+ exportBillsRecapPNG(sel);
+});
 
 function exportPNGPeriodBilan(){
  var keys = getMonthsForPeriod(currentBilanPeriod).map(function(m){ return m.key; });
@@ -2022,7 +2292,7 @@ function exportPNGPeriodBilan(){
  var width = 600, height = 420;
  canvas.width = width * 2; canvas.height = height * 2;
  ctx.scale(2, 2);
- ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, width, height);
+ ctx.fillStyle = "#0D0D0D"; ctx.fillRect(0, 0, width, height);
 
  drawAureorHeader(ctx, width, 100, "RAPPORT DE PÉRIODE");
 
@@ -2042,7 +2312,7 @@ function exportPNGPeriodBilan(){
  var y = 165;
  rows.forEach(function(r, idx){
   ctx.font = idx === 4 ? "bold 16px system-ui, sans-serif" : "14px system-ui, sans-serif";
-  ctx.fillStyle = idx === 4 ? (pNet < 0 ? "#f87171" : "#B08D35") : "#222222";
+  ctx.fillStyle = idx === 4 ? (pNet < 0 ? "#f87171" : "#B08D35") : "#f4f7fb";
   ctx.fillText(r.label, 40, y);
   ctx.textAlign = "right";
   ctx.fillText(r.value, width - 40, y);
@@ -2050,7 +2320,7 @@ function exportPNGPeriodBilan(){
   y += 32;
  });
 
- ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#888888"; ctx.textAlign = "center";
+ ctx.font = "11px system-ui, sans-serif"; ctx.fillStyle = "#a7b4c7"; ctx.textAlign = "center";
  ctx.fillText("Généré le : " + new Date().toLocaleString("fr-FR") + " · Profil : " + appData.username, width / 2, height - 20);
 
  downloadPNG(canvas, "AUREOR-Rapport-Periode-" + today() + ".png");
