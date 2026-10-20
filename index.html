@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0D0D">
 <title>Mon Budget AŪREOR</title>
+<!-- V3.1 : fiches clients & échéances, PIN haché, devise EUR/FCFA, périodes bilan étendues, confort desktop -->
 <link rel="icon" type="image/png" href="./apple-touch-icon.PNG">
 <link rel="apple-touch-icon" href="./apple-touch-icon.PNG">
 <!-- Police Lobster pour la marque AŪREOR -->
@@ -91,6 +92,7 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 .badge-pending{background:#2a2418;color:var(--amber);border:1px solid var(--amber)}
 .badge-partial{background:#172554;color:#60a5fa;border:1px solid #3b82f6}
 .badge-paid{background:#0f2418;color:var(--green);border:1px solid var(--green)}
+.badge-late{background:#241420;color:var(--danger);border:1px solid var(--danger)}
 
 /* Table Responsive Clients */
 .table-responsive{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
@@ -98,6 +100,23 @@ table.data-table{width:100%;border-collapse:collapse;font-size:13px;text-align:l
 table.data-table th{background:#0b1423;color:var(--accent);padding:10px 8px;border-bottom:1px solid var(--line);font-weight:600}
 table.data-table td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
 table.data-table tr:last-child td{border-bottom:0}
+/* ===== V3.1 AJOUTS — fiche client, confort desktop (ne modifie aucune règle existante) ===== */
+#clientSheetModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:95;display:none;align-items:center;justify-content:center;padding:16px}
+#clientSheetModal.show{display:flex}
+.sheet-body{background:var(--panel);border:1px solid var(--accent);border-radius:16px;width:100%;max-width:540px;max-height:86vh;overflow-y:auto;padding:18px}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
+.inst-item{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:#0e1930}
+.inst-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.inst-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.inst-actions button{padding:4px 8px;font-size:11px}
+.pay-item{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:8px 0;flex-wrap:wrap}
+.late-warn{color:var(--danger);font-weight:600}
+@media(min-width:900px){
+main{max-width:960px;padding:20px 20px 30px}
+#paymentModal .card{max-width:440px}
+#profileModal .modal-body{max-width:620px}
+.sheet-body{max-width:640px}
+}
 </style>
 </head>
 <body>
@@ -128,7 +147,7 @@ table.data-table tr:last-child td{border-bottom:0}
 </div>
 <div class="card">
 <strong>Budget mensuel</strong>
-<label for="budget">Budget du mois (€)</label>
+<label for="budget">Budget du mois (<span class="cur-suffix">\u20ac</span>)</label>
 <div class="row"><input id="budget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 800"><button id="saveBudget">OK</button></div>
 <div class="bar"><span id="progress" style="width:0;background:var(--accent)"></span></div>
 <small id="budgetHint" class="muted">Définis ton budget mensuel.</small>
@@ -155,7 +174,7 @@ table.data-table tr:last-child td{border-bottom:0}
 <label for="ename">Intitulé</label><input id="ename" maxlength="100" placeholder="Ex. Courses">
 <div class="err" id="err-ename"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="eamount">Montant (€)</label><input id="eamount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="12,50"></div>
+<div><label for="eamount">Montant (<span class="cur-suffix">\u20ac</span>)</label><input id="eamount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="12,50"></div>
 <div><label for="edate">Date</label><input id="edate" type="date"></div>
 </div>
 <div class="err" id="err-amount"></div>
@@ -188,7 +207,7 @@ table.data-table tr:last-child td{border-bottom:0}
 <label for="bname">Intitulé</label><input id="bname" maxlength="100" placeholder="Ex. Électricité">
 <div class="err" id="err-bname"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="bamount">Montant (€)</label><input id="bamount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
+<div><label for="bamount">Montant (<span class="cur-suffix">\u20ac</span>)</label><input id="bamount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
 <div><label for="bdue">Échéance</label><input id="bdue" type="date"></div>
 </div>
 <div class="err" id="err-bamount"></div>
@@ -234,6 +253,16 @@ table.data-table tr:last-child td{border-bottom:0}
 <div id="clientTableEmpty" class="empty" style="display:none">Aucun dossier client enregistré.</div>
 </div>
 
+<div class="card" id="clientSheetCard">
+<strong>📋 Fiche client détaillée</strong>
+<p class="hint" style="margin-top:6px">Échéances prévues, acomptes partiels, historique des règlements, moyens de paiement et retards.</p>
+<div class="row" style="margin-top:10px">
+<select id="sheetSelect" class="sheet-sel" aria-label="Choisir un dossier client"></select>
+<button id="openSheetBtn" class="primary" style="white-space:nowrap">Ouvrir la fiche</button>
+</div>
+<div id="sheetLateWarn" class="hint" style="margin-top:8px"></div>
+</div>
+
 <div class="card">
 <strong>Ajouter une prestation client</strong>
 <form id="clientBillForm" novalidate>
@@ -242,7 +271,7 @@ table.data-table tr:last-child td{border-bottom:0}
 <label for="cclient">Nom du client / payeur</label><input id="cclient" maxlength="100" placeholder="Ex. Jean Dupont">
 <div class="err" id="err-cclient"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="camount">Montant Facturé (€)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
+<div><label for="camount">Montant Facturé (<span class="cur-suffix">\u20ac</span>)</label><input id="camount" type="number" min="0.01" step=".01" inputmode="decimal"></div>
 <div><label for="cdate">Date de facturation</label><input id="cdate" type="date"></div>
 </div>
 <div class="err" id="err-camount"></div>
@@ -262,7 +291,7 @@ table.data-table tr:last-child td{border-bottom:0}
 <label for="pname">Nom du projet</label><input id="pname" maxlength="100" placeholder="Ex. Courchevel">
 <div class="err" id="err-pname"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:9px">
-<div><label for="penvelope">Enveloppe budgétaire (€)</label><input id="penvelope" type="number" min="0" step=".01" inputmode="decimal" placeholder="15000"></div>
+<div><label for="penvelope">Enveloppe budgétaire (<span class="cur-suffix">\u20ac</span>)</label><input id="penvelope" type="number" min="0" step=".01" inputmode="decimal" placeholder="15000"></div>
 <div><label for="palert">Seuil alerte dépense (%)</label><input id="palert" type="number" min="1" max="100" placeholder="80" value="80"></div>
 </div>
 <div class="err" id="err-penvelope"></div>
@@ -306,7 +335,17 @@ table.data-table tr:last-child td{border-bottom:0}
 <button type="button" class="chip sel" data-period="month">Mois</button>
 <button type="button" class="chip" data-period="6months">6 Mois</button>
 <button type="button" class="chip" data-period="1year">1 An</button>
+<button type="button" class="chip" data-period="civyear">Année civile</button>
+<button type="button" class="chip" data-period="custom">Perso</button>
 </div>
+</div>
+<div id="bilanYearRow" class="row" style="display:none;margin-top:10px">
+<label for="bilanYearSelect" style="margin:0;white-space:nowrap">Année analysée</label>
+<select id="bilanYearSelect" aria-label="Choisir l'année civile"></select>
+</div>
+<div id="bilanCustomRow" class="row" style="display:none;margin-top:10px;flex-wrap:wrap">
+<div style="flex:1;min-width:130px"><label for="bilanStartDate" style="margin-top:0">Début (inclus)</label><input id="bilanStartDate" type="date"></div>
+<div style="flex:1;min-width:130px"><label for="bilanEndDate" style="margin-top:0">Fin (incluse)</label><input id="bilanEndDate" type="date"></div>
 </div>
 </div>
 
@@ -331,7 +370,7 @@ table.data-table tr:last-child td{border-bottom:0}
 <div id="bilanAlert" style="margin-top:16px"></div>
 <div class="bar" style="margin-top:16px"><span id="bilanProgress" style="width:0;background:#B08D35"></span></div>
 <small id="bilanHint" class="muted" style="margin-top:8px;display:block">Objectif de marge actuel</small>
-<label for="marginTarget" style="margin-top:16px">Définir l'objectif de marge (€)</label>
+<label for="marginTarget" style="margin-top:16px">Définir l'objectif de marge (<span class="cur-suffix">\u20ac</span>)</label>
 <div class="row"><input id="marginTarget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 1000" value="1000"><button id="saveTarget" class="primary">OK</button></div>
 </div>
 
@@ -414,7 +453,7 @@ table.data-table tr:last-child td{border-bottom:0}
 <p id="payClientLabel" style="font-size:14px;margin:8px 0;color:var(--muted)"></p>
 <form id="paymentForm" novalidate>
 <input type="hidden" id="payClientId">
-<label for="payAmount">Montant encaissé (€)</label>
+<label for="payAmount">Montant encaissé (<span class="cur-suffix">\u20ac</span>)</label>
 <input id="payAmount" type="number" min="0.01" step=".01" inputmode="decimal" placeholder="100.00">
 <div class="err" id="err-payAmount"></div>
 <label for="payDate">Date d'encaissement</label>
@@ -428,6 +467,11 @@ table.data-table tr:last-child td{border-bottom:0}
 </div>
 </form>
 </div>
+</div>
+
+<!-- V3.1 : MODALE FICHE CLIENT DÉTAILLÉE (indépendante du tableau Clients) -->
+<div id="clientSheetModal" role="dialog" aria-modal="true" aria-label="Fiche client détaillée">
+<div class="sheet-body" id="sheetBody"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -462,12 +506,22 @@ var catOf=function(id){for(var i=0;i<CATS.length;i++){if(CATS[i].id===id)return 
 function pad(n){return String(n).length<2?"0"+n:String(n)}
 function today(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function nowISO(){return new Date().toISOString()}
-function money(n){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0)}
+function money(n){var v=Number(n)||0;if(typeof appData==="object"&&appData&&appData.currency==="XOF"){return new Intl.NumberFormat("fr-FR",{maximumFractionDigits:0}).format(v)+" FCFA"}return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(v)}
 function esc(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]})}
 function escAttr(s){if(s===null||s===undefined)return "";s=String(s);return s.replace(/[&<>"'\s]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"," ":"&#32;","\t":"&#9;","\n":"&#10;","\r":"&#13;"}[c]||c})}
 function isValidHexColor(c){return typeof c==="string"&&/^#([0-9A-Fa-f]{3}){1,2}$/.test(c)}
 var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)};
 function setErr(id,msg,show){var el=$(id);if(!el)return;el.textContent=msg||"";el.classList.toggle("show",!!show)}
+
+// ===== V3.1 — PIN haché (jamais en clair), devise, échéances clients =====
+function hashPin(pin){var s="AUREOR::"+String(pin||"");var h1=5381,h2=5271;for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);h1=((h1*33)^c)>>>0;h2=((h2*31)+c)>>>0}return "h1"+h1.toString(16)+"h2"+h2.toString(36)}
+function spaceHasPin(){return !!(appData&&((typeof appData.pinHash==="string"&&appData.pinHash)||(typeof appData.pin==="string"&&appData.pin)))}
+function refreshCurrencySuffixes(){var u=(appData&&appData.currency==="XOF")?"FCFA":"\u20ac";var els=document.querySelectorAll(".cur-suffix");for(var i=0;i<els.length;i++)els[i].textContent=u}
+function getBillInstallments(c){return Array.isArray(c.installments)?c.installments:[]}
+function getInstallmentReceived(c,instId){if(!Array.isArray(c.payments))return 0;return c.payments.filter(function(p){return p.installmentId===instId}).reduce(function(s,p){return s+Number(p.amount||0)},0)}
+function getInstallmentStatus(c,inst){var rec=getInstallmentReceived(c,inst.id);var planned=Number(inst.plannedAmount||0);if(planned>0&&rec>=planned)return "paid";if(inst.plannedDate&&inst.plannedDate<today())return "late";return "due"}
+function countLateInstallments(){var n=0;(appData.clientBills||[]).forEach(function(c){getBillInstallments(c).forEach(function(i){if(getInstallmentStatus(c,i)==="late")n++})});return n}
+function normalizeLoadedSpace(s){if(!s||typeof s!=="object")return false;var changed=false;["expenses","bills","clientBills","tasks","activities","projects","auditLog"].forEach(function(k){if(!Array.isArray(s[k]))s[k]=[]});if(!s.budgets||typeof s.budgets!=="object"||Array.isArray(s.budgets))s.budgets={};if(s.currency!=="XOF")s.currency="EUR";if(typeof s.pinHash!=="string")s.pinHash="";if(typeof s.pin==="string"&&s.pin){if(!s.pinHash){s.pinHash=hashPin(s.pin);changed=true}s.pin="";changed=true}if(Array.isArray(s.clientBills))s.clientBills.forEach(function(c){if(!Array.isArray(c.payments))c.payments=[];if(!Array.isArray(c.installments))c.installments=[]});return changed}
 
 var STORAGE_KEY_SPACE = "aureor_local_space_v3";
 var STORAGE_KEY_V1 = "mon-quotidien-v1";
@@ -482,7 +536,9 @@ function emptySpaceData(username, pin){
  return {
   version: 3,
   username: username || "Mon Espace",
-  pin: pin || "",
+  pin: "",
+  pinHash: pin ? hashPin(pin) : "",
+  currency: "EUR",
   createdAt: nowISO(),
   lastModifiedAt: nowISO(),
   expenses: [],
@@ -518,6 +574,7 @@ function initStorage(){
   var raw = localStorage.getItem(STORAGE_KEY_SPACE);
   if (raw) {
    appData = JSON.parse(raw);
+   if (normalizeLoadedSpace(appData)) saveSpace();
   } else {
    var rawV1 = localStorage.getItem(STORAGE_KEY_V1);
    if (rawV1) {
@@ -570,7 +627,7 @@ function toast(msg){
 var inactivityTimer = null;
 function resetInactivityTimer(){
  clearTimeout(inactivityTimer);
- if (isUnlocked && appData && appData.pin) {
+ if (isUnlocked && spaceHasPin()) {
   inactivityTimer = setTimeout(function(){
    lockSession();
    toast("Session verrouillée pour inactivité.");
@@ -587,7 +644,7 @@ document.addEventListener("visibilitychange", function(){
  if (document.hidden) {
   backgroundHiddenAt = Date.now();
  } else {
-  if (backgroundHiddenAt && isUnlocked && appData && appData.pin &&
+  if (backgroundHiddenAt && isUnlocked && spaceHasPin() &&
       Date.now() - backgroundHiddenAt >= 3000) {
    lockSession();
    toast("Espace verrouillé après absence.");
@@ -676,7 +733,10 @@ function getClientTotalEncaisse(c){
  return c.payments.reduce(function(s,p){ return s + Number(p.amount||0); }, 0);
 }
 
-var currentBilanPeriod = "month"; // "month", "6months", "1year"
+var currentBilanPeriod = "month"; // "month", "6months", "1year", "civyear" (année civile), "custom" (personnalisée)
+var currentBilanYear = new Date().getFullYear();
+var customStart = month + "-01"; // début personnalisé : 1er jour du mois affiché
+var customEnd = today(); // fin personnalisée : aujourd'hui
 
 function getMonthsForPeriod(period){
  var months=[],m=new Date();
@@ -684,6 +744,27 @@ function getMonthsForPeriod(period){
  var count = period === "1year" ? 12 : (period === "6months" ? 6 : 1);
  if (period === "month") {
   months.push({label: new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}), key: month});
+  return months;
+ }
+ if (period === "civyear") {
+  for (var j = 0; j < 12; j++) {
+   months.push({label: new Date(currentBilanYear, j, 1).toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}), key: currentBilanYear + "-" + pad(j+1)});
+  }
+  return months;
+ }
+ if (period === "custom") {
+  var dS = String(customStart || ""), dE = String(customEnd || "");
+  if (dS.length >= 7 && dE.length >= 7 && dS.slice(0,7) <= dE.slice(0,7)) {
+   var d = new Date(Number(dS.slice(0,4)), Number(dS.slice(5,7)) - 1, 1);
+   var endKey = dE.slice(0,7);
+   for (var g = 0; g < 60; g++) {
+    var k = d.getFullYear() + "-" + pad(d.getMonth()+1);
+    months.push({label:d.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),key:k});
+    if (k === endKey) break;
+    d.setMonth(d.getMonth()+1);
+   }
+  }
+  if (months.length === 0) months.push({label:"\u2014",key:month});
   return months;
  }
  for(var i=0;i<count;i++){
@@ -822,6 +903,8 @@ function render(){
  renderProjectsSection();
  renderActivitiesSection();
  renderBilanSection();
+ refreshCurrencySuffixes();
+ renderSheetOptions();
 }
 
 // RENDU TABLEAU CLIENTS
@@ -965,6 +1048,25 @@ function renderBilanSection(){
   pBtn.style.color = isSel ? "#0b1220" : "";
  }
 
+ $("bilanYearRow").style.display = currentBilanPeriod === "civyear" ? "flex" : "none";
+ $("bilanCustomRow").style.display = currentBilanPeriod === "custom" ? "flex" : "none";
+ if (currentBilanPeriod === "custom") {
+  if ($("bilanStartDate").value !== customStart) $("bilanStartDate").value = customStart;
+  if ($("bilanEndDate").value !== customEnd) $("bilanEndDate").value = customEnd;
+ }
+ var ySel = $("bilanYearSelect");
+ if (ySel) {
+  var yearMap = {};
+  appData.expenses.forEach(function(x){ if (x.date) yearMap[x.date.slice(0,4)] = 1; });
+  appData.bills.forEach(function(x){ if (x.due) yearMap[x.due.slice(0,4)] = 1; });
+  appData.clientBills.forEach(function(c){ (Array.isArray(c.payments) ? c.payments : []).forEach(function(p){ if (p.date) yearMap[p.date.slice(0,4)] = 1; }); getBillInstallments(c).forEach(function(i){ if (i.plannedDate) yearMap[i.plannedDate.slice(0,4)] = 1; }); });
+  yearMap[String(new Date().getFullYear())] = 1;
+  yearMap[String(currentBilanYear)] = 1;
+  var yList = Object.keys(yearMap).filter(function(y){ return /^\d{4}$/.test(y); }).sort();
+  ySel.innerHTML = yList.map(function(y){ return '<option value="' + y + '">' + y + '</option>'; }).join("");
+  if (yearMap[String(currentBilanYear)]) { ySel.value = String(currentBilanYear); } else { currentBilanYear = Number(ySel.value); }
+ }
+
  var targetMonths = getMonthsForPeriod(currentBilanPeriod);
  var targetKeys = targetMonths.map(function(m){ return m.key; });
 
@@ -972,18 +1074,22 @@ function renderBilanSection(){
  var periodTitles = {
   month: "Bilan du mois (" + new Date(month + "-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"}) + ")",
   "6months": "Bilan cumulé sur 6 mois",
-  "1year": "Bilan cumulé sur 1 an"
+  "1year": "Bilan cumulé sur 1 an",
+  civyear: "Bilan de l'année " + currentBilanYear,
+  custom: "Bilan personnalisé (du " + customStart + " au " + customEnd + ")"
  };
  $("bilanPeriodTitle").textContent = periodTitles[currentBilanPeriod] || "Bilan de la période";
  $("chartBilanTitle").textContent = currentBilanPeriod === "month" ? "Bénéfice du mois" : "Bénéfice par mois (" + targetMonths.length + " mois)";
 
- var pExp = appData.expenses.filter(function(x){ return x.date && targetKeys.indexOf(x.date.slice(0,7)) !== -1; }).reduce(function(s,x){ return s + x.amount; }, 0);
- var pBills = appData.bills.filter(function(x){ return x.due && targetKeys.indexOf(x.due.slice(0,7)) !== -1; }).reduce(function(s,x){ return s + x.amount; }, 0);
+ var isCustom = currentBilanPeriod === "custom";
+ var inRange = function(d){ return isCustom ? (d >= customStart && d <= customEnd) : (targetKeys.indexOf(d.slice(0,7)) !== -1); };
+ var pExp = appData.expenses.filter(function(x){ return x.date && inRange(x.date); }).reduce(function(s,x){ return s + x.amount; }, 0);
+ var pBills = appData.bills.filter(function(x){ return x.due && inRange(x.due); }).reduce(function(s,x){ return s + x.amount; }, 0);
  var pCharges = pExp + pBills;
 
  var pCAEncaisse = appData.clientBills.reduce(function(s, c){
   return s + (c.payments || []).filter(function(pm){
-   return pm.date && targetKeys.indexOf(pm.date.slice(0,7)) !== -1;
+   return pm.date && inRange(pm.date);
   }).reduce(function(ps, pm){ return ps + Number(pm.amount || 0); }, 0);
  }, 0);
 
@@ -1016,7 +1122,7 @@ function renderBilanSection(){
  }
  $("bilanAlert").innerHTML = alertHtml;
  $("bilanHint").textContent = "Objectif de marge : " + money(marginTarget) + " (" + Math.round(targetProgress) + "% atteint)";
- $("bilanMHint").textContent = "Période analysée : " + (targetKeys.length === 1 ? targetKeys[0] : "Du " + targetKeys[0] + " au " + targetKeys[targetKeys.length - 1]);
+ $("bilanMHint").textContent = "Période analysée : " + (currentBilanPeriod === "custom" ? ("Du " + customStart + " au " + customEnd + " (bornes incluses)") : (targetKeys.length === 1 ? targetKeys[0] : "Du " + targetKeys[0] + " au " + targetKeys[targetKeys.length - 1]));
 
  $("chartBilan").innerHTML = bilanSVG(currentBilanPeriod);
 
@@ -1044,6 +1150,9 @@ $("bilanPeriodWrap").addEventListener("click", function(e){
  currentBilanPeriod = b.dataset.period;
  renderBilanSection();
 });
+$("bilanYearSelect").addEventListener("change", function(e){ var y = Number(e.target.value); if (y > 1900 && y < 3000) { currentBilanYear = y; renderBilanSection(); } });
+$("bilanStartDate").addEventListener("change", function(e){ if (e.target.value) { customStart = e.target.value; renderBilanSection(); } });
+$("bilanEndDate").addEventListener("change", function(e){ if (e.target.value) { customEnd = e.target.value; renderBilanSection(); } });
 
 // EXACTEMENT 5 ONGLETS PRINCIPAUX
 var TITLES={home:"Tableau de bord",expenses:"Dépenses",clients:"Clients & CA",projects:"Projets & Activités",bilan:"Bilan"};
@@ -1202,6 +1311,197 @@ $("paymentForm").addEventListener("submit",function(e){
 });
 $("closePayModal").addEventListener("click",function(){ $("paymentModal").style.display = "none"; });
 
+// ===== V3.1 — FICHE CLIENT DÉTAILLÉE (modale indépendante, ne modifie jamais le tableau Clients) =====
+var sheetBillId = null;
+var sheetPayInstId = null;
+
+function findBill(id){ for (var i=0;i<(appData.clientBills||[]).length;i++){ if (appData.clientBills[i].id===id) return appData.clientBills[i]; } return null; }
+
+function methodLabel(m){ var map={cash:"Espèces",transfer:"Virement",card:"Carte",mobile:"Paiement mobile",check:"Chèque",other:"Autre"}; return map[m]||"Non précisé"; }
+
+function renderSheetOptions(){
+ var sel = $("sheetSelect");
+ if (!sel) return;
+ var bills = [].concat(appData.clientBills||[]);
+ var cur = sel.value;
+ sel.innerHTML = bills.length ? bills.map(function(c){ return '<option value="'+escAttr(c.id)+'">'+esc((c.clientName||"Non spécifié")+" — "+c.label)+'</option>'; }).join("") : '<option value="">Aucun dossier client</option>';
+ if (cur && bills.some(function(c){ return c.id===cur; })) sel.value = cur;
+ var late = countLateInstallments();
+ var w = $("sheetLateWarn");
+ if (w) w.innerHTML = late > 0 ? '<span class="late-warn">⏰ '+late+' échéance(s) client en retard — ouvre une fiche pour le détail.</span>' : "";
+}
+
+function instBadge(st){ if (st==="paid") return '<span class="badge badge-paid">Payé</span>'; if (st==="late") return '<span class="badge badge-late">En retard</span>'; return '<span class="badge badge-pending">À payer</span>'; }
+
+function renderClientSheet(id){
+ var c = findBill(id);
+ if (!c) return;
+ var insts = getBillInstallments(c);
+ var enc = getClientTotalEncaisse(c);
+ var reste = Math.max(0, c.amount - enc);
+ var plannedTotal = insts.reduce(function(s,i){ return s+Number(i.plannedAmount||0); },0);
+ var plannedPaid = insts.reduce(function(s,i){ return s+getInstallmentReceived(c,i.id); },0);
+ var ecart = Math.round((plannedTotal - c.amount)*100)/100;
+ var h = '';
+ h += '<div class="sheet-head"><div><strong style="font-size:17px;color:var(--accent)">'+esc(c.clientName||"Non spécifié")+'</strong><br><small class="muted">'+esc(c.label)+' · Facturé le '+esc(c.date)+'</small></div><button id="closeSheetModal" type="button" aria-label="Fermer la fiche" style="border:0;background:none;font-size:20px;color:var(--muted)">✕</button></div>';
+ h += '<div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:8px">';
+ h += '<div class="stat"><small>Total dû</small><strong>'+money(c.amount)+'</strong></div>';
+ h += '<div class="stat"><small>Encaissé</small><strong style="color:var(--green)">'+money(enc)+'</strong></div>';
+ h += '<div class="stat"><small>Restant</small><strong style="color:var(--amber)">'+money(reste)+'</strong></div>';
+ h += '</div>';
+ if (insts.length) {
+  h += '<small class="muted" style="display:block;margin-top:10px">Échéances prévues : '+money(plannedTotal)+' · Reçu sur échéances : '+money(plannedPaid)+(Math.abs(ecart)>0.009 ? ' · <span style="color:var(--amber)">⚠ écart échéances/facturé : '+money(ecart)+'</span>' : '')+'</small>';
+ }
+ h += '<div style="margin-top:14px"><strong>📅 Échéances & acomptes</strong>';
+ h += insts.map(function(inst){
+  var st = getInstallmentStatus(c, inst);
+  var rec = getInstallmentReceived(c, inst.id);
+  var soldeInst = Math.max(0, Math.round((Number(inst.plannedAmount||0)-rec)*100)/100);
+  return '<div class="inst-item"><div class="inst-row"><div><strong>'+money(inst.plannedAmount)+'</strong> <small class="muted">prévu le '+esc(inst.plannedDate||"—")+'</small><br><small>Reçu : '+money(rec)+(soldeInst>0 ? ' · Reste '+money(soldeInst) : '')+'</small></div>'+instBadge(st)+'</div><div class="inst-actions"><button class="primary" data-sheet-pay="'+escAttr(inst.id)+'">+ Encaisser</button><button data-sheet-edit="'+escAttr(inst.id)+'">✎ Modifier</button><button class="danger" data-sheet-del-inst="'+escAttr(inst.id)+'">✕ Supprimer</button></div></div>';
+ }).join("") || '<div class="empty" style="margin-top:8px">Aucune échéance prévue pour ce dossier.</div>';
+ h += '</div>';
+ h += '<form id="installmentForm" novalidate style="margin-top:12px"><strong style="font-size:13px">Ajouter / modifier une échéance</strong><input type="hidden" id="instEditId"><div class="grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-top:6px"><div><label style="margin-top:0">Montant prévu</label><input id="instAmount" type="number" min="0.01" step=".01" inputmode="decimal"></div><div><label style="margin-top:0">Date prévue</label><input id="instDate" type="date"></div></div><div class="err" id="err-instAmount"></div><div class="err" id="err-instDate"></div><div class="row" style="margin-top:10px"><button type="button" id="instReset" style="flex:1">Vider</button><button type="submit" class="primary" style="flex:2">Enregistrer l\'échéance</button></div></form>';
+ h += '<form id="sheetPayForm" novalidate style="margin-top:16px;border-top:1px dashed var(--line);padding-top:12px"><strong style="font-size:13px">Encaisser un acompte / règlement</strong><p class="hint" id="sheetPayTarget" style="margin:6px 0 0"></p><input type="hidden" id="sheetPayInstId"><div class="grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-top:6px"><div><label style="margin-top:0">Montant reçu</label><input id="sheetPayAmount" type="number" min="0.01" step=".01" inputmode="decimal"></div><div><label style="margin-top:0">Date réelle</label><input id="sheetPayDate" type="date"></div></div><label>Moyen de paiement (facultatif)</label><select id="sheetPayMethod"><option value="">-- Non précisé --</option><option value="cash">Espèces</option><option value="transfer">Virement</option><option value="card">Carte</option><option value="mobile">Paiement mobile</option><option value="check">Chèque</option><option value="other">Autre</option></select><label>Note / Référence (facultatif)</label><input id="sheetPayNote" maxlength="100"><div class="err" id="err-sheetPayAmount"></div><div class="err" id="err-sheetPayDate"></div><button type="submit" class="primary block" style="margin-top:10px">Enregistrer le règlement</button></form>';
+ var pays = [].concat(Array.isArray(c.payments)?c.payments:[]).slice().sort(function(a,b){ return String(b.date||"").localeCompare(String(a.date||"")); });
+ h += '<div style="margin-top:16px;border-top:1px dashed var(--line);padding-top:12px"><strong>🧾 Historique des règlements ('+pays.length+')</strong>';
+ h += pays.map(function(p){
+  var inst = null;
+  if (p.installmentId) { for (var i=0;i<insts.length;i++){ if (insts[i].id===p.installmentId) inst = insts[i]; } }
+  return '<div class="pay-item"><div><strong style="color:var(--green)">'+money(p.amount)+'</strong> <small class="muted">le '+esc(p.date||"—")+' · '+methodLabel(p.method)+'</small>'+(inst ? '<br><small class="muted">📅 échéance du '+esc(inst.plannedDate||"—")+'</small>' : '')+(p.note ? '<br><small>'+esc(p.note)+'</small>' : '')+'</div><button class="danger" data-sheet-del-pay="'+escAttr(p.id)+'" style="padding:4px 8px;font-size:11px">✕</button></div>';
+ }).join("") || '<div class="empty" style="margin-top:8px">Aucun règlement enregistré pour ce dossier.</div>';
+ h += '</div>';
+ $("sheetBody").innerHTML = h;
+ $("closeSheetModal").addEventListener("click", closeSheet);
+ $("instReset").addEventListener("click", function(){ resetInstForm(); });
+ $("installmentForm").addEventListener("submit", function(e){ e.preventDefault(); submitInstallment(c.id); });
+ $("sheetPayForm").addEventListener("submit", function(e){ e.preventDefault(); submitSheetPayment(c.id); });
+ setSheetPayTarget(sheetPayInstId);
+}
+
+function resetInstForm(){ $("instEditId").value=""; $("instAmount").value=""; $("instDate").value=today(); setErr("err-instAmount"); setErr("err-instDate"); }
+
+function setSheetPayTarget(instId){
+ sheetPayInstId = instId || null;
+ var c = findBill(sheetBillId);
+ if (!c) return;
+ $("sheetPayInstId").value = instId || "";
+ var inst = null;
+ if (instId) { var l = getBillInstallments(c); for (var i=0;i<l.length;i++){ if (l[i].id===instId) inst = l[i]; } }
+ if (inst) {
+  var rec = getInstallmentReceived(c, inst.id);
+  $("sheetPayTarget").textContent = "Échéance visée : " + money(inst.plannedAmount) + " prévue le " + (inst.plannedDate||"—") + " · déjà reçu : " + money(rec);
+  var rest = Math.max(0, Math.round((Number(inst.plannedAmount||0)-rec)*100)/100);
+  $("sheetPayAmount").value = rest > 0 ? rest : "";
+ } else {
+  $("sheetPayTarget").textContent = "Règlement libre (non lié à une échéance) · Solde global : " + money(Math.max(0, c.amount - getClientTotalEncaisse(c)));
+  $("sheetPayAmount").value = "";
+ }
+ $("sheetPayDate").value = today();
+ $("sheetPayMethod").value = "";
+ $("sheetPayNote").value = "";
+ setErr("err-sheetPayAmount"); setErr("err-sheetPayDate");
+}
+
+function submitInstallment(billId){
+ var c = findBill(billId);
+ if (!c) return;
+ setErr("err-instAmount"); setErr("err-instDate");
+ var amount = $("instAmount").value, date = $("instDate").value;
+ var amt = Number(amount);
+ var ok = true;
+ if (!amount || !Number.isFinite(amt) || amt <= 0) { setErr("err-instAmount", "Montant prévu invalide (supérieur à 0).", true); ok = false; }
+ if (!date) { setErr("err-instDate", "Date prévue requise.", true); ok = false; }
+ if (!ok) return;
+ if (!Array.isArray(c.installments)) c.installments = [];
+ var editId = $("instEditId").value;
+ if (editId) {
+  var inst = null;
+  for (var i = 0; i < c.installments.length; i++) { if (c.installments[i].id === editId) inst = c.installments[i]; }
+  if (inst) { inst.plannedAmount = Math.round(amt*100)/100; inst.plannedDate = date; logAudit("INSTALLMENT_UPDATE", (c.clientName||"?")+" : échéance "+money(amt)+" le "+date); }
+ } else {
+  c.installments.push({ id: uid(), plannedAmount: Math.round(amt*100)/100, plannedDate: date });
+  logAudit("INSTALLMENT_ADD", (c.clientName||"?")+" : échéance "+money(amt)+" le "+date);
+ }
+ saveSpace(); renderClientSheet(billId); renderSheetOptions();
+ toast("Échéance enregistrée.");
+}
+
+function submitSheetPayment(billId){
+ var c = findBill(billId);
+ if (!c) return;
+ setErr("err-sheetPayAmount"); setErr("err-sheetPayDate");
+ var amount = $("sheetPayAmount").value, date = $("sheetPayDate").value;
+ var amt = Number(amount);
+ var ok = true;
+ if (!amount || !Number.isFinite(amt) || amt <= 0) { setErr("err-sheetPayAmount", "Montant invalide (supérieur à 0).", true); ok = false; }
+ if (!date) { setErr("err-sheetPayDate", "Date requise.", true); ok = false; }
+ if (!ok) return;
+ if (!Array.isArray(c.payments)) c.payments = [];
+ var instId = $("sheetPayInstId").value || null;
+ c.payments.push({ id: uid(), amount: Math.round(amt*100)/100, date: date, note: $("sheetPayNote").value.trim(), method: $("sheetPayMethod").value || null, installmentId: instId });
+ if (getClientTotalEncaisse(c) >= c.amount) c.paid = true;
+ logAudit("PAYMENT_ADD", "Acompte " + money(amt) + (instId ? " (lié à une échéance)" : "") + " pour " + c.label);
+ saveSpace(); renderClientSheet(billId); renderSheetOptions();
+ toast("Règlement enregistré.");
+}
+
+function openSheet(id){
+ var c = findBill(id);
+ if (!c) { toast("Dossier introuvable."); return; }
+ sheetBillId = id; sheetPayInstId = null;
+ renderClientSheet(id);
+ $("clientSheetModal").classList.add("show");
+}
+
+function closeSheet(){ $("clientSheetModal").classList.remove("show"); sheetBillId = null; sheetPayInstId = null; }
+
+$("openSheetBtn").addEventListener("click", function(){
+ var id = $("sheetSelect").value;
+ if (id) openSheet(id); else toast("Aucun dossier client à afficher.");
+});
+
+document.addEventListener("click", function(e){
+ var b = e.target.closest("button");
+ if (!b) return;
+ if (b.dataset.sheetPay) { setSheetPayTarget(b.dataset.sheetPay); $("sheetPayAmount").focus(); return; }
+ if (b.dataset.sheetEdit) {
+  var c = findBill(sheetBillId);
+  if (!c) return;
+  var inst = null; var l = getBillInstallments(c);
+  for (var i = 0; i < l.length; i++) { if (l[i].id === b.dataset.sheetEdit) inst = l[i]; }
+  if (inst) { $("instEditId").value = inst.id; $("instAmount").value = inst.plannedAmount; $("instDate").value = inst.plannedDate || today(); $("instAmount").focus(); }
+  return;
+ }
+ if (b.dataset.sheetDelInst) {
+  var c2 = findBill(sheetBillId);
+  if (!c2) return;
+  var inst2 = null; var l2 = getBillInstallments(c2);
+  for (var k = 0; k < l2.length; k++) { if (l2[k].id === b.dataset.sheetDelInst) inst2 = l2[k]; }
+  if (!inst2) return;
+  var linked = (Array.isArray(c2.payments) ? c2.payments : []).filter(function(p){ return p.installmentId === inst2.id; });
+  if (linked.length > 0) { toast("Suppression impossible : " + linked.length + " règlement(s) lié(s) à cette échéance."); return; }
+  if (!confirm("Supprimer cette échéance (" + money(inst2.plannedAmount) + " prévue le " + (inst2.plannedDate||"—") + ") ?")) return;
+  c2.installments = getBillInstallments(c2).filter(function(x){ return x.id !== inst2.id; });
+  logAudit("INSTALLMENT_DELETE", (c2.clientName||"?") + " : échéance " + money(inst2.plannedAmount));
+  saveSpace(); renderClientSheet(sheetBillId); renderSheetOptions();
+  toast("Échéance supprimée.");
+  return;
+ }
+ if (b.dataset.sheetDelPay) {
+  var c3 = findBill(sheetBillId);
+  if (!c3) return;
+  if (!confirm("Supprimer ce règlement ? Les totaux et le CA seront recalculés.")) return;
+  if (!Array.isArray(c3.payments)) c3.payments = [];
+  c3.payments = c3.payments.filter(function(p){ return p.id !== b.dataset.sheetDelPay; });
+  c3.paid = (getClientTotalEncaisse(c3) >= c3.amount);
+  logAudit("PAYMENT_DELETE", (c3.clientName||"?") + " : règlement supprimé");
+  saveSpace(); renderClientSheet(sheetBillId); renderSheetOptions();
+  toast("Règlement supprimé.");
+  return;
+ }
+});
+
+
 $("projectForm").addEventListener("submit",function(e){
  e.preventDefault();
  setErr("err-pname");setErr("err-penvelope");
@@ -1351,6 +1651,8 @@ function renderProfileSubContent(section){
     '<input id="upPin" type="password" maxlength="8" inputmode="numeric" placeholder="Ex. 1234" style="text-align:center;font-size:18px">' +
     '<label>Confirmer le Code PIN</label>' +
     '<input id="upConfirmPin" type="password" maxlength="8" inputmode="numeric" placeholder="Confirmer PIN" style="text-align:center;font-size:18px">' +
+    '<label>Devise d\'affichage (aucune conversion des montants enregistrés)</label>' +
+    '<select id="upCurrency"><option value="EUR">Euro (€)</option><option value="XOF">Franc CFA (FCFA)</option></select>' +
     '<div style="margin-top:8px;display:flex;align-items:center;gap:6px">' +
      '<input type="checkbox" id="disablePinCheck" style="width:auto;min-width:18px;height:18px">' +
      '<label for="disablePinCheck" style="margin:0;font-size:12px;color:var(--danger)">Désactiver la protection par PIN (déverrouillage automatique)</label>' +
@@ -1359,6 +1661,7 @@ function renderProfileSubContent(section){
     '<button type="submit" class="primary block" style="margin-top:12px">Enregistrer les modifications</button>' +
    '</form>';
 
+  $("upCurrency").value = (appData.currency === "XOF") ? "XOF" : "EUR";
   $("updateProfileForm").addEventListener("submit", function(e){
    e.preventDefault();
    setErr("err-upProfile");
@@ -1370,17 +1673,21 @@ function renderProfileSubContent(section){
    if (!name) { setErr("err-upProfile", "Le nom ne peut pas être vide.", true); return; }
 
    if (disablePin) {
-    if (!confirm("Êtes-vous sûr de vouloir DÉSACTIVER le code PIN ? L'application ne demandera plus de code au démarrage.")) {
+    if (!confirm("ATTENTION : sans code PIN, toute personne accédant à cet appareil pourra ouvrir l'application et consulter vos données. Voulez-vous vraiment DÉSACTIVER la protection par PIN ?")) {
      return;
     }
     appData.pin = "";
+    appData.pinHash = "";
    } else if (pin || cPin) {
     if (!/^\d{4,8}$/.test(pin)) { setErr("err-upProfile", "Le PIN doit contenir 4 à 8 chiffres.", true); return; }
     if (pin !== cPin) { setErr("err-upProfile", "Les deux codes PIN ne correspondent pas.", true); return; }
-    appData.pin = pin;
+    appData.pinHash = hashPin(pin);
+    appData.pin = "";
    }
 
    appData.username = name;
+   var newCur = $("upCurrency").value === "XOF" ? "XOF" : "EUR";
+   if (appData.currency !== newCur) { appData.currency = newCur; logAudit("CURRENCY_SET", "Devise d'affichage : " + newCur); }
    logAudit("PROFILE_UPDATE", "Mise à jour profil (" + name + ")");
    saveSpace();
    render();
@@ -1443,6 +1750,7 @@ function exportJSONSpace(){
  var payload = JSON.parse(JSON.stringify(appData));
  payload.exportedAt = nowISO();
  payload.pin = ""; // Sécurité : le code PIN n'est jamais exporté
+ payload.pinHash = ""; // V3.1 : le hash du PIN n'est jamais exporté non plus
  payload.exportedOn = new Date().toLocaleString("fr-FR");
  var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
  var url = URL.createObjectURL(blob), a = document.createElement("a");
@@ -1477,6 +1785,9 @@ function restoreJSONSpace(){
   if (!s.username || typeof s.username !== "string") s.username = keepName;
   if (typeof s.pin !== "string") s.pin = "";
   if (!s.pin) s.pin = keepPin; // les exports ne contiennent plus le PIN : on conserve le PIN actuel de l'espace
+  if (typeof s.pinHash !== "string") s.pinHash = "";
+  if (!s.pinHash) s.pinHash = (appData && typeof appData.pinHash === "string") ? appData.pinHash : ""; // V3.1 : on conserve le hash du PIN actuel
+  normalizeLoadedSpace(s);
   s.marginTarget = Number(s.marginTarget) > 0 ? Number(s.marginTarget) : 1000;
   if (!s.createdAt) s.createdAt = nowISO();
   if (!s.lastModifiedAt) s.lastModifiedAt = nowISO();
@@ -1512,7 +1823,7 @@ function exportPNGProfile(){
  var rows = [
   { label: "Date de création :", value: appData.createdAt ? new Date(appData.createdAt).toLocaleDateString("fr-FR") : "-" },
   { label: "Dernière modification :", value: appData.lastModifiedAt ? new Date(appData.lastModifiedAt).toLocaleString("fr-FR") : "-" },
-  { label: "Sécurité PIN :", value: appData.pin ? "Actif (🔒 Local)" : "Désactivé" },
+  { label: "Sécurité PIN :", value: spaceHasPin() ? "Actif (🔒 Local)" : "Désactivé" },
   { label: "Total Dépenses :", value: appData.expenses.length + " enregistrées (" + money(appData.expenses.reduce(function(s,x){return s+x.amount},0)) + ")" },
   { label: "Total Prestations Clients :", value: appData.clientBills.length + " dossiers (" + money(appData.clientBills.reduce(function(s,x){return s+x.amount},0)) + ")" },
   { label: "Projets Actifs :", value: (appData.projects||[]).length + " projet(s)" }
@@ -1704,7 +2015,7 @@ function exportPNGPeriodBilan(){
   }).reduce(function(ps, pm){ return ps + Number(pm.amount || 0); }, 0);
  }, 0);
  var pNet = pCAEncaisse - pCharges;
- var periodLabel = currentBilanPeriod === "month" ? ("MOIS ANALYSÉ : " + keys[0]) : (currentBilanPeriod === "6months" ? "6 DERNIERS MOIS" : "12 DERNIERS MOIS");
+ var periodLabel = currentBilanPeriod === "month" ? ("MOIS ANALYSÉ : " + keys[0]) : (currentBilanPeriod === "6months" ? "6 DERNIERS MOIS" : (currentBilanPeriod === "civyear" ? "ANNÉE CIVILE : " + currentBilanYear : (currentBilanPeriod === "custom" ? "PÉRIODE : DU " + customStart + " AU " + customEnd : "12 DERNIERS MOIS")));
 
  var canvas = $("canvasExport");
  var ctx = canvas.getContext("2d");
@@ -1808,11 +2119,20 @@ $("loginPinForm").addEventListener("submit", function(e){
  e.preventDefault();
  setErr("err-loginPin");
  var pinInput = $("loginPinInput").value.trim();
- if (appData && appData.pin && appData.pin !== pinInput) {
-  setErr("err-loginPin", "Code PIN incorrect.", true);
-  $("loginPinInput").value = "";
-  $("loginPinInput").focus();
-  return;
+ if (appData && spaceHasPin()) {
+  var okPin = false;
+  if (typeof appData.pinHash === "string" && appData.pinHash) {
+   okPin = (hashPin(pinInput) === appData.pinHash);
+  } else if (appData.pin) {
+   okPin = (appData.pin === pinInput);
+   if (okPin) { appData.pinHash = hashPin(appData.pin); appData.pin = ""; saveSpace(); }
+  }
+  if (!okPin) {
+   setErr("err-loginPin", "Code PIN incorrect.", true);
+   $("loginPinInput").value = "";
+   $("loginPinInput").focus();
+   return;
+  }
  }
  isUnlocked = true;
  $("userGate").classList.remove("show");
@@ -1837,7 +2157,7 @@ $("btnSectionSettings").addEventListener("click", function(){ renderProfileSubCo
 $("btnLockLogout").addEventListener("click", function(){ lockSession(); });
 
 // DÉMARRAGE INITIAL
-if (!appData || !appData.username || (appData.pin && !isUnlocked)) {
+if (!appData || !appData.username || (spaceHasPin() && !isUnlocked)) {
  showUserGate();
 } else {
  isUnlocked = true;
