@@ -871,6 +871,19 @@ function drawAureorHeader(ctx, width, headerHeight, subtitle){
  ctx.fillText(subtitle + " · " + (appData ? appData.username : ""), width/2, headerHeight/2 + 22);
 }
 
+function drawSheetHeader(ctx, width, headerHeight, subtitle){
+ ctx.fillStyle="#0D0D0D";
+ ctx.fillRect(0,0,width,headerHeight);
+ ctx.textAlign="center";
+ ctx.textBaseline="middle";
+ ctx.font="bold 34px system-ui, -apple-system, 'Segoe UI', sans-serif";
+ ctx.fillStyle="#B08D35";
+ ctx.fillText("AŪREOR", width/2, headerHeight/2 - 15);
+ ctx.font="bold 15px system-ui, -apple-system, sans-serif";
+ ctx.fillStyle="#f4f7fb";
+ ctx.fillText(subtitle, width/2, headerHeight/2 + 20);
+}
+
 function downloadPNG(canvas,filename){
  canvas.toBlob(function(blob){
   if(!blob){toast("Export impossible sur cet appareil.");return}
@@ -2046,7 +2059,8 @@ function paginateBlocks(blocks){
  return pages;
 }
 
-function exportMultiPagePNG(subtitle, sectionTitle, blocks, baseName, onDone){
+function exportMultiPagePNG(subtitle, sectionTitle, blocks, baseName, onDone, opts){
+ opts=opts||{};
  var pages = paginateBlocks(blocks);
  var W=600,H=800;
  var idx=0;
@@ -2055,7 +2069,7 @@ function exportMultiPagePNG(subtitle, sectionTitle, blocks, baseName, onDone){
   var ctx=canvas.getContext("2d");
   canvas.width=W*2;canvas.height=H*2;ctx.scale(2,2);
   ctx.fillStyle="#0D0D0D";ctx.fillRect(0,0,W,H);
-  drawAureorHeader(ctx,W,100,subtitle);
+  if (opts.header) opts.header(ctx,W,100,subtitle); else drawAureorHeader(ctx,W,100,subtitle);
   ctx.textBaseline="alphabetic";
   ctx.fillStyle="#B08D35";ctx.font="bold 15px system-ui,sans-serif";ctx.textAlign="left";
   ctx.fillText(sectionTitle+(pages.length>1?(" (page "+(idx+1)+"/"+pages.length+")"):""),40,130);
@@ -2082,7 +2096,7 @@ function exportMultiPagePNG(subtitle, sectionTitle, blocks, baseName, onDone){
    }
   }
   ctx.font="11px system-ui,sans-serif";ctx.fillStyle="#a7b4c7";ctx.textAlign="center";
-  ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR")+" · Profil : "+(appData?appData.username:""),W/2,H-20);
+  ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR")+(opts.noUser?"":" · Profil : "+(appData?appData.username:"")),W/2,H-20);
   downloadPNG(canvas,baseName+(pages.length>1?("-p"+(idx+1)):"")+".png");
   idx++;
   if (idx<pages.length) setTimeout(drawPage,600);
@@ -2097,13 +2111,13 @@ function clientSheetBlocks(c){
  var st=clientBillStatus(c);
  var enc=getClientTotalEncaisse(c);
  var reste=Math.max(0,Math.round((Number(c.amount)-enc)*100)/100);
- var stColor=st.key==="paid"?"#34d399":(st.key==="partial"?"#60a5fa":"#fbbf24");
+ var stColor=st.key==="paid"?"#f4f7fb":(st.key==="partial"?"#B08D35":"#98a3b3");
  var blocks=[
   {t:"row",label:"CLIENT :",value:c.clientName||"Non spécifié",strong:true,color:"#B08D35"},
   {t:"row",label:"PRESTATION :",value:c.label},
   {t:"row",label:"MONTANT FACTURÉ :",value:money(c.amount)},
-  {t:"row",label:"TOTAL ENCAISSÉ :",value:money(enc),color:"#34d399"},
-  {t:"row",label:"SOLDE RESTANT :",value:money(reste),color:"#fbbf24"},
+  {t:"row",label:"TOTAL ENCAISSÉ :",value:money(enc),color:"#f4f7fb"},
+  {t:"row",label:"SOLDE RESTANT :",value:money(reste),color:"#B08D35"},
   {t:"row",label:"STATUT :",value:st.label,color:stColor,strong:true},
   {t:"row",label:"DATE FACTURE :",value:c.date},
   {t:"sep"},
@@ -2117,7 +2131,7 @@ function clientSheetBlocks(c){
   var soldeInst=Math.max(0,Math.round((Number(inst.plannedAmount||0)-rec)*100)/100);
   var istLbl=ist==="paid"?"Payé":(ist==="late"?"En retard":"À payer");
   blocks.push({t:"row",label:"• "+money(inst.plannedAmount)+" prévue le "+(inst.plannedDate||"—"),value:"Reçu "+money(rec)+(soldeInst>0?(" · Reste "+money(soldeInst)):""),indent:10});
-  blocks.push({t:"text",s:"Statut : "+istLbl,color:ist==="paid"?"#34d399":(ist==="late"?"#ff9aa5":"#fbbf24"),indent:22,dy:22});
+  blocks.push({t:"text",s:"Statut : "+istLbl,color:ist==="paid"?"#f4f7fb":(ist==="late"?"#B08D35":"#98a3b3"),indent:22,dy:22});
  }
  blocks.push({t:"sep"});
  blocks.push({t:"text",s:"🧾 HISTORIQUE DES RÈGLEMENTS ("+pays.length+")",color:"#B08D35",font:"bold 12px system-ui,sans-serif"});
@@ -2126,7 +2140,7 @@ function clientSheetBlocks(c){
   var p=pays[j];
   var instRef=null;
   for (var m=0;m<insts.length;m++){ if (insts[m].id===p.installmentId) instRef=insts[m]; }
-  blocks.push({t:"row",label:"• "+(p.date||"—")+" · "+methodLabel(p.method),value:money(p.amount),color:"#34d399",indent:10});
+  blocks.push({t:"row",label:"• "+(p.date||"—")+" · "+methodLabel(p.method),value:money(p.amount),color:"#f4f7fb",indent:10});
   blocks.push({t:"text",s:(instRef?("Échéance liée : "+(instRef.plannedDate||"—")+" · "):"")+(p.note||"Règlement"),indent:22,dy:22});
  }
  return blocks;
@@ -2134,7 +2148,7 @@ function clientSheetBlocks(c){
 
 function exportClientSheetAsPNG(c, onDone){
  if (!c) { toast("Dossier introuvable."); return; }
- exportMultiPagePNG("FICHE CLIENT DÉTAILLÉE","DOSSIER : "+(c.clientName||"Non spécifié"),clientSheetBlocks(c),"AUREOR-Fiche-"+exportSlug(c.clientName)+"-"+c.id, onDone || function(){ toast("Fiche détaillée exportée en PNG."); });
+ exportMultiPagePNG("Fiche client","DOSSIER : "+(c.clientName||"Non spécifié"),clientSheetBlocks(c),"AUREOR-Fiche-"+exportSlug(c.clientName)+"-"+c.id, onDone || function(){ toast("Fiche détaillée exportée en PNG."); }, {header:drawSheetHeader, noUser:true});
 }
 
 function exportClientsRecapPNG(clients, onDone){
