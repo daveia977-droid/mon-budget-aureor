@@ -365,6 +365,11 @@ main{max-width:960px;padding:20px 20px 30px}
 <div><label for="penvelope">Enveloppe budgétaire (<span class="cur-suffix">\u20ac</span>)</label><input id="penvelope" type="number" min="0" step=".01" inputmode="decimal" placeholder="15000"></div>
 <div><label for="palert">Seuil alerte dépense (%)</label><input id="palert" type="number" min="1" max="100" placeholder="80" value="80"></div>
 </div>
+<div class="grid" style="grid-template-columns:1fr 1fr;gap:9px;margin-top:9px">
+<div><label for="pforecastrev">Recettes prévues — prévision (<span class="cur-suffix">\u20ac</span>)</label><input id="pforecastrev" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 20000"></div>
+<div><label for="pforecastexp">Dépenses futures estimées — prévision (<span class="cur-suffix">\u20ac</span>)</label><input id="pforecastexp" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 5000"></div>
+</div>
+<small class="hint">Prévisions facultatives : elles alimentent le « Résultat prévisionnel » du projet. L'enveloppe budgétaire reste un plafond de dépenses, jamais une dépense prévue.</small>
 <div class="err" id="err-penvelope"></div>
 <button class="primary block">Enregistrer le projet</button>
 </form>
@@ -596,7 +601,22 @@ function spaceHasPin(){return !!(appData&&((typeof appData.pinHash==="string"&&a
 function refreshCurrencySuffixes(){var u=(appData&&appData.currency==="XOF")?"FCFA":"\u20ac";var els=document.querySelectorAll(".cur-suffix");for(var i=0;i<els.length;i++)els[i].textContent=u}
 function getBillInstallments(c){return Array.isArray(c.installments)?c.installments:[]}
 function getInstallmentReceived(c,instId){if(!Array.isArray(c.payments))return 0;return c.payments.filter(function(p){return p.installmentId===instId}).reduce(function(s,p){return s+Number(p.amount||0)},0)}
-function getInstallmentStatus(c,inst){var rec=getInstallmentReceived(c,inst.id);var planned=Number(inst.plannedAmount||0);if(planned>0&&rec>=planned)return "paid";if(inst.plannedDate&&inst.plannedDate<today())return "late";return "due"}
+// V5.1 : un règlement non lié à une échéance couvre les échéances non soldées, de la plus ancienne à la plus récente — une échéance réellement réglée ne doit jamais être signalée en retard
+function instAllocReceived(c){
+ var insts=getBillInstallments(c).slice().sort(function(a,b){return String(a.plannedDate||"").localeCompare(String(b.plannedDate||""))});
+ var unlinked=(Array.isArray(c.payments)?c.payments:[]).filter(function(p){return !p.installmentId}).reduce(function(s,p){return s+Number(p.amount||0)},0);
+ var alloc={};
+ for(var i=0;i<insts.length;i++){
+  var rec=getInstallmentReceived(c,insts[i].id);
+  var need=Math.max(0,(Number(insts[i].plannedAmount)||0)-rec);
+  var use=Math.min(need,unlinked);
+  if(use>0){unlinked-=use;rec+=use}
+  alloc[insts[i].id]=rec;
+ }
+ return alloc;
+}
+function getInstallmentEffectiveReceived(c,instId){var alloc=instAllocReceived(c);return Object.prototype.hasOwnProperty.call(alloc,instId)?alloc[instId]:getInstallmentReceived(c,instId)}
+function getInstallmentStatus(c,inst){var rec=getInstallmentEffectiveReceived(c,inst.id);var planned=Number(inst.plannedAmount||0);if(planned>0&&rec>=planned)return "paid";if(inst.plannedDate&&inst.plannedDate<today())return "late";return "due"}
 function countLateInstallments(){var n=0;(appData.clientBills||[]).forEach(function(c){getBillInstallments(c).forEach(function(i){if(getInstallmentStatus(c,i)==="late")n++})});return n}
 function normalizeLoadedSpace(s){if(!s||typeof s!=="object")return false;var changed=false;["expenses","bills","clientBills","tasks","activities","projects","auditLog"].forEach(function(k){if(!Array.isArray(s[k]))s[k]=[]});if(!s.budgets||typeof s.budgets!=="object"||Array.isArray(s.budgets))s.budgets={};if(s.currency!=="XOF")s.currency="EUR";if(typeof s.pinHash!=="string")s.pinHash="";if(typeof s.pin==="string"&&s.pin){if(!s.pinHash){s.pinHash=hashPin(s.pin);changed=true}s.pin="";changed=true}if(Array.isArray(s.clientBills))s.clientBills.forEach(function(c){if(!Array.isArray(c.payments))c.payments=[];if(!Array.isArray(c.installments))c.installments=[]});return changed}
 
@@ -1077,46 +1097,53 @@ function renderProjectsSection(){
  var list = appData.projects || [];
 
  $("projectsList").innerHTML = list.map(function(pj){
-  var projExpenses = appData.expenses.filter(function(e){ return e.projectId === pj.id; });
-  var spentTotal = projExpenses.reduce(function(s,e){ return s + e.amount; }, 0);
-
-  var projClients = appData.clientBills.filter(function(c){ return c.projectId === pj.id; });
-  var totalFacture = projClients.reduce(function(s,c){ return s + c.amount; }, 0);
-  var totalEncaisse = projClients.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
-  var totalAEncaisser = Math.max(0, totalFacture - totalEncaisse);
-  var netProfit = totalEncaisse - spentTotal;
-
-  var envelope = Number(pj.envelope) || 0;
-  var remEnvelope = envelope - spentTotal;
-  var pctUsed = envelope > 0 ? Math.min(100, Math.round((spentTotal / envelope) * 100)) : 0;
-  var isOver = envelope > 0 && spentTotal > envelope;
-  var isAlert = envelope > 0 && pctUsed >= (pj.alertPercent || 80);
+  var st = projectStats(pj.id);
+  if (!st) return "";
+  var isOver = st.envelope > 0 && st.spent > st.envelope;
+  var isAlert = st.envelope > 0 && st.pctUsed >= (pj.alertPercent || 80);
 
   var alertBox = "";
   if (isOver) {
-   alertBox = '<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:#241420;border:1px solid var(--danger);color:var(--danger);font-size:12px">⚠️ Enveloppe budgétaire dépassée de '+money(spentTotal - envelope)+' !</div>';
+   alertBox = '<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:#241420;border:1px solid var(--danger);color:var(--danger);font-size:12px">⚠️ Enveloppe budgétaire dépassée de '+money(st.spent - st.envelope)+' !</div>';
   } else if (isAlert) {
-   alertBox = '<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:#2a2418;border:1px solid var(--amber);color:var(--amber);font-size:12px">⚠️ Seuil d\'alerte dépense atteint ('+pctUsed+'% de l\'enveloppe).</div>';
+   alertBox = '<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:#2a2418;border:1px solid var(--amber);color:var(--amber);font-size:12px">⚠️ Seuil d\'alerte dépense atteint ('+st.pctUsed+'% de l\'enveloppe).</div>';
+  }
+  var prevCell = "";
+  if (st.forecastReliability === "fiable") {
+   prevCell = '<div><small class="muted">Résultat prévisionnel</small><br><strong style="color:'+(st.prevResult<0?'var(--danger)':'var(--green)')+'">'+money(st.prevResult)+'</strong></div>';
+  } else if (st.forecastReliability === "partielle") {
+   prevCell = '<div><small class="muted">Résultat prévisionnel</small><br><strong style="color:'+(st.prevResult<0?'var(--danger)':'var(--amber)')+'">'+money(st.prevResult)+' <small>estimation partielle</small></strong></div>';
+  } else {
+   prevCell = '<div><small class="muted">Résultat prévisionnel</small><br><strong class="muted" style="font-size:13px">Prévision indisponible</strong></div>';
   }
 
   return '<div class="card" style="margin-bottom:12px;border-color:'+(isOver?'var(--danger)':(isAlert?'var(--amber)':'var(--line)'))+'">' +
    '<div style="display:flex;justify-content:space-between;align-items:center">' +
     '<strong style="font-size:18px;color:var(--accent)">📁 '+esc(pj.name)+'</strong>' +
-    '<button class="danger" data-delete-project="'+escAttr(pj.id)+'" style="border:0;background:none;padding:4px;font-size:12px">✕ Supprimer</button>' +
+    '<div style="display:flex;gap:6px;align-items:center">' +
+     '<button data-export-project-csv="'+escAttr(pj.id)+'" aria-label="Exporter le bilan du projet en CSV" style="border-color:#4a3d17;color:var(--accent);padding:4px 10px;font-size:12px">📄 CSV</button>' +
+     '<button class="danger" data-delete-project="'+escAttr(pj.id)+'" style="border:0;background:none;padding:4px;font-size:12px">✕ Supprimer</button>' +
+    '</div>' +
    '</div>' +
    '<div class="grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">' +
-    '<div><small class="muted">Enveloppe budgétaire</small><br><strong>'+money(envelope)+'</strong></div>' +
-    '<div><small class="muted">Dépenses engagées</small><br><strong style="color:'+(isOver?'var(--danger)':'var(--text)')+'">'+money(spentTotal)+'</strong></div>' +
-    '<div><small class="muted">Budget disponible</small><br><strong style="color:'+(remEnvelope<0?'var(--danger)':'var(--green)')+'">'+money(remEnvelope)+'</strong></div>' +
-    '<div><small class="muted">Consommation</small><br><strong>'+pctUsed+' %</strong></div>' +
+    '<div><small class="muted">Enveloppe budgétaire</small><br><strong>'+money(st.envelope)+'</strong></div>' +
+    '<div><small class="muted">Dépenses réalisées</small><br><strong style="color:'+(isOver?'var(--danger)':'var(--text)')+'">'+money(st.spent)+'</strong></div>' +
+    '<div><small class="muted">Budget disponible</small><br><strong style="color:'+(st.rem<0?'var(--danger)':'var(--green)')+'">'+money(st.rem)+'</strong></div>' +
+    '<div><small class="muted">Consommation</small><br><strong>'+st.pctUsed+' %</strong></div>' +
    '</div>' +
-   '<div class="bar" style="margin-top:8px"><span style="width:'+pctUsed+'%;background:'+(isOver?'var(--danger)':(isAlert?'var(--amber)':'var(--accent)'))+'"></span></div>' +
+   '<div class="bar" style="margin-top:8px"><span style="width:'+st.pctUsed+'%;background:'+(isOver?'var(--danger)':(isAlert?'var(--amber)':'var(--accent)'))+'"></span></div>' +
    alertBox +
    '<div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px;font-size:12px" class="grid">' +
-    '<div><small class="muted">CA Facturé</small><br><strong>'+money(totalFacture)+'</strong></div>' +
-    '<div><small class="muted">CA Encaissé</small><br><strong style="color:var(--green)">'+money(totalEncaisse)+'</strong></div>' +
-    '<div><small class="muted">Reste à encaisser</small><br><strong style="color:var(--amber)">'+money(totalAEncaisser)+'</strong></div>' +
-    '<div><small class="muted">Bénéfice Réel Provisoire</small><br><strong style="color:'+(netProfit<0?'var(--danger)':'var(--green)')+'">'+money(netProfit)+'</strong></div>' +
+    '<div><small class="muted">CA Facturé</small><br><strong>'+money(st.facture)+'</strong></div>' +
+    '<div><small class="muted">CA Encaissé</small><br><strong style="color:var(--green)">'+money(st.encaisse)+'</strong></div>' +
+    '<div><small class="muted">Reste à encaisser</small><br><strong style="color:var(--amber)">'+money(st.reste)+'</strong></div>' +
+    '<div><small class="muted">Résultat de trésorerie</small><br><strong style="color:'+(st.net<0?'var(--danger)':'var(--green)')+'">'+money(st.net)+'</strong></div>' +
+   '</div>' +
+   '<div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px;font-size:12px" class="grid">' +
+    '<div><small class="muted">Recettes prévues (prévision)</small><br><strong>'+(st.forecastRevenue>0?money(st.forecastRevenue):'—')+'</strong></div>' +
+    '<div><small class="muted">Dépenses futures estimées</small><br><strong>'+(st.forecastExpenses>0?money(st.forecastExpenses):'—')+'</strong></div>' +
+    prevCell +
+    '<div><small class="muted">Échéances en retard</small><br><strong style="color:'+(st.lateCount>0?'var(--amber)':'var(--text)')+'">'+st.lateCount+(st.lateCount>0?' · '+money(st.lateAmount):'')+'</strong></div>' +
    '</div>' +
   '</div>';
  }).join("") || '<div class="empty">Aucun projet créé.</div>';
@@ -1144,20 +1171,25 @@ function projectStats(pjId){
  var payCount = clients.reduce(function(n,c){ return n + (Array.isArray(c.payments) ? c.payments.length : 0); }, 0);
  var envelope = Number(pj.envelope) || 0;
  var net = Math.round((encaisse - spent)*100)/100;
- var prevResult = Math.round((facture - spent)*100)/100;
  var pctUsed = envelope > 0 ? Math.min(100, Math.round((spent / envelope) * 100)) : 0;
  var collectRate = facture > 0 ? Math.round((encaisse / facture) * 100) : 0;
+ var tropPerce = Math.max(0, Math.round((encaisse - facture)*100)/100);
+ // V5.1 : prévisions saisies par l'utilisateur — l'enveloppe budgétaire n'est jamais comptée comme une dépense prévue
+ var forecastRevenue = Number(pj.forecastRevenue) || 0;
+ var forecastExpenses = Number(pj.forecastExpenses) || 0;
+ var prevResult = Math.round(((forecastRevenue > 0 ? forecastRevenue : facture) - (spent + forecastExpenses))*100)/100;
+ var forecastReliability = (forecastRevenue > 0 && forecastExpenses > 0) ? "fiable" : ((forecastRevenue > 0 || forecastExpenses > 0) ? "partielle" : "indisponible");
  var t = today();
  var lateList = [];
  clients.forEach(function(c){
-  homeInsts(c).forEach(function(inst){
+  getBillInstallments(c).forEach(function(inst){
    var planned = Number(inst.plannedAmount)||0;
-   var rec = homeInstRec(c, inst.id);
+   var rec = getInstallmentEffectiveReceived(c, inst.id);
    if (planned > 0 && rec < planned && inst.plannedDate && inst.plannedDate < t) lateList.push(Math.round((planned - rec)*100)/100);
   });
  });
  var lateAmount = Math.round(lateList.reduce(function(s,l){ return s + l; }, 0)*100)/100;
- return { pj: pj, spent: spent, facture: facture, encaisse: encaisse, reste: reste, payCount: payCount, envelope: envelope, rem: Math.round((envelope - spent)*100)/100, net: net, prevResult: prevResult, pctUsed: pctUsed, collectRate: collectRate, clientCount: clients.length, expensesCount: expenses.length, lateCount: lateList.length, lateAmount: lateAmount, clients: clients, expenses: expenses };
+ return { pj: pj, spent: spent, facture: facture, encaisse: encaisse, reste: reste, payCount: payCount, envelope: envelope, rem: Math.round((envelope - spent)*100)/100, net: net, prevResult: prevResult, forecastRevenue: forecastRevenue, forecastExpenses: forecastExpenses, forecastReliability: forecastReliability, tropPerce: tropPerce, pctUsed: pctUsed, collectRate: collectRate, clientCount: clients.length, expensesCount: expenses.length, lateCount: lateList.length, lateAmount: lateAmount, clients: clients, expenses: expenses };
 }
 
 function homePaymentsSVG(st){
@@ -1231,7 +1263,7 @@ function renderHomeMode(){
  lblEl.textContent = "Résultat de trésorerie";
  hv.textContent = money(st.net);
  hv.style.color = st.net < 0 ? "var(--danger)" : "var(--green)";
- subEl.textContent = "Encaissé " + money(st.encaisse) + " − Dépensé " + money(st.spent) + (st.facture > 0 ? " · Résultat prévisionnel : " + money(st.prevResult) : "");
+ subEl.textContent = "Encaissé " + money(st.encaisse) + " − Dépensé " + money(st.spent) + (st.forecastReliability !== "indisponible" ? " · Prévisionnel : " + money(st.prevResult) : "");
  $("homeKpiBudget").textContent = money(st.envelope);
  var kSpent = $("homeKpiSpent");
  kSpent.textContent = money(st.spent);
@@ -1245,16 +1277,18 @@ function renderHomeMode(){
  remEl.textContent = st.envelope > 0 ? money(st.rem) : "—";
  remEl.style.color = (st.envelope > 0 && st.rem < 0) ? "var(--danger)" : "";
  var pvEl = $("homePrevResult");
- pvEl.textContent = st.facture > 0 ? money(st.prevResult) : "—";
- pvEl.style.color = st.prevResult < 0 ? "var(--danger)" : "var(--green)";
+ if (st.forecastReliability === "indisponible"){ pvEl.textContent = "Prévision indisponible"; pvEl.style.color = "var(--muted)"; }
+ else { pvEl.textContent = money(st.prevResult) + (st.forecastReliability === "partielle" ? " (estimation partielle)" : ""); pvEl.style.color = st.prevResult < 0 ? "var(--danger)" : "var(--green)"; }
  var bar = $("homeConsBar");
  bar.style.width = st.pctUsed + "%";
  bar.style.background = isOver ? "var(--danger)" : (st.pctUsed >= threshold ? "var(--amber)" : "var(--accent)");
- $("homeConsHint").textContent = st.envelope > 0 ? (isOver ? "Budget dépassé de " + money(Math.round((st.spent - st.envelope)*100)/100) + "." : "Il reste " + money(st.rem) + " sur l'enveloppe (" + st.pctUsed + " % utilisé).") : "Définis une enveloppe budgétaire dans l'onglet Projets.";
+ var fHint = st.forecastReliability === "fiable" ? " Prévision fiable : recettes prévues " + money(st.forecastRevenue) + " · dépenses futures " + money(st.forecastExpenses) + "." : (st.forecastReliability === "partielle" ? " Estimation partielle : complète les montants manquants dans l'onglet Projets." : " Prévision indisponible : saisis les recettes et dépenses prévues dans l'onglet Projets.");
+ $("homeConsHint").textContent = (st.envelope > 0 ? (isOver ? "Budget dépassé de " + money(Math.round((st.spent - st.envelope)*100)/100) + "." : "Il reste " + money(st.rem) + " sur l'enveloppe (" + st.pctUsed + " % utilisé).") : "Définis une enveloppe budgétaire dans l'onglet Projets.") + fHint;
  var alerts = [];
  if (isOver) alerts.push('<div class="watch-item"><span>Dépassement du budget</span><strong style="color:var(--danger)">' + money(Math.round((st.spent - st.envelope)*100)/100) + '</strong></div>');
  else if (st.envelope > 0 && st.pctUsed >= threshold) alerts.push('<div class="watch-item"><span>Budget consommé à ' + st.pctUsed + ' %</span><strong style="color:var(--amber)">' + money(st.rem) + ' restants</strong></div>');
  if (st.lateCount > 0) alerts.push('<div class="watch-item"><span>' + st.lateCount + ' échéance' + (st.lateCount > 1 ? 's' : '') + ' de paiement en retard</span><strong style="color:var(--amber)">' + money(st.lateAmount) + ' restants</strong></div>');
+ if (st.tropPerce > 0) alerts.push('<div class="watch-item"><span>Trop-perçu : encaissé au-delà du facturé (remboursement à envisager)</span><strong style="color:var(--amber)">+' + money(st.tropPerce) + '</strong></div>');
  $("homeWatchCard").style.display = alerts.length ? "block" : "none";
  $("homeWatchList").innerHTML = alerts.join("");
  var m = {};
@@ -1284,6 +1318,82 @@ $("homeModeProject").addEventListener("change", function(){
  if (ph){ ph.classList.remove("home-swap"); void ph.offsetWidth; ph.classList.add("home-swap"); }
  renderHomeMode();
 });
+
+// ===== V5.1 : BILAN DE PROJET EXPORTABLE EN CSV =====
+function csvEsc(v){ v = String(v == null ? "" : v); return /[;"\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function csvMoney(n){ return (Math.round((Number(n)||0)*100)/100).toFixed(2).replace(".", ","); }
+function buildProjectCSV(st){
+ var rows = [];
+ rows.push(["BILAN DE PROJET AŪREOR"]);
+ rows.push(["Projet", st.pj.name || "—"]);
+ rows.push(["Généré le", new Date().toLocaleString("fr-FR")]);
+ rows.push([]);
+ rows.push(["SYNTHÈSE FINANCIÈRE"]);
+ rows.push(["Enveloppe budgétaire", csvMoney(st.envelope)]);
+ rows.push(["Dépenses réalisées", csvMoney(st.spent)]);
+ rows.push(["Budget restant", csvMoney(st.rem)]);
+ rows.push(["Consommation de l'enveloppe", st.pctUsed + " %"]);
+ rows.push(["CA facturé", csvMoney(st.facture)]);
+ rows.push(["CA encaissé", csvMoney(st.encaisse)]);
+ rows.push(["Reste à encaisser", csvMoney(st.reste)]);
+ if (st.tropPerce > 0) rows.push(["Trop-perçu (encaissé au-delà du facturé)", csvMoney(st.tropPerce)]);
+ rows.push(["Résultat de trésorerie", csvMoney(st.net)]);
+ if (st.forecastReliability !== "indisponible"){
+  rows.push(["Recettes prévues", csvMoney(st.forecastRevenue)]);
+  rows.push(["Dépenses futures estimées", csvMoney(st.forecastExpenses)]);
+  rows.push(["Résultat prévisionnel", csvMoney(st.prevResult)]);
+  rows.push(["Fiabilité de la prévision", st.forecastReliability === "fiable" ? "Prévision fiable" : "Estimation partielle"]);
+ } else { rows.push(["Résultat prévisionnel", "Prévision indisponible"]); }
+ rows.push(["Échéances en retard", st.lateCount + (st.lateCount > 0 ? " (" + csvMoney(st.lateAmount) + ")" : "")]);
+ rows.push([]);
+ rows.push(["CLIENTS DU PROJET"]);
+ rows.push(["Client", "Intitulé", "Facturé", "Encaissé", "Reste", "Statut"]);
+ st.clients.forEach(function(c){
+  var enc = Array.isArray(c.payments) ? c.payments.reduce(function(s,p){ return s + (Number(p.amount)||0); }, 0) : 0;
+  rows.push([c.clientName || "—", c.label || "—", csvMoney(c.amount), csvMoney(enc), csvMoney(Math.max(0, (Number(c.amount)||0) - enc)), clientBillStatus(c).label]);
+ });
+ rows.push([]);
+ rows.push(["ÉCHÉANCES"]);
+ rows.push(["Client", "Date prévue", "Montant prévu", "Reçu", "Statut"]);
+ st.clients.forEach(function(c){
+  getBillInstallments(c).forEach(function(inst){
+   var stat = getInstallmentStatus(c, inst);
+   rows.push([c.clientName || "—", inst.plannedDate || "—", csvMoney(inst.plannedAmount), csvMoney(getInstallmentEffectiveReceived(c, inst.id)), stat === "paid" ? "Payé" : (stat === "late" ? "En retard" : "À payer")]);
+  });
+ });
+ rows.push([]);
+ rows.push(["DÉPENSES"]);
+ rows.push(["Date", "Intitulé", "Catégorie", "Montant"]);
+ [].concat(st.expenses).sort(function(a,b){ return String(b.date||"").localeCompare(String(a.date||"")); }).forEach(function(x){
+  rows.push([x.date || "—", x.label || "—", catOf(x.category).label, csvMoney(x.amount)]);
+ });
+ rows.push([]);
+ rows.push(["RÈGLEMENTS ENCAISSÉS"]);
+ rows.push(["Date", "Client", "Montant", "Moyen", "Échéance liée"]);
+ st.clients.forEach(function(c){
+  [].concat(Array.isArray(c.payments) ? c.payments : []).sort(function(a,b){ return String(b.date||"").localeCompare(String(a.date||"")); }).forEach(function(p){
+   var inst = p.installmentId ? getBillInstallments(c).filter(function(i){ return i.id === p.installmentId; })[0] : null;
+   rows.push([p.date || "—", c.clientName || "—", csvMoney(p.amount), p.method ? methodLabel(p.method) : "—", inst ? (inst.plannedDate || "—") : "—"]);
+  });
+ });
+ return "\uFEFF" + rows.map(function(r){ return r.map(csvEsc).join(";"); }).join("\r\n");
+}
+function exportProjectCSV(pjId){
+ var st = projectStats(pjId);
+ if (!st){ toast("Projet introuvable."); return; }
+ var csv = buildProjectCSV(st);
+ var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+ var url = URL.createObjectURL(blob), a = document.createElement("a");
+ a.href = url; a.download = "AUREOR-Bilan-" + String(st.pj.name || "Projet").replace(/[^a-zA-Z0-9]+/g, "_") + "-" + today() + ".csv";
+ document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+ logAudit("EXPORT_PROJECT_CSV", st.pj.name);
+ toast("Bilan du projet exporté en CSV !");
+}
+document.addEventListener("click", function(e){
+ var b = e.target.closest("[data-export-project-csv]");
+ if (b && b.dataset.exportProjectCsv) exportProjectCSV(b.dataset.exportProjectCsv);
+});
+
 function renderActivitiesSection(){
  $("actDate").value = today();
 
@@ -1627,7 +1737,7 @@ function renderClientSheet(id){
  h += '<div style="margin-top:14px"><strong>📅 Échéances & acomptes</strong>';
  h += insts.map(function(inst){
   var st = getInstallmentStatus(c, inst);
-  var rec = getInstallmentReceived(c, inst.id);
+  var rec = getInstallmentEffectiveReceived(c, inst.id);
   var soldeInst = Math.max(0, Math.round((Number(inst.plannedAmount||0)-rec)*100)/100);
   return '<div class="inst-item"><div class="inst-row"><div><strong>'+money(inst.plannedAmount)+'</strong> <small class="muted">prévu le '+esc(inst.plannedDate||"—")+'</small><br><small>Reçu : '+money(rec)+(soldeInst>0 ? ' · Reste '+money(soldeInst) : '')+'</small></div>'+instBadge(st)+'</div><div class="inst-actions"><button class="primary" data-sheet-pay="'+escAttr(inst.id)+'">+ Encaisser</button><button data-sheet-edit="'+escAttr(inst.id)+'">✎ Modifier</button><button class="danger" data-sheet-del-inst="'+escAttr(inst.id)+'">✕ Supprimer</button></div></div>';
  }).join("") || '<div class="empty" style="margin-top:8px">Aucune échéance prévue pour ce dossier.</div>';
@@ -1660,7 +1770,7 @@ function setSheetPayTarget(instId){
  var inst = null;
  if (instId) { var l = getBillInstallments(c); for (var i=0;i<l.length;i++){ if (l[i].id===instId) inst = l[i]; } }
  if (inst) {
-  var rec = getInstallmentReceived(c, inst.id);
+  var rec = getInstallmentEffectiveReceived(c, inst.id);
   $("sheetPayTarget").textContent = "Échéance visée : " + money(inst.plannedAmount) + " prévue le " + (inst.plannedDate||"—") + " · déjà reçu : " + money(rec);
   var rest = Math.max(0, Math.round((Number(inst.plannedAmount||0)-rec)*100)/100);
   $("sheetPayAmount").value = rest > 0 ? rest : "";
@@ -1694,7 +1804,7 @@ function submitInstallment(billId){
   c.installments.push({ id: uid(), plannedAmount: Math.round(amt*100)/100, plannedDate: date });
   logAudit("INSTALLMENT_ADD", (c.clientName||"?")+" : échéance "+money(amt)+" le "+date);
  }
- saveSpace(); renderClientSheet(billId); renderSheetOptions();
+ saveSpace(); render(); renderClientSheet(billId); renderSheetOptions();
  toast("Échéance enregistrée.");
 }
 
@@ -1713,7 +1823,7 @@ function submitSheetPayment(billId){
  c.payments.push({ id: uid(), amount: Math.round(amt*100)/100, date: date, note: $("sheetPayNote").value.trim(), method: $("sheetPayMethod").value || null, installmentId: instId });
  if (getClientTotalEncaisse(c) >= c.amount) c.paid = true;
  logAudit("PAYMENT_ADD", "Acompte " + money(amt) + (instId ? " (lié à une échéance)" : "") + " pour " + c.label);
- saveSpace(); renderClientSheet(billId); renderSheetOptions();
+ saveSpace(); render(); renderClientSheet(billId); renderSheetOptions();
  toast("Règlement enregistré.");
 }
 
@@ -1756,7 +1866,7 @@ document.addEventListener("click", function(e){
   if (!confirm("Supprimer cette échéance (" + money(inst2.plannedAmount) + " prévue le " + (inst2.plannedDate||"—") + ") ?")) return;
   c2.installments = getBillInstallments(c2).filter(function(x){ return x.id !== inst2.id; });
   logAudit("INSTALLMENT_DELETE", (c2.clientName||"?") + " : échéance " + money(inst2.plannedAmount));
-  saveSpace(); renderClientSheet(sheetBillId); renderSheetOptions();
+  saveSpace(); render(); renderClientSheet(sheetBillId); renderSheetOptions();
   toast("Échéance supprimée.");
   return;
  }
@@ -1768,7 +1878,7 @@ document.addEventListener("click", function(e){
   c3.payments = c3.payments.filter(function(p){ return p.id !== b.dataset.sheetDelPay; });
   c3.paid = (getClientTotalEncaisse(c3) >= c3.amount);
   logAudit("PAYMENT_DELETE", (c3.clientName||"?") + " : règlement supprimé");
-  saveSpace(); renderClientSheet(sheetBillId); renderSheetOptions();
+  saveSpace(); render(); renderClientSheet(sheetBillId); renderSheetOptions();
   toast("Règlement supprimé.");
   return;
  }
@@ -1781,24 +1891,34 @@ $("projectForm").addEventListener("submit",function(e){
  var name = $("pname").value.trim();
  var env = $("penvelope").value;
  var alertPct = $("palert").value || 80;
+ var frRaw = $("pforecastrev").value;
+ var feRaw = $("pforecastexp").value;
  var ok = true;
  if (!name) { setErr("err-pname", "Nom requis.", true); ok = false; }
  var envAmt = Number(env);
  if (env === "" || !Number.isFinite(envAmt) || envAmt < 0) { setErr("err-penvelope", "Enveloppe invalide.", true); ok = false; }
+ var frAmt = frRaw === "" ? 0 : Number(frRaw);
+ var feAmt = feRaw === "" ? 0 : Number(feRaw);
+ if (!Number.isFinite(frAmt) || frAmt < 0 || !Number.isFinite(feAmt) || feAmt < 0) { setErr("err-penvelope", "Montants prévisionnels invalides (supérieurs ou égaux à 0).", true); ok = false; }
  if (!ok) return;
-
+ if (frAmt > 0) frAmt = Math.round(frAmt * 100) / 100;
+ if (feAmt > 0) feAmt = Math.round(feAmt * 100) / 100;
  var existing = appData.projects.find(function(pj){ return pj.name.toLowerCase() === name.toLowerCase(); });
  if (existing) {
   existing.envelope = Math.round(envAmt * 100) / 100;
   existing.alertPercent = Number(alertPct);
-  logAudit("PROJECT_UPDATE", name + " (Enveloppe: " + money(envAmt) + ")");
+  existing.forecastRevenue = frAmt;
+  existing.forecastExpenses = feAmt;
+  logAudit("PROJECT_UPDATE", name + " (Enveloppe: " + money(envAmt) + " · Prévisions: recettes " + money(frAmt) + ", dépenses futures " + money(feAmt) + ")");
   toast("Projet mis à jour.");
  } else {
   appData.projects.push({
    id: uid(),
    name: name,
    envelope: Math.round(envAmt * 100) / 100,
-   alertPercent: Number(alertPct)
+   alertPercent: Number(alertPct),
+   forecastRevenue: frAmt,
+   forecastExpenses: feAmt
   });
   logAudit("PROJECT_ADD", name + " (Enveloppe: " + money(envAmt) + ")");
   toast("Projet créé.");
@@ -1849,8 +1969,17 @@ document.addEventListener("click",function(e){
    logAudit("CLIENT_DELETE", b.dataset.deleteClientBill);
   }
   if(b.dataset.deleteProject) {
-   appData.projects=appData.projects.filter(function(x){return x.id!==b.dataset.deleteProject});
-   logAudit("PROJECT_DELETE", b.dataset.deleteProject);
+   var delId=b.dataset.deleteProject;
+   var delPj=appData.projects.filter(function(x){return x.id===delId})[0];
+   var nExp=0,nCli=0;
+   (appData.expenses||[]).forEach(function(x){ if(x.projectId===delId) nExp++; });
+   (appData.clientBills||[]).forEach(function(x){ if(x.projectId===delId) nCli++; });
+   if(!confirm("Supprimer le projet « "+(delPj?delPj.name:"?")+" » ? "+((nExp+nCli)>0 ? "Ses "+nExp+" dépense(s) et "+nCli+" dossier(s) client seront conservés et détachés du projet." : "Aucune opération ne lui est rattachée."))) return;
+   (appData.expenses||[]).forEach(function(x){ if(x.projectId===delId) x.projectId=null; });
+   (appData.clientBills||[]).forEach(function(x){ if(x.projectId===delId) x.projectId=null; });
+   (appData.activities||[]).forEach(function(x){ if(x.projectId===delId) x.projectId=null; });
+   appData.projects=appData.projects.filter(function(x){return x.id!==delId});
+   logAudit("PROJECT_DELETE", (delPj?delPj.name:delId)+((nExp+nCli)>0 ? " · "+nExp+" dépense(s) et "+nCli+" dossier(s) client détachés" : ""));
   }
   if(b.dataset.deleteActivity) {
    appData.activities=appData.activities.filter(function(x){return x.id!==b.dataset.deleteActivity});
@@ -1969,6 +2098,7 @@ function renderProfileSubContent(section){
  } else if (section === "export") {
   box.innerHTML = '<strong style="color:var(--accent)">📥 Sauvegarde JSON & Reports PNG</strong>' +
    '<p class="hint">Le JSON sert à restaurer vos données. Le PNG produit des fiches visuelles détaillées avec logo AŪREOR.</p>' +
+   '<p class="hint">⚠️ Tes données restent uniquement dans le navigateur de cet appareil : pas de synchronisation ni de chiffrement. Le PIN protège l’accès à l’application, il ne chiffre pas les données. Exporte une sauvegarde JSON régulièrement et garde-la hors de cet appareil.</p>' +
    '<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">' +
     '<button id="btnExportJSON" class="primary block">💾 EXPORTER LA SAUVEGARDE (JSON)</button>' +
     '<button id="btnExportPNGProfile" class="block">🖼️ Exporter Fiche Profil (PNG)</button>' +
@@ -2597,7 +2727,7 @@ function showUserGate(){
  $("userGate").classList.add("show");
  if (!appData || !appData.username) {
   // Première ouverture : Formulaire Créer mon espace
-  $("gateTitle").textContent = "Création de votre espace local sécurisé";
+  $("gateTitle").textContent = "Création de votre espace local";
   $("createSpaceForm").style.display = "block";
   $("loginPinForm").style.display = "none";
  } else {
