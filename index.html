@@ -100,6 +100,15 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1);padding:4p
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media (prefers-reduced-transparency:reduce){nav,header{-webkit-backdrop-filter:none;backdrop-filter:none;background:#0D0D0D}}
+/* ===== V5 : Accueil projet — hiérarchie premium ===== */
+.hero-card{background:linear-gradient(180deg,#1a170d,#151513);border-color:#4a3d17;padding:18px 16px 16px}
+.hero-label{display:block;color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.hero-value{font-size:34px;font-weight:700;letter-spacing:-0.02em;line-height:1.15;margin-top:6px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.hero-sub{color:var(--muted);font-size:12px;line-height:1.5;margin-top:6px}
+.watch-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.watch-item:last-child{border-bottom:0}
+.home-swap{animation:homeSwap .22s var(--ease-out)}
+@keyframes homeSwap{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
 /* Badges de Statut */
 .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:bold}
 .badge-pending{background:#2a2418;color:#fbbf24;border:1px solid #fbbf24}
@@ -160,53 +169,46 @@ main{max-width:960px;padding:20px 20px 30px}
 <!-- 1. ACCUEIL -->
 <section id="p-home" class="page active">
 <div class="card row">
-<div style="flex:1"><small class="muted">Mois affiché</small><div id="monthLabel"></div></div>
-<input type="month" id="month" aria-label="Choisir le mois" style="max-width:160px">
+<div style="flex:1"><small class="muted">Projet supervisé</small><div id="homeProjectName" class="brand-font" style="color:var(--accent);font-size:18px;margin-top:2px">—</div></div>
+<select id="homeModeProject" aria-label="Projet affiché sur l'Accueil" style="max-width:190px"></select>
 </div>
-<div class="card">
-<strong>Affichage de l'Accueil</strong>
-<div class="row" style="margin-top:10px">
-<select id="homeModeProject" aria-label="Mode d'affichage de l'Accueil"><option value="">📅 Budget mensuel (indépendant)</option></select>
+<div class="card hero-card">
+<span class="hero-label" id="homeHeroLabel">Résultat de trésorerie</span>
+<div class="hero-value" id="homeHeroValue">—</div>
+<div class="hero-sub" id="homeHeroSub">—</div>
 </div>
-<small class="muted">Budget mensuel indépendant, ou suivi financier complet d'un projet : clients, dépenses, encaissements, bénéfice.</small>
-</div>
-<div id="homeMonthBlock">
 <div class="grid kpi-grid">
-<div class="card stat"><small>Total facturé</small><strong id="kpiTotalInvoiced">0 €</strong></div>
-<div class="card stat"><small>Total encaissé</small><strong id="kpiTotalCollected" style="color:var(--green)">0 €</strong></div>
-<div class="card stat"><small>Créances restantes</small><strong id="kpiClaims" style="color:var(--amber)">0 €</strong></div>
-<div class="card stat"><small>Charges à payer</small><strong id="unpaid">0 €</strong></div>
+<div class="card stat"><small>Budget prévisionnel</small><strong id="homeKpiBudget" style="color:var(--accent)">—</strong></div>
+<div class="card stat"><small>Dépenses réalisées</small><strong id="homeKpiSpent">—</strong></div>
+<div class="card stat"><small>Recettes encaissées</small><strong id="homeKpiEncaisse" style="color:var(--green)">—</strong></div>
+<div class="card stat"><small>Reste à encaisser</small><strong id="homeKpiReste" style="color:var(--amber)">—</strong></div>
 </div>
 <div class="card">
-<strong>Budget mensuel</strong>
+<strong>Consommation du budget</strong>
 <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">
-<div class="stat"><small>Dépenses internes</small><strong id="spent" style="font-size:15px">0 €</strong></div>
-<div class="stat"><small>Budget restant</small><strong id="remaining" style="font-size:15px">—</strong></div>
-<div class="stat"><small>CA Encaissé (Mois)</small><strong id="caHome" style="font-size:15px">0 €</strong></div>
+<div class="stat"><small>Utilisé</small><strong id="homeConsPct" style="font-size:15px">—</strong></div>
+<div class="stat"><small>Restant</small><strong id="homeConsRem" style="font-size:15px">—</strong></div>
+<div class="stat"><small>Résultat prévisionnel</small><strong id="homePrevResult" style="font-size:15px">—</strong></div>
 </div>
-<label for="budget">Budget du mois (<span class="cur-suffix">\u20ac</span>)</label>
-<div class="row"><input id="budget" type="number" min="0" step=".01" inputmode="decimal" placeholder="Ex. 800"><button id="saveBudget">OK</button></div>
-<div class="bar"><span id="progress" style="width:0;background:var(--accent)"></span></div>
-<small id="budgetHint" class="muted">Définis ton budget mensuel.</small>
+<div class="bar"><span id="homeConsBar" style="width:0;background:var(--accent)"></span></div>
+<small id="homeConsHint" class="muted">—</small>
 </div>
-<div class="card">
-<strong>Répartition par catégorie</strong>
-<div id="chartCats" class="empty">Aucune dépense ce mois-ci.</div>
+<div class="card" id="homeWatchCard" style="display:none">
+<strong style="color:var(--amber)">⚠ À surveiller</strong>
+<div id="homeWatchList"></div>
 </div>
 <div class="card">
-<strong>Tendance 6 mois</strong>
+<strong>Répartition des dépenses</strong>
+<div id="chartCats" class="empty">Aucune dépense sur ce projet.</div>
+</div>
+<div class="card">
+<strong>Évolution des encaissements</strong>
 <div id="chartMonths"></div>
 </div>
 <div class="card">
-<strong>Dernières dépenses</strong>
-<div id="recent" class="empty">Aucune dépense.</div>
+<strong>Dernières opérations</strong>
+<div id="recent" class="empty">Aucune opération sur ce projet.</div>
 </div>
-</div>
-<div class="card" id="homeProjectsQuick" style="display:none">
-<strong>Vue rapide des projets</strong>
-<div id="homeProjectsQuickList"></div>
-</div>
-<div class="card" id="homeProjectBlock" style="display:none"></div>
 </section>
 <!-- 2. DÉPENSES -->
 <section id="p-expenses" class="page">
@@ -999,45 +1001,7 @@ function render(){
  $("headerUserName").textContent = appData.username;
  $("profileModalUserName").textContent = appData.username;
 
- var es=appData.expenses.filter(function(x){return x.date&&x.date.slice(0,7)===month});
- var total=es.reduce(function(s,x){return s+x.amount},0);
- var budget=Number(appData.budgets[month]||0);
- var paidBillsMonth=appData.bills.filter(function(x){return x.paid&&x.due&&x.due.slice(0,7)===month}).reduce(function(s,x){return s+x.amount},0);
- var usedWithBills=total+paidBillsMonth;
-
- $("month").value=month;
- $("monthLabel").textContent=new Date(month+"-01T12:00:00").toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
- $("spent").textContent=money(total);
- var rem=$("remaining");
- rem.textContent=budget?money(budget-usedWithBills):"—";
- rem.style.color=budget&&usedWithBills>budget?"var(--danger)":budget&&budget-usedWithBills<budget*0.2?"var(--amber)":"";
- $("unpaid").textContent=money(appData.bills.filter(function(x){return !x.paid}).reduce(function(s,x){return s+x.amount},0));
-
- var caMonthEncaisse = appData.clientBills.reduce(function(s,c){
-  return s + getClientEncaisseInMonth(c, month);
- }, 0);
- $("caHome").textContent=money(caMonthEncaisse);
- var kpiFacture = appData.clientBills.reduce(function(s,c){ return s + (Number(c.amount)||0); }, 0);
- var kpiEncaisse = appData.clientBills.reduce(function(s,c){ return s + getClientTotalEncaisse(c); }, 0);
- var kpiCreances = Math.max(0, Math.round((kpiFacture - kpiEncaisse)*100)/100);
- $("kpiTotalInvoiced").textContent = money(kpiFacture);
- $("kpiTotalCollected").textContent = money(kpiEncaisse);
- $("kpiClaims").textContent = money(kpiCreances);
-
- $("budget").value=budget||"";
- var pct=budget?Math.min(100,usedWithBills/budget*100):0;
- var bar=$("progress");
- bar.style.width=pct+"%";
- bar.style.background=pct>=100?"var(--danger)":pct>=80?"var(--amber)":"var(--accent)";
- $("budgetHint").textContent=budget?(usedWithBills>budget?"Budget dépassé de "+money(usedWithBills-budget):"Il reste "+money(budget-usedWithBills)+" ("+Math.round(pct)+"% utilisé)")+(paidBillsMonth>0?" · dont "+money(paidBillsMonth)+" de charges payées":""):"Définis ton budget mensuel.";
-
- var m={};
- es.forEach(function(x){m[x.category]=(m[x.category]||0)+x.amount});
- var entries=Object.keys(m).map(function(id){return{label:catOf(id).label,color:catOf(id).color,value:Math.round(m[id]*100)/100}}).sort(function(a,b){return b.value-a.value});
- $("chartCats").innerHTML=entries.length?('<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:8px">'+donutSVG(entries,Math.round(total*100)/100)+'<div style="flex:1;min-width:150px">'+entries.map(function(e){return '<p style="margin:4px 0;font-size:13px"><span class="dot" style="background:'+escAttr(e.color)+'"></span>'+esc(e.label)+' <strong>'+money(e.value)+' · '+Math.round(e.value/total*100)+'%</strong></p>'}).join("")+'</div></div>'):'<div class="empty">Aucune dépense ce mois-ci.</div>';
- $("chartMonths").innerHTML=monthsSVG();
- var recent=[].concat(es).sort(function(a,b){return b.date.localeCompare(a.date)}).slice(0,4);
- $("recent").innerHTML=recent.map(expenseRow).join("")||'<div class="empty">Aucune dépense.</div>';
+ // V5 : le rendu mensuel de l'Accueil a été remplacé par le tableau de bord projet (renderHomeMode)
  var all=[].concat(appData.expenses).sort(function(a,b){return b.date.localeCompare(a.date)});
  $("elist").innerHTML=all.map(expenseRow).join("")||'<div class="empty">Aucune dépense enregistrée.</div>';
 
@@ -1158,8 +1122,12 @@ function renderProjectsSection(){
  }).join("") || '<div class="empty">Aucun projet créé.</div>';
 }
 
-// ===== V4 : ACCUEIL INTELLIGENT — mode mensuel indépendant OU budget par projet (aucune double comptabilisation) =====
+// ===== V5 : ACCUEIL — tableau de bord financier dédié aux projets (aucune double comptabilisation) =====
 var homeModeProjectId = "";
+var HOME_PROJECT_KEY = "aureor_home_project_v5";
+
+function homeInsts(c){ return Array.isArray(c.installments) ? c.installments : []; }
+function homeInstRec(c, instId){ if (!Array.isArray(c.payments)) return 0; return c.payments.filter(function(p){ return p.installmentId === instId; }).reduce(function(s,p){ return s + (Number(p.amount)||0); }, 0); }
 
 function projectStats(pjId){
  var pj = (appData.projects||[]).filter(function(p){ return p.id === pjId; })[0];
@@ -1172,77 +1140,150 @@ function projectStats(pjId){
   if (!Array.isArray(c.payments)) return s;
   return s + c.payments.reduce(function(t,p){ return t + (Number(p.amount)||0); }, 0);
  }, 0);
- var reste = Math.max(0, facture - encaisse);
+ var reste = Math.max(0, Math.round((facture - encaisse)*100)/100);
  var payCount = clients.reduce(function(n,c){ return n + (Array.isArray(c.payments) ? c.payments.length : 0); }, 0);
  var envelope = Number(pj.envelope) || 0;
- var net = encaisse - spent;
+ var net = Math.round((encaisse - spent)*100)/100;
+ var prevResult = Math.round((facture - spent)*100)/100;
  var pctUsed = envelope > 0 ? Math.min(100, Math.round((spent / envelope) * 100)) : 0;
  var collectRate = facture > 0 ? Math.round((encaisse / facture) * 100) : 0;
- return { pj: pj, spent: spent, facture: facture, encaisse: encaisse, reste: reste, payCount: payCount, envelope: envelope, rem: envelope - spent, net: net, pctUsed: pctUsed, collectRate: collectRate, clientCount: clients.length, expensesCount: expenses.length, clients: clients, expenses: expenses };
+ var t = today();
+ var lateList = [];
+ clients.forEach(function(c){
+  homeInsts(c).forEach(function(inst){
+   var planned = Number(inst.plannedAmount)||0;
+   var rec = homeInstRec(c, inst.id);
+   if (planned > 0 && rec < planned && inst.plannedDate && inst.plannedDate < t) lateList.push(Math.round((planned - rec)*100)/100);
+  });
+ });
+ var lateAmount = Math.round(lateList.reduce(function(s,l){ return s + l; }, 0)*100)/100;
+ return { pj: pj, spent: spent, facture: facture, encaisse: encaisse, reste: reste, payCount: payCount, envelope: envelope, rem: Math.round((envelope - spent)*100)/100, net: net, prevResult: prevResult, pctUsed: pctUsed, collectRate: collectRate, clientCount: clients.length, expensesCount: expenses.length, lateCount: lateList.length, lateAmount: lateAmount, clients: clients, expenses: expenses };
+}
+
+function homePaymentsSVG(st){
+ var months = [], m = new Date();
+ for (var i = 0; i < 6; i++){
+  var key = m.getFullYear() + "-" + ("0" + (m.getMonth()+1)).slice(-2);
+  months.push({ label: m.toLocaleDateString("fr-FR", { month: "short" }), key: key, total: 0 });
+  m.setMonth(m.getMonth() - 1);
+ }
+ months.reverse();
+ st.clients.forEach(function(c){
+  (Array.isArray(c.payments) ? c.payments : []).forEach(function(p){
+   if (!p.date) return;
+   var k = p.date.slice(0,7);
+   for (var i = 0; i < months.length; i++){ if (months[i].key === k) months[i].total += Number(p.amount)||0; }
+  });
+ });
+ var max = Math.max.apply(null, months.map(function(x){ return x.total; })) || 1;
+ var H = 150, W = 320, bw = 28, gap = (W - 6*bw) / 7;
+ var bars = "";
+ for (var i = 0; i < months.length; i++){
+  var x = months[i];
+  var h = Math.max(2, Math.round(x.total / max * (H - 40)));
+  var left = 6 + (bw + gap) * i;
+  var mid = left + bw/2;
+  bars += '<rect x="' + left + '" y="' + (H - 26 - h) + '" width="' + bw + '" height="' + h + '" rx="5" fill="' + (x.total > 0 ? "#d9b45a" : "#8a6d2a") + '"/>';
+  bars += '<text x="' + mid + '" y="' + (H - 10) + '" text-anchor="middle" font-size="9" fill="#a7b4c7">' + x.label + '</text>';
+ }
+ return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="150" role="img" aria-label="Encaissements des 6 derniers mois">' + bars + '</svg>';
 }
 
 function renderHomeMode(){
  var projects = appData.projects || [];
+ var saved = "";
+ try { saved = localStorage.getItem(HOME_PROJECT_KEY) || ""; } catch(e){ saved = ""; }
+ if (!homeModeProjectId && saved) homeModeProjectId = saved;
  if (homeModeProjectId && !projects.some(function(p){ return p.id === homeModeProjectId; })) homeModeProjectId = "";
+ if (!homeModeProjectId && projects.length) homeModeProjectId = projects[0].id;
+ if (homeModeProjectId){ try { localStorage.setItem(HOME_PROJECT_KEY, homeModeProjectId); } catch(e){} }
  var sel = $("homeModeProject");
- sel.innerHTML = '<option value="">📅 Budget mensuel (indépendant)</option>' + projects.map(function(p){
+ sel.innerHTML = projects.map(function(p){
   return '<option value="' + escAttr(p.id) + '">📁 ' + esc(p.name) + '</option>';
  }).join("");
  sel.value = homeModeProjectId;
- renderHomeProjectsQuick();
- if (!homeModeProjectId){
-  $("homeMonthBlock").style.display = "block";
-  $("homeProjectBlock").style.display = "none";
+ var nameEl = $("homeProjectName");
+ var lblEl = $("homeHeroLabel");
+ var hv = $("homeHeroValue");
+ var subEl = $("homeHeroSub");
+ if (!projects.length){
+  nameEl.textContent = "AŪREOR";
+  lblEl.textContent = "Espace financier AŪREOR";
+  hv.textContent = "Crée ton premier projet";
+  hv.style.color = "var(--accent)";
+  subEl.textContent = "L'Accueil suit les finances d'un projet : crée-le depuis l'onglet Projets.";
+  ["homeKpiBudget","homeKpiSpent","homeKpiEncaisse","homeKpiReste"].forEach(function(id){ var el = $(id); el.textContent = "—"; el.style.color = ""; });
+  $("homeConsPct").textContent = "—";
+  var crEl = $("homeConsRem"); crEl.textContent = "—"; crEl.style.color = "";
+  var pvE = $("homePrevResult"); pvE.textContent = "—"; pvE.style.color = "";
+  $("homeConsBar").style.width = "0";
+  $("homeConsHint").textContent = "Aucun budget à suivre pour le moment.";
+  $("homeWatchCard").style.display = "none";
+  var cc0 = $("chartCats"); cc0.innerHTML = "Aucune dépense sur ce projet."; cc0.className = "empty";
+  $("chartMonths").innerHTML = '<div class="empty">Aucun encaissement pour le moment.</div>';
+  var rc0 = $("recent"); rc0.innerHTML = "Aucune opération sur ce projet."; rc0.className = "empty";
   return;
  }
  var st = projectStats(homeModeProjectId);
- $("homeMonthBlock").style.display = "none";
- $("homeProjectBlock").style.display = "block";
+ if (!st) return;
  var pj = st.pj;
+ nameEl.textContent = pj.name;
+ lblEl.textContent = "Résultat de trésorerie";
+ hv.textContent = money(st.net);
+ hv.style.color = st.net < 0 ? "var(--danger)" : "var(--green)";
+ subEl.textContent = "Encaissé " + money(st.encaisse) + " − Dépensé " + money(st.spent) + (st.facture > 0 ? " · Résultat prévisionnel : " + money(st.prevResult) : "");
+ $("homeKpiBudget").textContent = money(st.envelope);
+ var kSpent = $("homeKpiSpent");
+ kSpent.textContent = money(st.spent);
+ kSpent.style.color = (st.envelope > 0 && st.spent > st.envelope) ? "var(--danger)" : "";
+ $("homeKpiEncaisse").textContent = money(st.encaisse);
+ $("homeKpiReste").textContent = money(st.reste);
  var isOver = st.envelope > 0 && st.spent > st.envelope;
- $("homeProjectBlock").innerHTML =
-  '<strong style="color:var(--accent)">📁 ' + esc(pj.name) + '</strong>' +
-  '<div class="grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">' +
-   '<div><small class="muted">Budget prévisionnel</small><br><strong>' + money(st.envelope) + '</strong></div>' +
-   '<div><small class="muted">Dépenses réelles</small><br><strong style="color:' + (isOver?'var(--danger)':'var(--text)') + '">' + money(st.spent) + ' · ' + st.pctUsed + ' %</strong></div>' +
-   '<div><small class="muted">Recettes encaissées</small><br><strong style="color:var(--green)">' + money(st.encaisse) + '</strong></div>' +
-   '<div><small class="muted">Bénéfice / Perte</small><br><strong style="color:' + (st.net<0?'var(--danger)':'var(--green)') + '">' + money(st.net) + '</strong></div>' +
-  '</div>' +
-  '<div class="bar" style="margin-top:8px"><span style="width:' + st.pctUsed + '%;background:' + (isOver?'var(--danger)':'var(--accent)') + '"></span></div>' +
-  '<div class="grid" style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">' +
-   '<div><small class="muted">Nombre de clients</small><br><strong>' + st.clientCount + '</strong></div>' +
-   '<div><small class="muted">Paiements enregistrés</small><br><strong>' + st.payCount + '</strong></div>' +
-   '<div><small class="muted">Restes à payer</small><br><strong style="color:var(--amber)">' + money(st.reste) + '</strong></div>' +
-   '<div><small class="muted">Taux de recouvrement</small><br><strong>' + st.collectRate + ' %</strong></div>' +
-  '</div>' +
-  '<div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">' +
-   '<small class="muted">Clients du projet</small>' +
-   (st.clients.length ? st.clients.map(function(c){
-    var enc = Array.isArray(c.payments) ? c.payments.reduce(function(t,p){ return t + (Number(p.amount)||0); }, 0) : 0;
-    var left = Math.max(0, (Number(c.amount)||0) - enc);
-    var badge = left === 0 ? '<span class="badge badge-paid">Payé</span>' : (enc > 0 ? '<span class="badge badge-partial">Partiel</span>' : '<span class="badge badge-pending">En attente</span>');
-    return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(c.clientName) + ' · ' + money(c.amount) + '</span>' + badge + '</div>';
-   }).join("") : '<div class="empty" style="margin-top:6px">Aucun client rattaché à ce projet.</div>') +
-  '</div>';
-}
-
-function renderHomeProjectsQuick(){
- var box = $("homeProjectsQuick");
- var projects = appData.projects || [];
- if (!projects.length){ box.style.display = "none"; return; }
- box.style.display = "block";
- $("homeProjectsQuickList").innerHTML = projects.map(function(p){
-  var st = projectStats(p.id);
-  if (!st) return "";
-  return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📁 ' + esc(p.name) + '</span><span style="white-space:nowrap;color:' + (st.net<0?'var(--danger)':'var(--green)') + '">' + money(st.net) + '</span></div>';
- }).join("");
+ var threshold = Number(pj.alertPercent) || 80;
+ $("homeConsPct").textContent = st.envelope > 0 ? st.pctUsed + " %" : "—";
+ var remEl = $("homeConsRem");
+ remEl.textContent = st.envelope > 0 ? money(st.rem) : "—";
+ remEl.style.color = (st.envelope > 0 && st.rem < 0) ? "var(--danger)" : "";
+ var pvEl = $("homePrevResult");
+ pvEl.textContent = st.facture > 0 ? money(st.prevResult) : "—";
+ pvEl.style.color = st.prevResult < 0 ? "var(--danger)" : "var(--green)";
+ var bar = $("homeConsBar");
+ bar.style.width = st.pctUsed + "%";
+ bar.style.background = isOver ? "var(--danger)" : (st.pctUsed >= threshold ? "var(--amber)" : "var(--accent)");
+ $("homeConsHint").textContent = st.envelope > 0 ? (isOver ? "Budget dépassé de " + money(Math.round((st.spent - st.envelope)*100)/100) + "." : "Il reste " + money(st.rem) + " sur l'enveloppe (" + st.pctUsed + " % utilisé).") : "Définis une enveloppe budgétaire dans l'onglet Projets.";
+ var alerts = [];
+ if (isOver) alerts.push('<div class="watch-item"><span>Dépassement du budget</span><strong style="color:var(--danger)">' + money(Math.round((st.spent - st.envelope)*100)/100) + '</strong></div>');
+ else if (st.envelope > 0 && st.pctUsed >= threshold) alerts.push('<div class="watch-item"><span>Budget consommé à ' + st.pctUsed + ' %</span><strong style="color:var(--amber)">' + money(st.rem) + ' restants</strong></div>');
+ if (st.lateCount > 0) alerts.push('<div class="watch-item"><span>' + st.lateCount + ' échéance' + (st.lateCount > 1 ? 's' : '') + ' de paiement en retard</span><strong style="color:var(--amber)">' + money(st.lateAmount) + ' restants</strong></div>');
+ $("homeWatchCard").style.display = alerts.length ? "block" : "none";
+ $("homeWatchList").innerHTML = alerts.join("");
+ var m = {};
+ st.expenses.forEach(function(x){ m[x.category] = (m[x.category] || 0) + (Number(x.amount) || 0); });
+ var entries = Object.keys(m).map(function(id){ return { label: catOf(id).label, color: catOf(id).color, value: Math.round(m[id]*100)/100 }; }).filter(function(e){ return e.value > 0; }).sort(function(a,b){ return b.value - a.value; });
+ var cc = $("chartCats");
+ cc.innerHTML = (entries.length && st.spent > 0) ? ('<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:8px">' + donutSVG(entries, st.spent) + '<div style="flex:1;min-width:150px">' + entries.map(function(e){ return '<p style="margin:4px 0;font-size:13px"><span class="dot" style="background:' + escAttr(e.color) + '"></span>' + esc(e.label) + ' <strong>' + money(e.value) + ' · ' + Math.round(e.value / st.spent * 100) + '%</strong></p>'; }).join("") + '</div></div>') : "Aucune dépense sur ce projet.";
+ cc.className = (entries.length && st.spent > 0) ? "" : "empty";
+ $("chartMonths").innerHTML = homePaymentsSVG(st);
+ var ops = [];
+ st.expenses.forEach(function(x){ ops.push({ date: x.date || "", label: x.label || "Dépense", amount: -(Number(x.amount) || 0) }); });
+ st.clients.forEach(function(c){ (Array.isArray(c.payments) ? c.payments : []).forEach(function(p){ ops.push({ date: p.date || "", label: "Encaissement · " + (c.clientName || "Client"), amount: Number(p.amount) || 0 }); }); });
+ ops.sort(function(a,b){ return (b.date || "").localeCompare(a.date || ""); });
+ ops = ops.slice(0, 5);
+ var rec = $("recent");
+ rec.innerHTML = ops.map(function(o){
+  var neg = o.amount < 0;
+  return '<div class="item"><div class="details"><strong>' + esc(o.label) + '</strong><br><small class="muted">' + esc(o.date || "—") + '</small></div><strong style="color:' + (neg ? "var(--danger)" : "var(--green)") + ';font-variant-numeric:tabular-nums;white-space:nowrap">' + (neg ? "-" : "+") + money(Math.abs(o.amount)) + '</strong></div>';
+ }).join("") || "Aucune opération sur ce projet.";
+ rec.className = ops.length ? "" : "empty";
 }
 
 $("homeModeProject").addEventListener("change", function(){
  homeModeProjectId = $("homeModeProject").value;
+ try { localStorage.setItem(HOME_PROJECT_KEY, homeModeProjectId); } catch(e){}
+ var ph = document.getElementById("p-home");
+ if (ph){ ph.classList.remove("home-swap"); void ph.offsetWidth; ph.classList.add("home-swap"); }
  renderHomeMode();
 });
-
 function renderActivitiesSection(){
  $("actDate").value = today();
 
@@ -1418,16 +1459,7 @@ document.querySelector("nav").addEventListener("click",function(e){
  showPage(b.dataset.page);
 });
 
-$("month").addEventListener("change",function(e){if(e.target.value){month=e.target.value;render()}});
-
-$("saveBudget").addEventListener("click",function(){
- var v=$("budget").value;
- if(v===""||!Number.isFinite(Number(v))||Number(v)<0){toast("Saisis un budget valide.");return}
- appData.budgets[month]=Math.round(Number(v)*100)/100;
- logAudit("BUDGET_UPDATE", "Budget "+month+" défini à "+money(v));
- saveSpace();render();toast("Budget enregistré.");
-});
-
+// V5 : budget mensuel retiré de l'interface (les données appData.budgets existantes restent intactes)
 var saveTargetBtn = $("saveTarget");
 if (saveTargetBtn) {
  saveTargetBtn.addEventListener("click",function(){
