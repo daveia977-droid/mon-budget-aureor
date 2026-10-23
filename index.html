@@ -301,7 +301,7 @@ main{max-width:960px;padding:20px 20px 30px}
 </div>
 <div id="clientExportList" class="empty" style="padding-top:4px">Aucun dossier client.</div>
 <div class="row" style="margin-top:10px">
-<button id="exportSelectedSheets" class="primary" style="flex:2">📤 Exporter les fiches détaillées (PNG)</button>
+<button id="exportSelectedSheets" class="primary" style="flex:2">📤 Exporter les fiches sélectionnées (ZIP)</button>
 <button id="exportSelectedRecap" style="flex:1">📊 Récapitulatif</button>
 </div>
 </div>
@@ -871,17 +871,24 @@ function drawAureorHeader(ctx, width, headerHeight, subtitle){
  ctx.fillText(subtitle + " · " + (appData ? appData.username : ""), width/2, headerHeight/2 + 22);
 }
 
+function spacedCaps(s){ return String(s||"").toUpperCase().split("").join(" "); }
 function drawSheetHeader(ctx, width, headerHeight, subtitle){
  ctx.fillStyle="#0D0D0D";
  ctx.fillRect(0,0,width,headerHeight);
  ctx.textAlign="center";
  ctx.textBaseline="middle";
- ctx.font="bold 34px system-ui, -apple-system, 'Segoe UI', sans-serif";
+ ctx.font="bold 32px system-ui, -apple-system, 'Segoe UI', sans-serif";
  ctx.fillStyle="#B08D35";
- ctx.fillText("AŪREOR", width/2, headerHeight/2 - 15);
- ctx.font="bold 15px system-ui, -apple-system, sans-serif";
- ctx.fillStyle="#f4f7fb";
- ctx.fillText(subtitle, width/2, headerHeight/2 + 20);
+ ctx.fillText("AŪREOR", width/2, headerHeight/2 - 16);
+ ctx.font="600 11px system-ui, -apple-system, sans-serif";
+ ctx.fillStyle="#98a3b3";
+ ctx.fillText(spacedCaps(subtitle), width/2, headerHeight/2 + 12);
+ ctx.strokeStyle="#B08D35";
+ ctx.lineWidth=1;
+ ctx.beginPath();
+ ctx.moveTo(48, headerHeight - 1);
+ ctx.lineTo(width - 48, headerHeight - 1);
+ ctx.stroke();
 }
 
 function downloadPNG(canvas,filename){
@@ -899,6 +906,46 @@ function downloadPNG(canvas,filename){
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){URL.revokeObjectURL(url)},4000);
  },"image/png");
+}
+
+function downloadBlob(blob, filename){
+ var url=URL.createObjectURL(blob);
+ var a=document.createElement("a");
+ a.href=url;a.download=filename;
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(function(){URL.revokeObjectURL(url)},4000);
+}
+
+var ZIP_CRC_TABLE=null;
+function zipCrc32(buf){
+ if(!ZIP_CRC_TABLE){ZIP_CRC_TABLE=[];for(var n=0;n<256;n++){var x=n;for(var k=0;k<8;k++){x=(x&1)?(0xEDB88320^(x>>>1)):(x>>>1)}ZIP_CRC_TABLE.push(x>>>0)}}
+ var crc=0xFFFFFFFF;
+ for(var i=0;i<buf.length;i++){crc=(crc>>>8)^ZIP_CRC_TABLE[(crc^buf[i])&0xFF]}
+ return (crc^0xFFFFFFFF)>>>0;
+}
+function utf8Bytes(s){
+ var t=unescape(encodeURIComponent(String(s)));
+ var out=new Uint8Array(t.length);
+ for(var i=0;i<t.length;i++){out[i]=t.charCodeAt(i)&0xFF}
+ return out;
+}
+function makeZip(entries){
+ var parts=[],central=[],offset=0;
+ var DOSTIME=0,DOSDATE=0x5C41;
+ function u16(v){return [v&255,(v>>8)&255]}
+ function u32(v){return [v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255]}
+ entries.forEach(function(e){
+  var nameB=utf8Bytes(e.name),data=e.data,crc=zipCrc32(data);
+  var lh=[0x50,0x4B,0x03,0x04].concat(u16(20),u16(0),u16(0),u16(DOSTIME),u16(DOSDATE),u32(crc),u32(data.length),u32(data.length),u16(nameB.length),u16(0));
+  parts.push(new Uint8Array(lh),nameB,data);
+  var ch=[0x50,0x4B,0x01,0x02].concat(u16(20),u16(20),u16(0),u16(0),u16(DOSTIME),u16(DOSDATE),u32(crc),u32(data.length),u32(data.length),u16(nameB.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset));
+  central.push(new Uint8Array(ch),nameB);
+  offset+=lh.length+nameB.length+data.length;
+ });
+ var cdSize=0;
+ central.forEach(function(p){cdSize+=p.length});
+ var end=new Uint8Array([0x50,0x4B,0x05,0x06].concat(u16(0),u16(0),u16(entries.length),u16(entries.length),u32(cdSize),u32(offset),u16(0)));
+ return new Blob(parts.concat(central,[end]),{type:"application/zip"});
 }
 
 function renderProjectOptions(){
@@ -2105,50 +2152,94 @@ function exportMultiPagePNG(subtitle, sectionTitle, blocks, baseName, onDone, op
  drawPage();
 }
 
-function clientSheetBlocks(c){
- var insts=getBillInstallments(c);
- var pays=[].concat(Array.isArray(c.payments)?c.payments:[]).slice().sort(function(a,b){return String(b.date||"").localeCompare(String(a.date||""));});
- var st=clientBillStatus(c);
+function clientSheetRows(c){
  var enc=getClientTotalEncaisse(c);
+ var st=clientBillStatus(c);
  var reste=Math.max(0,Math.round((Number(c.amount)-enc)*100)/100);
- var stColor=st.key==="paid"?"#f4f7fb":(st.key==="partial"?"#B08D35":"#98a3b3");
- var blocks=[
-  {t:"row",label:"CLIENT :",value:c.clientName||"Non spécifié",strong:true,color:"#B08D35"},
-  {t:"row",label:"PRESTATION :",value:c.label},
-  {t:"row",label:"MONTANT FACTURÉ :",value:money(c.amount)},
-  {t:"row",label:"TOTAL ENCAISSÉ :",value:money(enc),color:"#f4f7fb"},
-  {t:"row",label:"SOLDE RESTANT :",value:money(reste),color:"#B08D35"},
-  {t:"row",label:"STATUT :",value:st.label,color:stColor,strong:true},
-  {t:"row",label:"DATE FACTURE :",value:c.date},
-  {t:"sep"},
-  {t:"text",s:"📅 ÉCHÉANCES PRÉVUES ("+insts.length+") — jamais comptées comme recettes",color:"#B08D35",font:"bold 12px system-ui,sans-serif"}
+ return [
+  {label:"PRESTATION",value:c.label||"—",color:"#f4f7fb"},
+  {label:"MONTANT TOTAL",value:money(c.amount),color:"#B08D35",strong:true},
+  {label:"MONTANT PAYÉ",value:money(enc),color:"#f4f7fb"},
+  {label:"RESTE À PAYER",value:money(reste),color:reste>0?"#B08D35":"#98a3b3",strong:true},
+  {label:"STATUT DE PAIEMENT",value:st.label,color:"#f4f7fb"},
+  {label:"DATE FACTURE",value:c.date||"—",color:"#98a3b3"}
  ];
- if (!insts.length) blocks.push({t:"text",s:"Aucune échéance prévue.",indent:10});
- for (var i=0;i<insts.length;i++){
-  var inst=insts[i];
-  var ist=getInstallmentStatus(c,inst);
-  var rec=getInstallmentReceived(c,inst.id);
-  var soldeInst=Math.max(0,Math.round((Number(inst.plannedAmount||0)-rec)*100)/100);
-  var istLbl=ist==="paid"?"Payé":(ist==="late"?"En retard":"À payer");
-  blocks.push({t:"row",label:"• "+money(inst.plannedAmount)+" prévue le "+(inst.plannedDate||"—"),value:"Reçu "+money(rec)+(soldeInst>0?(" · Reste "+money(soldeInst)):""),indent:10});
-  blocks.push({t:"text",s:"Statut : "+istLbl,color:ist==="paid"?"#f4f7fb":(ist==="late"?"#B08D35":"#98a3b3"),indent:22,dy:22});
- }
- blocks.push({t:"sep"});
- blocks.push({t:"text",s:"🧾 HISTORIQUE DES RÈGLEMENTS ("+pays.length+")",color:"#B08D35",font:"bold 12px system-ui,sans-serif"});
- if (!pays.length) blocks.push({t:"text",s:"Aucun règlement enregistré.",indent:10});
- for (var j=0;j<pays.length;j++){
-  var p=pays[j];
-  var instRef=null;
-  for (var m=0;m<insts.length;m++){ if (insts[m].id===p.installmentId) instRef=insts[m]; }
-  blocks.push({t:"row",label:"• "+(p.date||"—")+" · "+methodLabel(p.method),value:money(p.amount),color:"#f4f7fb",indent:10});
-  blocks.push({t:"text",s:(instRef?("Échéance liée : "+(instRef.plannedDate||"—")+" · "):"")+(p.note||"Règlement"),indent:22,dy:22});
- }
- return blocks;
 }
 
+function drawClientSheetOnCanvas(canvas,c){
+ var W=600;
+ var rows=clientSheetRows(c);
+ var headerH=96,nameH=58,rowH=32,footH=52;
+ var H=headerH+nameH+rows.length*rowH+footH;
+ canvas.width=W*2;canvas.height=H*2;
+ var ctx=canvas.getContext("2d");
+ ctx.scale(2,2);
+ ctx.fillStyle="#0D0D0D";ctx.fillRect(0,0,W,H);
+ drawSheetHeader(ctx,W,headerH,"FICHE CLIENT");
+ ctx.textBaseline="alphabetic";
+ ctx.textAlign="left";
+ ctx.font="600 9px system-ui, -apple-system, sans-serif";
+ ctx.fillStyle="#B08D35";
+ ctx.fillText(spacedCaps("Client"),40,headerH+24);
+ ctx.font="bold 21px system-ui, -apple-system, sans-serif";
+ ctx.fillStyle="#f4f7fb";
+ ctx.fillText(String(c.clientName||"Non spécifié"),40,headerH+46);
+ var y0=headerH+nameH;
+ for(var i=0;i<rows.length;i++){
+  var r=rows[i];
+  var yy=y0+i*rowH+21;
+  ctx.font=(r.strong?"bold 13px":"13px")+" system-ui, -apple-system, sans-serif";
+  ctx.textAlign="left";ctx.fillStyle="#98a3b3";
+  ctx.fillText(spacedCaps(r.label),40,yy);
+  ctx.fillStyle=r.color;ctx.textAlign="right";
+  ctx.fillText(String(r.value),W-40,yy);
+  ctx.strokeStyle="#2E2E2E";ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(40,yy+12);ctx.lineTo(W-40,yy+12);ctx.stroke();
+ }
+ ctx.font="10px system-ui, -apple-system, sans-serif";
+ ctx.fillStyle="#98a3b3";ctx.textAlign="center";
+ ctx.fillText("Généré le : "+new Date().toLocaleString("fr-FR"),W/2,H-20);
+ return H;
+}
+
+function clientSheetFileName(c){ return "AUREOR-Fiche-"+exportSlug(c.clientName)+"-"+c.id+".png"; }
+
 function exportClientSheetAsPNG(c, onDone){
- if (!c) { toast("Dossier introuvable."); return; }
- exportMultiPagePNG("Fiche client","DOSSIER : "+(c.clientName||"Non spécifié"),clientSheetBlocks(c),"AUREOR-Fiche-"+exportSlug(c.clientName)+"-"+c.id, onDone || function(){ toast("Fiche détaillée exportée en PNG."); }, {header:drawSheetHeader, noUser:true});
+ if (!c) { toast("Dossier introuvable."); if (onDone) onDone(); return; }
+ drawClientSheetOnCanvas($("canvasExport"),c);
+ downloadPNG($("canvasExport"), clientSheetFileName(c));
+ if (!onDone) toast("Fiche client exportée en PNG.");
+ if (onDone) onDone();
+}
+
+function exportClientSheetsZip(sel){
+ var i=0,entries=[],failed=0;
+ toast("Génération des fiches en cours…");
+ function next(){
+  if (i>=sel.length){
+   if (!entries.length){ toast("Export impossible sur cet appareil."); return; }
+   try{
+    downloadBlob(makeZip(entries),"AUREOR-Fiches-Clients-"+today()+".zip");
+    toast(failed?(entries.length+" fiche(s) exportée(s) en ZIP ("+failed+" échec(s))."):(entries.length+" fiche(s) exportée(s) en ZIP."));
+   }catch(e){
+    entries.forEach(function(en){ try{ downloadBlob(new Blob([en.data],{type:"image/png"}),en.name); }catch(e2){} });
+    toast("ZIP indisponible : fiches téléchargées séparément.");
+   }
+   return;
+  }
+  var c=sel[i];
+  var canvas=document.createElement("canvas");
+  drawClientSheetOnCanvas(canvas,c);
+  canvas.toBlob(function(blob){
+   if (blob){
+    var fr=new FileReader();
+    fr.onload=function(){ entries.push({name:clientSheetFileName(c),data:new Uint8Array(fr.result)}); i++; setTimeout(next,60); };
+    fr.onerror=function(){ failed++; i++; setTimeout(next,60); };
+    fr.readAsArrayBuffer(blob);
+   } else { failed++; i++; setTimeout(next,60); }
+  },"image/png");
+ }
+ next();
 }
 
 function exportClientsRecapPNG(clients, onDone){
@@ -2269,15 +2360,7 @@ $("clientExportSelNone").addEventListener("click",function(){ var els=document.q
 $("exportSelectedSheets").addEventListener("click",function(){
  var sel=selectedClients();
  if (!sel.length){ toast("Coche au moins un dossier client (ou utilise Tout cocher)."); return; }
- var i=0;
- function nextSheet(){
-  exportClientSheetAsPNG(sel[i], function(){
-   i++;
-   if (i<sel.length) setTimeout(nextSheet,700);
-   else toast(sel.length+" fiche(s) détaillée(s) exportée(s) en PNG.");
-  });
- }
- nextSheet();
+ exportClientSheetsZip(sel);
 });
 $("exportSelectedRecap").addEventListener("click",function(){ exportClientsRecapPNG(selectedClients()); });
 $("billsExportSelAll").addEventListener("click",function(){ var els=document.querySelectorAll("input[data-billsel]"); for (var i=0;i<els.length;i++) els[i].checked=true; toast("Toutes les charges cochées."); });
